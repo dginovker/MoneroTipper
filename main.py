@@ -1,24 +1,14 @@
-from monero.wallet import Wallet
-from monero.backends.jsonrpc import JSONRPCWallet
-from moneroRPC.RPC import RPC
-import time
-
-start = time.time()
+from tipperInteractions.tip import *
+from tipperInteractions.sendinfo import *
+from tipperInteractions.generatewallet import *
 
 
-rpcP = RPC(28088)
-
-time.sleep(5)
-
-w = Wallet(JSONRPCWallet(port=28088))
-
-print("It took", time.time() - start, "to get the wallet.")
-
-start = time.time()
-
-print("Address: ", w.address(), "\nHeight: ", w.height(), "\nBalance: ", w.balance())
+def main():
+    #tip("testwallet", "testwallet2", 0.6)
+    generateWallet("testGeneration")
+    print(sendinfo("testGeneration"))
 
 
-end = time.time()
 
-print("It has since taken", end - start, " to do all my things")
+if __name__ == "__main__":
+    main()
