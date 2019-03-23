@@ -2,7 +2,8 @@ from monero.wallet import Wallet
 from monero.backends.jsonrpc import JSONRPCWallet
 from moneroRPC.rpc import RPC
 from decimal import Decimal
-import time
+import time, json
+import pprint
 
 
 def tip(sender, recipient, amount):
@@ -12,8 +13,8 @@ def tip(sender, recipient, amount):
     :param sender: wallet sending Monero
     :param recipient: wallet receiving
     :param amount: amount to send in XMR
+    :return info: dictionary of the txid and message
     """
-    start = time.time()
 
     rpcPsender = RPC(port=28088, walletfile=sender)
     rpcPrecipient = RPC(port=28089, walletfile=recipient)
@@ -23,20 +24,23 @@ def tip(sender, recipient, amount):
     senderWallet = Wallet(JSONRPCWallet(port=28088))
     recipientWallet = Wallet(JSONRPCWallet(port=28089))
 
-    print("It took", time.time() - start, "to get both wallets.")
 
-    start = time.time()
+    info = {
+        "txid" : "None",
+        "message" : "None",
+    }
 
-    print("Recipient address: ", recipientWallet.address(), "\nSender balance: ", senderWallet.balance())
+    #print("Recipient address: ", recipientWallet.address(), "\nSender balance: ", senderWallet.balance())
 
-    if (senderWallet.balance(unlocked=True) >= amount):
+    if senderWallet.balance(unlocked=True) >= Decimal(amount):
         txs = senderWallet.transfer(recipientWallet.address(), Decimal(amount))
+        info["txid"] = txs
+        info["message"] = "Success"
     else:
-        print("Not enough money to send! Need ", amount, ", has ", senderWallet.balance(unlocked=True), "and", senderWallet.balance(unlocked=False), " still incoming")
+        info["message"] = "Not enough money to send! Need " + amount + ", has " + str(senderWallet.balance(unlocked=True)) + " and " + str(senderWallet.balance(unlocked=False)) + " still incoming"
 
     rpcPsender.kill()
     rpcPrecipient.kill()
 
-    end = time.time()
 
-    print("It has since taken", end - start, " to do all my things")
+    return info

@@ -1,9 +1,25 @@
-from monero.wallet import Wallet
-from monero.backends.jsonrpc import JSONRPCWallet
-from monero.seed import Seed
 from moneroRPC.rpc import RPC
 import time
 import json, requests
+import os
+
+def generateWalletIfDoesntExist(name):
+    """
+    Generates a new user wallet, if the user doesn't already have one
+
+    :param name: Name of user generating the wallet
+    :return: True if a wallet was generated, False otherwise
+    """
+    if walletExists(name):
+        print("User " + name + " already has a wallet.")
+        return False
+
+    return generateWallet(name=name)
+
+
+def walletExists(name):
+    return os.path.isfile('./wallets/' + name) or os.path.isfile('./wallets/' + name + '.keys') or os.path.isfile('./wallets/' + name + '.address.txt')
+
 
 def generateWallet(name):
     """
@@ -13,7 +29,7 @@ def generateWallet(name):
     :return True on successful wallet generation, False otherwise
     """
 
-    rpcP = RPC(port=28087)
+    rpcP = RPC(port=28087, walletDir="./wallets")
 
     time.sleep(10)
 
@@ -32,9 +48,11 @@ def generateWallet(name):
     }
 
     try:
-        response = requests.post(
+        requests.post(
             url, data=json.dumps(payload), headers=headers).json()
-        print(response["result"])
+    except Exception as e:
+        print(e)
+
+    if walletExists(name):
         return True
-    except:
-        return False
+    return False
