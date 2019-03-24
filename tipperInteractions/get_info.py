@@ -7,7 +7,7 @@ import time
 from tipperInteractions.wallet_generator import generate_wallet_if_doesnt_exist
 
 
-def get_info(wallet_name, private_info=False):
+def get_info(wallet_name, private_info=False, password="\"\""):
     """
     Displays the wallet addresses and contents to the user
 
@@ -15,14 +15,12 @@ def get_info(wallet_name, private_info=False):
     :return formatted string of content
     """
 
-    generate_wallet_if_doesnt_exist(wallet_name)
+    generate_wallet_if_doesnt_exist(wallet_name, password)
 
-    rpcP = RPC(port=28088, wallet_file=wallet_name)
+    rpcP = RPC(port=28088, wallet_file=wallet_name, password=password)
 
     time.sleep(10)
-
-    wallet = Wallet(JSONRPCWallet(port=28088))
-
+    wallet = Wallet(JSONRPCWallet(port=28088, password=password))
 
     info = "Public address: " + str(wallet.address()) + "\n\nBalance: " + format_decimal(wallet.balance(True)) + " (+ " + format_decimal(wallet.balance(False) - wallet.balance(True)) + " unconfirmed)" + ("\n\nPrivate mnemonic seed (DO NOT SHARE): \n\n" + str(wallet.seed().phrase) if private_info else "") + signature
 

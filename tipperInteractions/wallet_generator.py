@@ -3,7 +3,7 @@ import time
 import json, requests
 import os
 
-def generate_wallet_if_doesnt_exist(name):
+def generate_wallet_if_doesnt_exist(name, password):
     """
     Generates a new user wallet, if the user doesn't already have one
 
@@ -16,7 +16,7 @@ def generate_wallet_if_doesnt_exist(name):
         print("User " + name + " already has a wallet.")
         return False
 
-    return generate_wallet(name=name)
+    return generate_wallet(name=name, password=password)
 
 
 def wallet_exists(name):
@@ -30,7 +30,7 @@ def wallet_exists(name):
     return os.path.isfile('./wallets/' + name) or os.path.isfile('./wallets/' + name + '.keys') or os.path.isfile('./wallets/' + name + '.address.txt')
 
 
-def generate_wallet(name):
+def generate_wallet(name, password):
     """
     Generates a new user wallet
 
@@ -39,7 +39,7 @@ def generate_wallet(name):
     """
 
     name = str(name)
-    rpcP = RPC(port=28087, wallet_dir=".")
+    rpcP = RPC(port=28087, wallet_dir=".", password=password)
 
     time.sleep(10)
 
@@ -52,7 +52,7 @@ def generate_wallet(name):
         "method" : "create_wallet",
         "params": {
             "filename" : name,
-            "password" : "",
+            "password" : password,
             "language" : "English",
         }
     }

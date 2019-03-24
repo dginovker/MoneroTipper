@@ -2,9 +2,23 @@ import pprint
 import datetime
 from tipperInteractions.reply import *
 import praw
+from argparse import ArgumentParser
+
+
+parser = ArgumentParser()
+parser.add_argument("-p", "--password", dest="password")
+args = parser.parse_args()
 
 reddit = praw.Reddit('tipbot', user_agent='Monero non-custodial tipper: v0.1 (by /u/OsrsNeedsF2P)')
-replier = ReplyHandler(reddit)
+replier = ReplyHandler(reddit=reddit, password=args.password)
+
+
+def commentRequestsTip(body):
+    m = re.search('/u/monerotipsbot (tip )?([\d\.]+?) xmr', str(body).lower())
+    if m:
+        if m.lastindex == 2:
+            return True
+    return False
 
 
 def processMessage(subject, body, author, comment):
@@ -16,15 +30,15 @@ def processMessage(subject, body, author, comment):
 
     print("Received message: " + subject + " from " + author.name + ": " + body)
 
-    generate_wallet_if_doesnt_exist(author.name)
+    generate_wallet_if_doesnt_exist(name=author.name, password=args.password)
 
-    if "/u/monerotipsbot tip" in body.lower():
+    if commentRequestsTip(body):
         replier.handle_tip(author, body, comment)
         return
-    if subject == "My info":
+    if subject.lower() in "my info":
         replier.handle_info_request(author=author, private_info=False)
         return
-    if subject == "My private info":
+    if subject.lower() in "my private info":
         replier.handle_info_request(author=author, private_info=True)
         return
     if "withdraw" in subject.lower():
@@ -32,6 +46,7 @@ def processMessage(subject, body, author, comment):
         return
 
     print("Received a message I don't understand: " + author.name + ":\n" + body)
+    reddit.redditor(author.name).message(subject="I didn't understand your command", message="I didn't understand the following: \n\n" + body + "\n\nIf you're confused, please let my owner know by clicking Report a Bug!" + signature)
 
 
 def main():
