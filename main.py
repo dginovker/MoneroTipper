@@ -1,28 +1,10 @@
 import pprint
 import datetime
-import re
-from tipperInteractions.tip import *
-from tipperInteractions.sendinfo import *
-from tipperInteractions.generatewallet import *
+from tipperInteractions.reply import *
 import praw
-import prawcore
-import time
 
 reddit = praw.Reddit('tipbot', user_agent='Monero non-custodial tipper: v0.1 (by /u/OsrsNeedsF2P)')
-
-
-def parseRecipient(body):
-    m = re.search('/u/MoneroTipsBot tip (.+?) ', body)
-    if m:
-        return m.group(1)
-    return None
-
-
-def parseAmount(body):
-    m = re.search('/u/MoneroTipsBot tip .+? (.+?)', body)
-    if m:
-        return m.group(1)
-    return None
+replier = ReplyHandler(reddit)
 
 
 def processMessage(subject, body, author, comment):
@@ -31,26 +13,26 @@ def processMessage(subject, body, author, comment):
 
     :param comment: comment to parse for the command
     """
-    #pprint.pprint(vars(author))
+
     print("Received message: " + subject + " from " + author.name + ": " + body)
 
-    generateWalletIfDoesntExist(author.name)
+    generate_wallet_if_doesnt_exist(author.name)
 
-    if "/u/MoneroTipsBot tip" in body:
-        recipient = parseRecipient(body)
-        amount = parseAmount(body)
-        if recipient != None and amount != None:
-            print(author.name + " is sending " + recipient + " " + amount + " XMR.")
-            generateWalletIfDoesntExist(recipient)
+    if "/u/monerotipsbot tip" in body.lower():
+        replier.handle_tip(author, body, comment)
+        return
+    if subject == "My info":
+        replier.handle_info_request(author=author, private_info=False)
+        return
+    if subject == "My private info":
+        replier.handle_info_request(author=author, private_info=True)
+        return
+    if "withdraw" in subject.lower():
+        replier.handle_withdraw(author=author, subject=subject, contents=body)
+        return
 
-            res = tip(sender=author.name, recipient=recipient, amount=amount)
-            reply = "Response message: " + res["message"] + "\nResponse txid: " + res["txid"]
-            try:
-                reddit.comment(str(comment)).reply(reply)
-            except Exception as e:
-                print(e)
-            #pprint.pprint(vars(commentID))
-            #reddit.submission(commentID).reply(reply)
+    print("Received a message I don't understand: " + author.name + ":\n" + body)
+
 
 def main():
 
@@ -58,14 +40,10 @@ def main():
     startTime = datetime.datetime.now().timestamp()
 
     for message in reddit.inbox.stream():
-        #pprint.pprint(vars(message))
         if message.created_utc > startTime:
+            #pprint.pprint(vars(message))
             processMessage(subject=message.subject, body=message.body, author=message.author, comment=message)
 
-
-#tip("testwallet", "testwallet2", 0.6)
-#generateWalletIfDoesntExist("testGeneration5")
-#print(sendinfo("testGeneration"))
 
 
 if __name__ == "__main__":

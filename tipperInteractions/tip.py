@@ -2,8 +2,8 @@ from monero.wallet import Wallet
 from monero.backends.jsonrpc import JSONRPCWallet
 from moneroRPC.rpc import RPC
 from decimal import Decimal
-import time, json
-import pprint
+from helper import *
+import time
 
 
 def tip(sender, recipient, amount):
@@ -16,8 +16,11 @@ def tip(sender, recipient, amount):
     :return info: dictionary of the txid and message
     """
 
-    rpcPsender = RPC(port=28088, walletfile=sender)
-    rpcPrecipient = RPC(port=28089, walletfile=recipient)
+    recipient = str(recipient)
+    sender = str(sender)
+
+    rpcPsender = RPC(port=28088, wallet_file=sender)
+    rpcPrecipient = RPC(port=28089, wallet_file=recipient)
 
     time.sleep(10)
 
@@ -33,11 +36,16 @@ def tip(sender, recipient, amount):
     #print("Recipient address: ", recipientWallet.address(), "\nSender balance: ", senderWallet.balance())
 
     if senderWallet.balance(unlocked=True) >= Decimal(amount):
-        txs = senderWallet.transfer(recipientWallet.address(), Decimal(amount))
-        info["txid"] = txs
-        info["message"] = "Success"
+        print(sender + " is trying to send " + recipient + " " + amount + " XMR")
+        try:
+            txs = senderWallet.transfer(recipientWallet.address(), Decimal(amount))
+            info["txid"] = str(txs)
+            info["message"] = "Successfully tipped /u/" + sender + " " + amount + " XMR!"
+        except Exception as e:
+            print(e)
+            info["message"] = "Error: " + str(e)
     else:
-        info["message"] = "Not enough money to send! Need " + amount + ", has " + str(senderWallet.balance(unlocked=True)) + " and " + str(senderWallet.balance(unlocked=False)) + " still incoming"
+        info["message"] = "Not enough money to send! Need " + format_decimal(Decimal(amount)) + ", has " + format_decimal(senderWallet.balance(unlocked=True)) + " and " + format_decimal(senderWallet.balance(unlocked=False)) + " still incoming"
 
     rpcPsender.kill()
     rpcPrecipient.kill()
