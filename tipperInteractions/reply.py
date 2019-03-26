@@ -1,9 +1,7 @@
-import re
-from tipperInteractions.wallet_generator import *
 from tipperInteractions.get_info import *
 from tipperInteractions.tip import *
 from helper import *
-import praw
+import re
 
 
 class ReplyHandler(object):
@@ -46,10 +44,9 @@ class ReplyHandler(object):
         :return: An amount, in XMR, that the bot will tip
         """
 
-        m = re.search('/u/monerotipsbot (tip )?([\d\.]+?) xmr', str(body).lower())
+        m = re.search('/u/monerotipsbot (tip )?([\d\.]+?) (t)?xmr', str(body).lower())
         if m:
-            if m.lastindex == 2:
-                return m.group(2)
+            return m.group(2)
         return None
 
 
@@ -67,7 +64,7 @@ class ReplyHandler(object):
         return None
 
 
-    def handle_tip(self, author, body, comment):
+    def handle_tip_request(self, author, body, comment):
         """
         Handles the tipping interaction, called by a Redditor's comment
 
@@ -85,15 +82,18 @@ class ReplyHandler(object):
             generate_wallet_if_doesnt_exist(recipient, self.password)
 
             res = tip(sender=author.name, recipient=recipient, amount=amount, password=self.password)
-            reply = "Response message: " + res["message"] + "\n\n[Txid](" + res["txid"] + ")" + str(signature)
+            reply = "Response message: " + res["response"] + "\n\n[Txid](" + res["txid"] + ")"
             print("The response is: " + reply)
+            if res["message"] != None:
+                self.reddit.redditor(author.name).message(subject="Your tip", message=res["message"] + signature)
         else:
-            reply = "Nothing interesting happens.\n\n*I couldn't find out how much you wanted to tip, or who you were trying to send your tip to*" + str(signature)
+            reply = "Nothing interesting happens.\n\n*In case you were trying to tip, I didn't understand you.*"
 
         try:
-            self.reddit.comment(str(comment)).reply(reply)
+            self.reddit.comment(str(comment)).reply(reply + signature)
         except Exception as e:
             print(e)
+
 
     def handle_withdraw(self, author, subject, contents):
         """
@@ -117,7 +117,7 @@ class ReplyHandler(object):
             print(author.name + " is trying to send " + contents + " " + amount + " XMR")
             try:
                 res = "Withdrawl success! Txid: "
-                res += str(senderWallet.transfer(contents, Decimal(amount)))
+                res += generate_transaction(senderWallet, contents, Decimal(amount))
             except Exception as e:
                 print(e)
                 res = "Error: " + str(e)
@@ -126,9 +126,10 @@ class ReplyHandler(object):
 
         rpcSender.kill()
 
-        self.reddit.redditor(author.name).message(subject="Your withdrawl", message=res)
+        self.reddit.redditor(author.name).message(subject="Your withdrawl", message=res + signature)
         print("Told " + author.name + " their withdrawl status (" + res + ")")
         return res
+
 
     def handle_info_request(self, author, private_info=False):
         """
@@ -138,7 +139,7 @@ class ReplyHandler(object):
         :param private_info: Whether or not to send the private key (mnemonic) along with the message
         :return:
         """
-        self.reddit.redditor(author.name).message(subject="Your " + ("private address and info" if private_info else "public address and balance"), message=get_info(wallet_name=author.name, private_info=private_info, password=self.password))
+        self.reddit.redditor(author.name).message(subject="Your " + ("private address and info" if private_info else "public address and balance"), message=get_info(wallet_name=author.name, private_info=private_info, password=self.password) + signature)
         print("Told " + author.name + " their " + ("private" if private_info else "public") + " info.")
 
 

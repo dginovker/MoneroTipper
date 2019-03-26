@@ -22,7 +22,6 @@ def get_info(wallet_name, private_info=False, password="\"\""):
     time.sleep(10)
     wallet = Wallet(JSONRPCWallet(port=28088, password=password))
 
-    info = "Public address: " + str(wallet.address()) + "\n\nBalance: " + format_decimal(wallet.balance(True)) + " (+ " + format_decimal(wallet.balance(False) - wallet.balance(True)) + " unconfirmed)" + ("\n\nPrivate mnemonic seed (DO NOT SHARE): \n\n" + str(wallet.seed().phrase) if private_info else "") + signature
-
+    info = "Public address: " + str(wallet.address()) + "\n\nBalance: " + format_decimal(wallet.balance(True)) + " (+ " + format_decimal(wallet.balance(False) - wallet.balance(True)) + " unconfirmed)" + ("\n\nPrivate mnemonic seed (DO NOT SHARE): \n\n" + str(wallet.seed().phrase) if private_info else "")
     rpcP.kill()
     return info

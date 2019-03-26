@@ -4,6 +4,41 @@ from moneroRPC.rpc import RPC
 from helper import *
 import time
 
+from tipperInteractions.transaction import generate_transaction
+
+
+def get_error_response(e):
+    """
+    Determines the reply for an exception that occured when generating a transaction that should have been valid
+
+    :param e: Exception to determine error for
+    :return: A reply to be sent publicly to the user regarding the exception
+    """
+    # Default
+    response = "Error: " + str(e)
+
+    # User does not have enough inputs
+    if "Method 'transfer_split' failed with RPC Error of unknown code -4" in str(e):
+        response = "Congradulations, I tried to fix this. Pinging me: /u/OsrsNeedsF2P\n\nCould you please tell how much did you thought you had available to tip, and how many tips you've issued in the past 20 minutes? Thanks\n\nError: You do not have enough spendable balance. Either wait a bit, or see [this link](https://www.reddit.com/r/MoneroTipsBot/wiki/index#wiki_why_is_all_my_monero_unconfirmed.3F_i_want_to_send_more_tips.21) on how to avoid this in the future."
+
+    return response
+
+
+def get_balance_to_low_message(senderWallet, amount):
+    """
+    Determines the private message to send to a user who tried to tip more than their balance
+
+    :param senderWallet:
+    :param amount:
+    :return:
+    """
+
+    message = "Not enough money to send! Need " + format_decimal(Decimal(amount)) + ", you have " + format_decimal(senderWallet.balance(unlocked=True)) + " and " + format_decimal(senderWallet.balance(unlocked=False)) + " still incoming."
+    if senderWallet.balance(unlocked=True) == 0 and senderWallet.balance(unlocked=False) > 0:
+        message += "\n\n[(Why is all my balance still incoming?)](https://www.reddit.com/r/MoneroTipsBot/wiki/index#wiki_why_is_all_my_monero_unconfirmed.3F_i_want_to_send_more_tips.21)"
+
+    return message
+
 
 def tip(sender, recipient, amount, password):
     """
@@ -12,7 +47,7 @@ def tip(sender, recipient, amount, password):
     :param sender: wallet sending Monero
     :param recipient: wallet receiving
     :param amount: amount to send in XMR
-    :return info: dictionary of the txid and message
+    :return info: dictionary of the txid, a private message and a public response
     """
 
     recipient = str(recipient)
@@ -29,24 +64,23 @@ def tip(sender, recipient, amount, password):
 
     info = {
         "txid" : "None",
-        "message" : "None",
+        "response" : "None",
+        "message" : None
     }
-
-    #print("Recipient address: ", recipientWallet.address(), "\nSender balance: ", senderWallet.balance())
 
     if senderWallet.balance(unlocked=True) >= Decimal(amount):
         print(sender + " is trying to send " + recipient + " " + amount + " XMR")
         try:
-            txs = senderWallet.transfer(recipientWallet.address(), Decimal(amount))
+            txs = generate_transaction(senderWallet=senderWallet, recipientWallet=recipientWallet, amount=amount)
+
             info["txid"] = "https://testnet.xmrchain.com/search?value=" + str(txs)
-            info["message"] = "Successfully tipped /u/" + recipient + " " + amount + " XMR!"
+            info["response"] = "Successfully tipped /u/" + recipient + " " + amount + " tXMR!"
         except Exception as e:
             print(e)
-            info["message"] = "Error: " + str(e)
-            if "Method 'transfer_split' failed with RPC Error of unknown code -4" in str(e):
-                info["message"] = "Error: You do not have enough spendable balance. Either wait a bit, or see [this link](https://www.reddit.com/r/MoneroTipsBot/wiki/index#wiki_why_is_all_my_monero_unconfirmed.3F_i_want_to_send_more_tips.21) on how to avoid this in the future."
+            info["response"] = get_error_response(e)
     else:
-        info["message"] = "Not enough money to send! Need " + format_decimal(Decimal(amount)) + ", has " + format_decimal(senderWallet.balance(unlocked=True)) + " and " + format_decimal(senderWallet.balance(unlocked=False)) + " still incoming"
+        info["response"] = "Not enough money to send! See your private message for details."
+        info["message"] = get_balance_to_low_message(senderWallet, amount)
 
     rpcPsender.kill()
     rpcPrecipient.kill()

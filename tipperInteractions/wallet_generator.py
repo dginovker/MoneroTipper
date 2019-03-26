@@ -13,7 +13,6 @@ def generate_wallet_if_doesnt_exist(name, password):
 
     name = str(name)
     if wallet_exists(name):
-        print("User " + name + " already has a wallet.")
         return False
 
     return generate_wallet(name=name, password=password)
@@ -66,5 +65,7 @@ def generate_wallet(name, password):
     rpcP.kill()
 
     if wallet_exists(name):
+        print("Generated a wallet for " + name)
         return True
+    print("Failed to generate a wallet for " + name)
     return False
