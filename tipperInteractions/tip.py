@@ -1,3 +1,4 @@
+from decimal import Decimal
 from monero.wallet import Wallet
 from monero.backends.jsonrpc import JSONRPCWallet
 from moneroRPC.rpc import RPC
@@ -24,7 +25,7 @@ def get_error_response(e):
     return response
 
 
-def get_balance_to_low_message(senderWallet, amount):
+def get_balance_too_low_message(senderWallet, amount):
     """
     Determines the private message to send to a user who tried to tip more than their balance
 
@@ -71,16 +72,17 @@ def tip(sender, recipient, amount, password):
     if senderWallet.balance(unlocked=True) >= Decimal(amount):
         print(sender + " is trying to send " + recipient + " " + amount + " XMR")
         try:
-            txs = generate_transaction(senderWallet=senderWallet, recipientWallet=recipientWallet, amount=amount)
+            txs = generate_transaction(senderWallet=senderWallet, recipientAddress=recipientWallet.address(), amount=amount)
 
             info["txid"] = "https://testnet.xmrchain.com/search?value=" + str(txs)
             info["response"] = "Successfully tipped /u/" + recipient + " " + amount + " tXMR!"
         except Exception as e:
             print(e)
             info["response"] = get_error_response(e)
+            info["message"] = get_balance_too_low_message(senderWallet, amount)
     else:
         info["response"] = "Not enough money to send! See your private message for details."
-        info["message"] = get_balance_to_low_message(senderWallet, amount)
+        info["message"] = get_balance_too_low_message(senderWallet, amount)
 
     rpcPsender.kill()
     rpcPrecipient.kill()

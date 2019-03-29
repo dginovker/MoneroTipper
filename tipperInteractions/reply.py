@@ -1,6 +1,8 @@
 from tipperInteractions.get_info import *
 from tipperInteractions.tip import *
 from helper import *
+from decimal import Decimal
+import traceback
 import re
 
 
@@ -58,7 +60,7 @@ class ReplyHandler(object):
         :return: Ann amount, in XMR, that the bot will withdraw
         """
 
-        m = re.search('withdraw (.+?) xmr', str(subject).lower())
+        m = re.search('withdraw ([\d\.]+?) (t)?xmr', str(subject).lower())
         if m:
             return m.group(1)
         return None
@@ -105,11 +107,15 @@ class ReplyHandler(object):
         :return: Response message about withdrawl request
         """
 
+        amount = self.parse_withdrawl_amount(subject)
+        if amount == None:
+            self.reddit.redditor(author.name).message(subject="I didn't understand your withdrawal!", message="You sent: \"" + subject + "\", but I couldn't figure out how much you wanted to send. See [this](https://www.reddit.com/r/MoneroTipsBot/wiki/index#wiki_withdrawing) guide if you need help, or click \"Report a Bug\" if you think there's a bug!" + signature)
+            return None
+
         rpcSender = RPC(port=28086, wallet_file=author.name, password=self.password)
         time.sleep(10)
 
         senderWallet = Wallet(JSONRPCWallet(port=28086, password=self.password))
-        amount = self.parse_withdrawl_amount(subject)
 
         res = None
 
@@ -117,7 +123,7 @@ class ReplyHandler(object):
             print(author.name + " is trying to send " + contents + " " + amount + " XMR")
             try:
                 res = "Withdrawl success! Txid: "
-                res += generate_transaction(senderWallet, contents, Decimal(amount))
+                res += generate_transaction(senderWallet=senderWallet, recipientAddress=contents, amount=Decimal(amount))
             except Exception as e:
                 print(e)
                 res = "Error: " + str(e)
@@ -141,5 +147,9 @@ class ReplyHandler(object):
         """
         self.reddit.redditor(author.name).message(subject="Your " + ("private address and info" if private_info else "public address and balance"), message=get_info(wallet_name=author.name, private_info=private_info, password=self.password) + signature)
         print("Told " + author.name + " their " + ("private" if private_info else "public") + " info.")
+
+
+    def handle_donation(self, author, subject, contents):
+        self.reddit.redditor(author.name).message(subject="Your donation to the General Dev Fund", message="Thank you for your interest in donating! Unfortunately, this isn't implemented because we're on the testnet. Come back soon though!")
 
 

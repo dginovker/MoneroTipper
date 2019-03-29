@@ -8,7 +8,7 @@ parser = ArgumentParser()
 parser.add_argument("-p", "--password", dest="password")
 args = parser.parse_args()
 
-reddit = praw.Reddit('tipbot', user_agent='Monero non-custodial tipper: v0.2 (by /u/OsrsNeedsF2P)')
+reddit = praw.Reddit('tipbot', user_agent='Monero non-custodial tipper: v0.3 (by /u/OsrsNeedsF2P)')
 replier = ReplyHandler(reddit=reddit, password=args.password)
 
 
@@ -42,9 +42,12 @@ def processMessage(subject, body, author, comment):
     if "withdraw" in subject.lower():
         replier.handle_withdraw(author=author, subject=subject, contents=body)
         return
+    if "donate" in subject.lower():
+        replier.handle_donation(author=author, subject=subject, contents=body)
+        return
 
     print("Received a message I don't understand: " + author.name + ":\n" + body)
-    reddit.redditor(author.name).message(subject="I didn't understand your command", message="I didn't understand the following: \n\n" + body + "\n\nIf you didn't mean to summon me, you're all good! If you're confused, please let my owner know by clicking Report a Bug!" + signature)
+    reddit.redditor(author.name).message(subject="I didn't understand your command", message="I didn't understand what you meant [here](" + comment.permalink() + "). You said: \n\n" + body + "\n\nIf you didn't mean to summon me, you're all good! If you're confused, please let my owner know by clicking Report a Bug!" + signature)
 
 
 def main():
@@ -58,7 +61,7 @@ def main():
                 #pprint.pprint(vars(message))
                 processMessage(subject=message.subject, body=message.body, author=message.author, comment=message)
     except Exception as e:
-        print(e)
+        print("Main error: " + str(e))
         main()
 
 

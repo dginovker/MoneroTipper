@@ -1,7 +1,22 @@
-from decimal import Decimal
 
-signature = str("\n\n*****\n\n^\(っ◔◡◔)っ ^♡ ^| [^(H𝗈𝗐 𝗍𝗈 𝗎𝗌𝖾)](https://www.reddit.com/r/MoneroTipsBot/wiki/index#wiki_how_to_use) ^| [^(Show my balance)](https://www.reddit.com/message/compose/?to=MoneroTipsBot&subject=My+info&message=Hit+%27send%27+and+the+bot+will+tell+you+your+balance+:\)) ^| [^(𝖥𝖠𝖰)](https://www.reddit.com/r/MoneroTipsBot/wiki/index#wiki_f.a.q.) ^| [^(𝖱𝖾𝗉𝗈𝗋𝗍 𝖺 𝖻𝗎𝗀)](https://www.reddit.com/message/compose/?to=OsrsNeedsF2P&subject=/u/MoneroTipsBot%20bug%20report!&message=Please%20be%20as%20detailed%20as%20possible.%20What%20happened?%20What%20should%20have%20happened?%20Thank%20you!) ^| ^♡\n\n^*Testnet ^only")
+### Constants ###
+
+# Signature to add to the end of each reply
+signature = str("\n\n*****\n\n^\(っ◔◡◔)っ ^♡ ^| [^(Deposit)](https://www.reddit.com/message/compose/?to=MoneroTipsBot&subject=My+info&message=Hit+%27send%27+and+the+bot+will+tell+you+your+public+address+:\)) ^| [^(Withdraw)](https://www.reddit.com/message/compose/?to=MoneroTipsBot&subject=Withdraw+0+XMR&message=Replace+this+line+with+your+public+address!) ^|  [^(Show my balance)](https://www.reddit.com/message/compose/?to=MoneroTipsBot&subject=My+info&message=Hit+%27send%27+and+the+bot+will+tell+you+your+balance+:\)) ^| [^(Donate to the CCS)](https://old.reddit.com/r/MoneroTipsBot/wiki/index#wiki_donating_to_the_ccs) ^| [^(Report a bug)](https://old.reddit.com/r/MoneroTipsBot/wiki/index#wiki_report_a_bug) ^| ^♡\n\n^*Testnet ^only")
+
+# Number of decimal points to display
 precision = 4
+
+### Default locations ###
+
+logPath = "./logs/"
+
+# TODO for 0.4 release:
+# Make "I didn't understand this comment" directly link the comment - Done :)
+# Fix withdrawal bug
+# Allow for withdrawals directly to the CCS - Partially complete
+# Introduce logging
+
 
 def format_decimal(decimal):
     """
