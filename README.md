@@ -4,6 +4,8 @@ An on-chain, non-custodial, Reddit Monero tip bot written in Python.
 
 **Version history:**
 - 0.1: Initial release, testnet only
+- 0.2: Security and bugfixes
+- 0.3: Usability enhancements with output splitting
 
 ## Pull Requests:
 
@@ -11,8 +13,8 @@ Due to the nature of the project, it is unlikely I will merge pull requests. How
 
 ## Credits:
 
-- [XMR.to](https://community.xmr.to/faucet/testnet/), for the testnet faucet
-- [monero-python](https://github.com/monero-ecosystem/monero-python/tree/master/monero), for the libraries
+- [XMR.to](https://community.xmr.to/faucet/testnet/) (testnet faucet)
+- [monero-python](https://github.com/monero-ecosystem/monero-python/tree/master/monero)
 
 ### Special thanks to
 - [moneromoo](https://github.com/moneromooo-monero)
