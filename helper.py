@@ -7,16 +7,16 @@ signature = str("\n\n*****\n\n^\(っ◔◡◔)っ ^♡ ^| [^(Deposit)](https://w
 # Number of decimal points to display
 precision = 4
 
-### Default locations ###
+# General dev fund holder address
+general_fund_address = '9tpz9KzNwpEQyM3yUEGaxSJUWmLqfd9iQRbWB6ndd9qEXVShKhxW4Fif4xQyuwWFYNfji1A9uvjAFDuqYzx9jgWPME8bNRU'
 
-logPath = "./logs/"
 
 # TODO for 0.4 release:
 # Make "I didn't understand this comment" directly link the comment - Done :)
 # Fix withdrawal bug - Done
-# Allow for withdrawals directly to the CCS - Partially complete
-# Introduce logging
-# Make "Main error's" be forwarded to the user
+# Allow for withdrawals directly to the CCS - Done
+# Introduce logging - Done
+# Make "Main error's" be forwarded to the user - Done
 # Fix unconfirmed balance
 
 

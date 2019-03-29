@@ -1,5 +1,6 @@
 from tipperInteractions.reply import *
 from argparse import ArgumentParser
+from logger import tipper_logger
 import datetime
 import praw
 
@@ -26,7 +27,7 @@ def processMessage(subject, body, author, comment):
     :param comment: comment to parse for the command
     """
 
-    print("Received message: " + subject + " from " + author.name + ": " + body)
+    tipper_logger.log("Received message: " + subject + " from " + author.name + ": " + body)
 
     generate_wallet_if_doesnt_exist(name=author.name, password=args.password)
 
@@ -46,22 +47,25 @@ def processMessage(subject, body, author, comment):
         replier.handle_donation(author=author, subject=subject, contents=body)
         return
 
-    print("Received a message I don't understand: " + author.name + ":\n" + body)
+    tipper_logger.log("Received a message I don't understand: " + author.name + ":\n" + body)
     reddit.redditor(author.name).message(subject="I didn't understand your command", message="I didn't understand what you meant [here](" + comment.permalink() + "). You said: \n\n" + body + "\n\nIf you didn't mean to summon me, you're all good! If you're confused, please let my owner know by clicking Report a Bug!" + signature)
 
 
 def main():
 
-    print("Searching for new messages")
+    tipper_logger.log("Searching for new messages")
     startTime = datetime.datetime.now().timestamp()
 
+    author = None
     try:
         for message in reddit.inbox.stream():
             if message.created_utc > startTime:
                 #pprint.pprint(vars(message))
+                author = message.author.name
                 processMessage(subject=message.subject, body=message.body, author=message.author, comment=message)
     except Exception as e:
-        print("Main error: " + str(e))
+        reddit.redditor(author.name).message(subject="Something broke!!", message="If you tried to do something, please send the following to /u/OsrsNeedsF2P:\n\n" + str(e))
+        tipper_logger.log("Main error: " + str(e))
         main()
 
 

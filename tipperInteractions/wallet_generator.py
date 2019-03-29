@@ -1,4 +1,5 @@
 from moneroRPC.rpc import RPC
+from logger import tipper_logger
 import time
 import json, requests
 import os
@@ -60,12 +61,12 @@ def generate_wallet(name, password):
         requests.post(
             url, data=json.dumps(payload), headers=headers).json()
     except Exception as e:
-        print(e)
+        tipper_logger.log(e)
 
     rpcP.kill()
 
     if wallet_exists(name):
-        print("Generated a wallet for " + name)
+        tipper_logger.log("Generated a wallet for " + name)
         return True
-    print("Failed to generate a wallet for " + name)
+    tipper_logger.log("Failed to generate a wallet for " + name)
     return False

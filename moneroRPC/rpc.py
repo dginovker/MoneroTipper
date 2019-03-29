@@ -1,4 +1,5 @@
 import shlex, subprocess
+from logger import tipper_logger
 
 class RPC(object):
     """
@@ -40,7 +41,7 @@ class RPC(object):
         else:
             command = rpc_location + " --wallet-dir ./wallets/" + wallet_dir + " --rpc-bind-port " + str(port) + (" --testnet" if testnet else "") + (" --disable-rpc-login" if disable_rpc_login else "")
 
-        print(command)
+        tipper_logger.log(command)
         args = shlex.split(command)
 
         self.process = subprocess.Popen(args, stdout=subprocess.PIPE)

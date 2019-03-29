@@ -2,6 +2,7 @@ from decimal import Decimal
 from monero.wallet import Wallet
 from monero.backends.jsonrpc import JSONRPCWallet
 from moneroRPC.rpc import RPC
+from logger import tipper_logger
 from helper import *
 import time
 
@@ -70,14 +71,14 @@ def tip(sender, recipient, amount, password):
     }
 
     if senderWallet.balance(unlocked=True) >= Decimal(amount):
-        print(sender + " is trying to send " + recipient + " " + amount + " XMR")
+        tipper_logger.log(sender + " is trying to send " + recipient + " " + amount + " XMR")
         try:
             txs = generate_transaction(senderWallet=senderWallet, recipientAddress=recipientWallet.address(), amount=amount)
 
             info["txid"] = "https://testnet.xmrchain.com/search?value=" + str(txs)
             info["response"] = "Successfully tipped /u/" + recipient + " " + amount + " tXMR!"
         except Exception as e:
-            print(e)
+            tipper_logger.log(e)
             info["response"] = get_error_response(e)
             info["message"] = get_balance_too_low_message(senderWallet, amount)
     else:
