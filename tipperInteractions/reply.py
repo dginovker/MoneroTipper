@@ -145,11 +145,36 @@ class ReplyHandler(object):
         :param private_info: Whether or not to send the private key (mnemonic) along with the message
         :return:
         """
-        self.reddit.redditor(author.name).message(subject="Your " + ("private address and info" if private_info else "public address and balance"), message=get_info(wallet_name=author.name, private_info=private_info, password=self.password) + signature)
+        self.reddit.redditor(author.name).message(subject="Your " + ("private address and info" if private_info else "public address and balance"), message=get_info_as_string(wallet_name=author.name, private_info=private_info, password=self.password) + signature)
         print("Told " + author.name + " their " + ("private" if private_info else "public") + " info.")
 
 
+    def parse_donate_amount(self, subject, param):
+        pass
+
+
     def handle_donation(self, author, subject, contents):
+        """
+        Allows Reddit users to donate a portion of their balance directly to the CCS
+        CCS can be seen at: https://ccs.getmonero.org/
+
+        :param author: Reddit account to withdraw from
+        :param subject: Subject line of the message, telling how much to withdraw
+        :param contents: Message body
+        :return:
+        """
+
+        rpcSender = RPC(port=28090, wallet_file=author.name, password=self.password)
+        time.sleep(10)
+
+        senderWallet = Wallet(JSONRPCWallet(port=28090, password=self.password))
+        walletInfo = get_info_from_wallet(wallet=senderWallet, private_info=False)
+
+        amount = self.parse_donate_amount(subject, senderWallet.balance())
+
+        if (amount > senderWallet.balance()):
+            self.reddit.redditor(author.name).message(subject="Your donation to the CCS", message="Unfortunately, you do not have enough funds to donate " + str(amount) + " XMR. You have: " + walletInfo["balance"] + " XMR and " + walletInfo["balance_(unconfirmed)"] + " XMR unconfirmed.")
+
         self.reddit.redditor(author.name).message(subject="Your donation to the General Dev Fund", message="Thank you for your interest in donating! Unfortunately, this isn't implemented because we're on the testnet. Come back soon though!")
 
 

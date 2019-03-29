@@ -13,9 +13,11 @@ logPath = "./logs/"
 
 # TODO for 0.4 release:
 # Make "I didn't understand this comment" directly link the comment - Done :)
-# Fix withdrawal bug
+# Fix withdrawal bug - Done
 # Allow for withdrawals directly to the CCS - Partially complete
 # Introduce logging
+# Make "Main error's" be forwarded to the user
+# Fix unconfirmed balance
 
 
 def format_decimal(decimal):

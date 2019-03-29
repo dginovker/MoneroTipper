@@ -25,4 +25,4 @@ def generate_transaction(senderWallet, recipientAddress, amount, splitSize=6):
     # Add the remainder
     transactions.append((recipientAddress, Decimal(float(amount) - sum)))
 
-    return senderWallet.transfer_multiple(transactions)
+    return str(senderWallet.transfer_multiple(transactions))
