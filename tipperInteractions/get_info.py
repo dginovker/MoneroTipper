@@ -17,16 +17,17 @@ def get_info_as_string(wallet_name, private_info=False, password="\"\""):
 
     info = get_info(wallet_name, private_info, password)
 
-    info_as_string = "Public address: " + info["address"] + "\n\nBalance: " + info["balance"] + " (+ " + info["balance"] + " unconfirmed)" + info["seed"]
+    info_as_string = f'Public address: {info["address"]}\n\nBalance: {info["balance"]} ({info["balance_unconfirmed"]} unconfirmed){info["seed"]}'
     return info_as_string
 
 def get_info(wallet_name, private_info=False, password="\"\""):
     """
+    Gets a tuple of wallet information, based on the user's name passed in
 
-    :param wallet_name:
-    :param private_info:
-    :param password:
-    :return:
+    :param wallet_name: Name of the wallet/User who's info is being returned
+    :param private_info: Boolean determining if the private mnemonic is included
+    :param password: Password to open the wallet
+    :return: Tuple containing the address, balance, unconfirmed balance and private seed if private_info is True
     """
 
     generate_wallet_if_doesnt_exist(wallet_name, password)
@@ -44,17 +45,18 @@ def get_info(wallet_name, private_info=False, password="\"\""):
 
 def get_info_from_wallet(wallet, private_info=False):
     """
+    Gets a tuple of wallet information, based on the wallet passed in
 
-    :param wallet:
-    :param private_info:
-    :return:
+    :param wallet: Wallet to extract information from
+    :param private_info: A boolean that determines whether or not to add the user's private info
+    :return: Returns a tuple containing the user's address, balance, unconfirmed balance, and if private_info is True then their private mnemonic
     """
 
     return {
         "address" : str(wallet.address()),
-        "balance" : format_decimal(wallet.balance(True)),
-        "balance_(unconfirmed)" : str(format_decimal(wallet.balance(False) - wallet.balance(True))),
-        "seed" : ("\n\nPrivate mnemonic seed (DO NOT SHARE): \n\n" + str(wallet.seed().phrase) if private_info else "")
+        "balance" : format_decimal(wallet.balance(unlocked=True)),
+        "balance_(unconfirmed)" : str(format_decimal(wallet.balance(unlocked=False) - wallet.balance(unlocked=True))),
+        "seed" : f'\n\nPrivate mnemonic seed (DO NOT SHARE): \n\n{wallet.seed().phrase if private_info else ""}'
     }
 
 

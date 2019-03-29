@@ -80,14 +80,14 @@ class ReplyHandler(object):
         amount = self.parse_tip_amount(body)
         reply = None
 
-        if recipient != None and amount != None:
-            tipper_logger.log(author.name + " is sending " + str(recipient) + " " + amount + " XMR.")
+        if recipient is not None and amount is not None:
+            tipper_logger.log(f'{author.name} is sending {recipient} {amount} XMR.')
             generate_wallet_if_doesnt_exist(recipient, self.password)
 
             res = tip(sender=author.name, recipient=recipient, amount=amount, password=self.password)
-            reply = "Response message: " + res["response"] + "\n\n[Txid](" + res["txid"] + ")"
+            reply = f'Response message: {res["response"]}\n\n[Txid]({res["txid"]})'
             tipper_logger.log("The response is: " + reply)
-            if res["message"] != None:
+            if res["message"] is not None:
                 self.reddit.redditor(author.name).message(subject="Your tip", message=res["message"] + signature)
         else:
             reply = "Nothing interesting happens.\n\n*In case you were trying to tip, I didn't understand you.*"
@@ -110,7 +110,7 @@ class ReplyHandler(object):
 
         amount = self.parse_withdrawl_amount(subject)
         if amount == None:
-            self.reddit.redditor(author.name).message(subject="I didn't understand your withdrawal!", message="You sent: \"" + subject + "\", but I couldn't figure out how much you wanted to send. See [this](https://www.reddit.com/r/MoneroTipsBot/wiki/index#wiki_withdrawing) guide if you need help, or click \"Report a Bug\" if you think there's a bug!" + signature)
+            self.reddit.redditor(author.name).message(subject="I didn't understand your withdrawal!", message=f'You sent: "{subject}", but I couldn\'t figure out how much you wanted to send. See [this](https://www.reddit.com/r/MoneroTipsBot/wiki/index#wiki_withdrawing) guide if you need help, or click "Report a Bug" if you think there\'s a bug!' + signature)
             return None
 
         rpcSender = RPC(port=28086, wallet_file=author.name, password=self.password)
@@ -121,7 +121,7 @@ class ReplyHandler(object):
         res = None
 
         if senderWallet.balance(unlocked=True) >= Decimal(amount):
-            tipper_logger.log(author.name + " is trying to send " + contents + " " + amount + " XMR")
+            tipper_logger.log(f'{author.name} is trying to send {contents} {amount} XMR')
             try:
                 res = "Withdrawl success! Txid: "
                 res += generate_transaction(senderWallet=senderWallet, recipientAddress=contents, amount=Decimal(amount))
@@ -129,7 +129,7 @@ class ReplyHandler(object):
                 tipper_logger.log(e)
                 res = "Error: " + str(e)
         else:
-            res = "Not enough money to send! Need " + format_decimal(Decimal(amount)) + ", has " + format_decimal(senderWallet.balance(unlocked=True)) + " and " + format_decimal(senderWallet.balance(unlocked=False)) + " still incoming"
+            res = f'Not enough money to send! Need {format_decimal(Decimal(amount))}, has {format_decimal(senderWallet.balance(unlocked=True))} and {format_decimal(senderWallet.balance(unlocked=True) - senderWallet.balance(unlocked=False))} still incoming.'
 
         rpcSender.kill()
 
@@ -147,17 +147,23 @@ class ReplyHandler(object):
         :return:
         """
         self.reddit.redditor(author.name).message(subject="Your " + ("private address and info" if private_info else "public address and balance"), message=get_info_as_string(wallet_name=author.name, private_info=private_info, password=self.password) + signature)
-        tipper_logger.log("Told " + author.name + " their " + ("private" if private_info else "public") + " info.")
+        tipper_logger.log(f'Told {author.name} their {("private" if private_info else "public")} info.)')
 
 
     def parse_donate_amount(self, subject, senderBalance):
+        """
+        Parses the amount a user wishes to donate to the CSS based on their message.
+
+        :param subject: Subject line of message being sent
+        :param senderBalance: Their current balance, used to calculate when sending a percentage
+        :return: Final amount in XMR they wish to donate
+        """
         m = re.search('donate (.+) xmr', subject.lower())
         if m:
             return m.group(1)
         m = re.search('donate (.+)% of my balance', subject.lower())
         if m:
             return float(m.group(1))*float(senderBalance)/100
-        return None
 
 
     def handle_donation(self, author, subject, contents):
@@ -179,12 +185,12 @@ class ReplyHandler(object):
 
         amount = Decimal(self.parse_donate_amount(subject, senderWallet.balance()))
 
-        if (senderWallet.balance(True) >= Decimal(amount)):
-            generate_transaction(senderWallet=senderWallet, recipientAddress=general_fund_address, amount=amount, splitSize=1)
-            self.reddit.redditor(author.name).message(subject="Your donation to the General Dev Fund", message="Thank you for donating " + format_decimal(amount) + " of your XMR balance to the CCS!\n\nYou will soon have your total donations broadcasted to the wiki :)")
-            self.reddit.redditor("OsrsNeedsF2P").message(subject=author.name + " donated " + amount + " to the CCS!", message="Update table here: https://old.reddit.com/r/MoneroTipsBot/wiki/index#wiki_donating_to_the_ccs")
-            tipper_logger.log(author.name + " donated " + amount + " to the CCS.")
+        if senderWallet.balance(True) < Decimal(amount):
+            self.reddit.redditor(author.name).message(subject="Your donation to the CCS", message=f'Unfortunately, you do not have enough funds to donate {format_decimal(amount)} XMR. You have: {walletInfo["balance"]} XMR and {walletInfo["balance_(unconfirmed)"]} + " XMR unconfirmed.')
         else:
-            self.reddit.redditor(author.name).message(subject="Your donation to the CCS", message="Unfortunately, you do not have enough funds to donate " + format_decimal(amount) + " XMR. You have: " + walletInfo["balance"] + " XMR and " + walletInfo["balance_(unconfirmed)"] + " XMR unconfirmed.")
+            generate_transaction(senderWallet=senderWallet, recipientAddress=general_fund_address, amount=amount, splitSize=1)
+            self.reddit.redditor(author.name).message(subject="Your donation to the General Dev Fund", message=f'Thank you for donating {format_decimal(amount)} of your XMR balance to the CCS!\n\nYou will soon have your total donations broadcasted to the wiki :)')
+            self.reddit.redditor("OsrsNeedsF2P").message(subject=f'{author.name} donated {amount} to the CCS!', message="Update table here: https://old.reddit.com/r/MoneroTipsBot/wiki/index#wiki_donating_to_the_ccs")
+            tipper_logger.log(f'{author.name} donated {amount} + " to the CCS.')
 
         rpcSender.kill()
