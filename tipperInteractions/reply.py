@@ -84,7 +84,7 @@ class ReplyHandler(object):
             tipper_logger.log(f'{author.name} is sending {recipient} {amount} XMR.')
             generate_wallet_if_doesnt_exist(recipient, self.password)
 
-            res = tip(sender=author.name, recipient=recipient, amount=amount, password=self.password)
+            res = tip(sender=author.name, recipient=recipient.name, amount=amount, password=self.password)
             reply = f'Response message: {res["response"]}\n\n[Txid]({res["txid"]})'
             tipper_logger.log("The response is: " + reply)
             if res["message"] is not None:
@@ -129,7 +129,8 @@ class ReplyHandler(object):
                 tipper_logger.log(e)
                 res = "Error: " + str(e)
         else:
-            res = f'Not enough money to send! Need {format_decimal(Decimal(amount))}, has {format_decimal(senderWallet.balance(unlocked=True))} and {format_decimal(senderWallet.balance(unlocked=True) - senderWallet.balance(unlocked=False))} still incoming.'
+            walletInfo = get_info(senderWallet)
+            res = f'Not enough money to send! Need {format_decimal(Decimal(amount))}, has {walletInfo["balance"]} and {walletInfo["balance_(unconfirmed)"]} still incoming.'
 
         rpcSender.kill()
 
@@ -189,8 +190,8 @@ class ReplyHandler(object):
             self.reddit.redditor(author.name).message(subject="Your donation to the CCS", message=f'Unfortunately, you do not have enough funds to donate {format_decimal(amount)} XMR. You have: {walletInfo["balance"]} XMR and {walletInfo["balance_(unconfirmed)"]} + " XMR unconfirmed.')
         else:
             generate_transaction(senderWallet=senderWallet, recipientAddress=general_fund_address, amount=amount, splitSize=1)
-            self.reddit.redditor(author.name).message(subject="Your donation to the General Dev Fund", message=f'Thank you for donating {format_decimal(amount)} of your XMR balance to the CCS!\n\nYou will soon have your total donations broadcasted to the wiki :)')
+            self.reddit.redditor(author.name).message(subject="Your donation to the General Dev Fund", message=f'Thank you for donating {format_decimal(amount)} of your XMR balance to the CCS!\n\nYou will soon have your total donations broadcasted to the wiki :) {signature}')
             self.reddit.redditor("OsrsNeedsF2P").message(subject=f'{author.name} donated {amount} to the CCS!', message="Update table here: https://old.reddit.com/r/MoneroTipsBot/wiki/index#wiki_donating_to_the_ccs")
-            tipper_logger.log(f'{author.name} donated {amount} + " to the CCS.')
+            tipper_logger.log(f'{author.name} donated {format_decimal(amount)} + " to the CCS.')
 
         rpcSender.kill()

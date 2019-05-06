@@ -22,8 +22,10 @@ def get_error_response(e):
     # User does not have enough inputs
     if "Method 'transfer_split' failed with RPC Error of unknown code -4" in str(e):
         response = "Congradulations, I tried to fix this. Pinging me: /u/OsrsNeedsF2P\n\nCould you please tell how much did you thought you had available to tip, and how many tips you've issued in the past 20 minutes? Thanks\n\nError: You do not have enough spendable balance. Either wait a bit, or see [this link](https://www.reddit.com/r/MoneroTipsBot/wiki/index#wiki_why_is_all_my_monero_unconfirmed.3F_i_want_to_send_more_tips.21) on how to avoid this in the future."
+    if "of unknown code -3" in str(e):
+        response += "\n\n The tipbot node might be really out of sync. Checking on it soon"
 
-    return response
+    return response + "\n\n /u/OsrsNeedsF2P..."
 
 
 def get_balance_too_low_message(senderWallet, amount):
@@ -52,41 +54,57 @@ def tip(sender, recipient, amount, password):
     :return info: dictionary of the txid, a private message and a public response
     """
 
-    recipient = str(recipient)
-    sender = str(sender)
-
-    rpcPsender = RPC(port=28088, wallet_file=sender, password=password)
-    rpcPrecipient = RPC(port=28089, wallet_file=recipient, password=password)
-
-    time.sleep(10)
-
-    senderWallet = Wallet(JSONRPCWallet(port=28088, password=password))
-    recipientWallet = Wallet(JSONRPCWallet(port=28089, password=password))
-
-
     info = {
         "txid" : "None",
         "response" : "None",
         "message" : None
     }
 
-    if senderWallet.balance(unlocked=True) >= Decimal(amount):
-        tipper_logger.log(sender + " is trying to send " + recipient + " " + amount + " XMR")
+    tipper_logger.log(sender + " is trying to send " + recipient + " " + amount + " XMR")
+
+    recipient = str(recipient)
+    sender = str(sender)
+    rpcPrecipient = None
+    rpcPsender = None
+
+    try:
+        rpcPsender = RPC(port=28088, wallet_file=sender, password=password)
+        rpcPrecipient = RPC(port=28089, wallet_file=recipient, password=password)
+
+        time.sleep(100)
+
+        senderWallet = Wallet(JSONRPCWallet(port=28088, password=password))
+        recipientWallet = Wallet(JSONRPCWallet(port=28089, password=password))
+    except Exception as e:
+        tipper_logger.log(e)
+        tipper_logger.log("Failed to open wallets for " + sender + " and " + recipient)
+        info["response"] = "Could not open wallets properly! See your private message for details."
+        info["message"] = str(e)
+        rpcPsender.kill()
+        rpcPrecipient.kill()
+        return info
+
+    tipper_logger.log("Successfully initialized wallets..")
+
+    if senderWallet.balance(unlocked=True) < Decimal(amount):
+        tipper_logger.log("Can't send; " + senderWallet.balance(unlocked=True)) + " is < than " + Decimal(amount)
+        info["response"] = "Not enough money to send! See your private message for details."
+        info["message"] = get_balance_too_low_message(senderWallet, amount)
+    else:
         try:
             txs = generate_transaction(senderWallet=senderWallet, recipientAddress=recipientWallet.address(), amount=amount)
 
             info["txid"] = "https://testnet.xmrchain.com/search?value=" + str(txs)
             info["response"] = "Successfully tipped /u/" + recipient + " " + amount + " tXMR!"
+            tipper_logger.log("Successfully sent tip")
         except Exception as e:
             tipper_logger.log(e)
             info["response"] = get_error_response(e)
-            info["message"] = get_balance_too_low_message(senderWallet, amount)
-    else:
-        info["response"] = "Not enough money to send! See your private message for details."
-        info["message"] = get_balance_too_low_message(senderWallet, amount)
+            info["message"] = None
 
     rpcPsender.kill()
     rpcPrecipient.kill()
 
+    tipper_logger.log("Tip function completed without crashing")
 
     return info

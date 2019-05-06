@@ -9,7 +9,7 @@ An on-chain, non-custodial, Reddit Monero tip bot written in Python.
 
 ## Pull Requests:
 
-Due to the nature of the project, it is unlikely I will merge pull requests. However, feel free to fork the codebase and re-implement the bot as your own.
+Due to the nature of the project, it is unlikely I will merge pull requests. However, feel free to create issues or fork the codebase to implement the bot as your own.
 
 ## Credits:
 

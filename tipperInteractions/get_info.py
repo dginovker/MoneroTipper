@@ -17,7 +17,7 @@ def get_info_as_string(wallet_name, private_info=False, password="\"\""):
 
     info = get_info(wallet_name, private_info, password)
 
-    info_as_string = f'Public address: {info["address"]}\n\nBalance: {info["balance"]} ({info["balance_unconfirmed"]} unconfirmed){info["seed"]}'
+    info_as_string = f'Public address: {info["address"]}\n\nBalance: {info["balance"]} ({info["balance_(unconfirmed)"]} unconfirmed){info["seed"]}'
     return info_as_string
 
 def get_info(wallet_name, private_info=False, password="\"\""):
@@ -56,7 +56,7 @@ def get_info_from_wallet(wallet, private_info=False):
         "address" : str(wallet.address()),
         "balance" : format_decimal(wallet.balance(unlocked=True)),
         "balance_(unconfirmed)" : str(format_decimal(wallet.balance(unlocked=False) - wallet.balance(unlocked=True))),
-        "seed" : f'\n\nPrivate mnemonic seed (DO NOT SHARE): \n\n{wallet.seed().phrase if private_info else ""}'
+        "seed" : "\n\nPrivate mnemonic seed (DO NOT SHARE): \n\n" + wallet.seed().phrase if private_info else ""
     }
 
 

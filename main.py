@@ -3,6 +3,7 @@ from argparse import ArgumentParser
 from logger import tipper_logger
 import datetime
 import praw
+import traceback
 
 
 parser = ArgumentParser()
@@ -59,13 +60,19 @@ def main():
     author = None
     try:
         for message in reddit.inbox.stream():
+            author = message.author.name
             if message.created_utc > startTime:
                 #pprint.pprint(vars(message))
-                author = message.author.name
                 processMessage(subject=message.subject, body=message.body, author=message.author, comment=message)
     except Exception as e:
-        reddit.redditor(author.name).message(subject="Something broke!!", message="If you tried to do something, please send the following to /u/OsrsNeedsF2P:\n\n" + str(e))
-        tipper_logger.log("Main error: " + str(e))
+        try:
+            tipper_logger.log("Main error: " + str(e))
+            tipper_logger.log("Blame " + author)
+            traceback.print_exc()
+            reddit.redditor(author).message(subject="Something broke!!", message="If you tried to do something, please send the following error to /u/OsrsNeedsF2P:\n\n" + str(e))
+            author = None
+        except Exception as e:
+            tipper_logger.log("Just wow." + str(e))
         main()
 
 

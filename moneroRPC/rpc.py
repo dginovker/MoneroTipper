@@ -35,7 +35,7 @@ class RPC(object):
 
         # For opening an existing wallet
         if wallet_file is not None:
-            command = f'{rpc_location} --wallet-file ./wallets/{wallet_file} --password {password} --rpc-bind-port {port}{" --testnet" if testnet else ""}{" --disable_rpc_login" if disable_rpc_login else ""}'
+            command = f'{rpc_location} --wallet-file ./wallets/{wallet_file} --password {password} --rpc-bind-port {port}{" --testnet" if testnet else ""}{" --disable-rpc-login" if disable_rpc_login else ""}'
 
         # For creating a new wallet
         else:
