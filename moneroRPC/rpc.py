@@ -1,4 +1,6 @@
 import shlex, subprocess
+import time
+
 from logger import tipper_logger
 
 class RPC(object):
@@ -24,6 +26,8 @@ class RPC(object):
     disable_rpc_login = None
     process = None
 
+    wallet_finished = False
+
     def __init__(self, port, wallet_file=None, rpc_location="monero/monero-wallet-rpc", password="\"\"", testnet=True, wallet_dir=".", disable_rpc_login=True):
         self.port = port
         self.wallet_file = wallet_file
@@ -45,6 +49,27 @@ class RPC(object):
         args = shlex.split(command)
 
         self.process = subprocess.Popen(args, stdout=subprocess.PIPE)
+
+
+
+
+    def isWalletLoaded(self):
+        if (self.wallet_finished == True):
+            return True
+
+        if self.process.poll() != None: # An exit means there's an error we'll handle elsewhere
+            returned = self.process.poll()
+            print("We have an exit!! Returned " + str(returned))
+            return True
+
+        print("About to read from the process")
+        rpc_out = self.process.stdout.readline()
+        print(rpc_out)
+
+        if "starting wallet rpc server" in str(rpc_out.lower()):
+            print("Found out the RPC has started!")
+            self.wallet_finished = True
+        return self.wallet_finished
 
 
     def kill(self):

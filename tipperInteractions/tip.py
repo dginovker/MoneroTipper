@@ -71,7 +71,11 @@ def tip(sender, recipient, amount, password):
         rpcPsender = RPC(port=28088, wallet_file=sender, password=password)
         rpcPrecipient = RPC(port=28089, wallet_file=recipient, password=password)
 
-        time.sleep(100)
+        while rpcPsender.isWalletLoaded() == False or rpcPrecipient.isWalletLoaded() == False: #Add timeout
+            print("Someone's not loaded yet")
+            time.sleep(0.5)
+
+        print("We're loaded!!")
 
         senderWallet = Wallet(JSONRPCWallet(port=28088, password=password))
         recipientWallet = Wallet(JSONRPCWallet(port=28089, password=password))

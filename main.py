@@ -28,7 +28,7 @@ def processMessage(subject, body, author, comment):
     :param comment: comment to parse for the command
     """
 
-    tipper_logger.log(f'Received message: {subject} from {author.name}: {body}')
+    # tipper_logger.log(f'Received message: {subject} from {author.name}: {body}')
 
     generate_wallet_if_doesnt_exist(name=author.name, password=args.password)
 
@@ -48,7 +48,7 @@ def processMessage(subject, body, author, comment):
         replier.handle_donation(author=author, subject=subject, contents=body)
         return
 
-    tipper_logger.log(f'Received message I don\t understand from {author.name}:\n\n {body}')
+    # tipper_logger.log(f'Received message I don\t understand from {author.name}:\n\n {body}')
     reddit.redditor(author.name).message(subject="I didn't understand your command", message=f'I didn\'t understand what you meant [here](" + comment.permalink() + "). You said: \n\n{body}\n\nIf you didn\'t mean to summon me, you\'re all good! If you\'re confused, please let my owner know by clicking Report a Bug!{signature}')
 
 
