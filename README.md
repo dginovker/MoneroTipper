@@ -6,7 +6,7 @@ An on-chain, non-custodial, Reddit Monero tip bot written in Python.
 - 0.1: Initial release, testnet only
 - 0.2: Security and bugfixes
 - 0.3: Usability enhancements with output splitting
-- 0.4: Better RPC and CCS withdrawls
+- 0.4: CCS donations and better RPC
 
 ## Pull Requests:
 
