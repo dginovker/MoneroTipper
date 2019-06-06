@@ -34,7 +34,6 @@ def get_info(wallet_name, private_info=False, password="\"\""):
 
     rpcP = RPC(port=28088, wallet_file=wallet_name, password=password)
 
-    time.sleep(10)
     wallet = Wallet(JSONRPCWallet(port=28088, password=password))
 
     info = get_info_from_wallet(wallet, private_info)

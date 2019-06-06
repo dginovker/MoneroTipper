@@ -114,7 +114,6 @@ class ReplyHandler(object):
             return None
 
         rpcSender = RPC(port=28086, wallet_file=author.name, password=self.password)
-        time.sleep(10)
 
         senderWallet = Wallet(JSONRPCWallet(port=28086, password=self.password))
 
@@ -175,18 +174,16 @@ class ReplyHandler(object):
         :param author: Reddit account to withdraw from
         :param subject: Subject line of the message, telling how much to withdraw
         :param contents: Message body
-        :return:
         """
 
         rpcSender = RPC(port=28090, wallet_file=author.name, password=self.password)
-        time.sleep(10)
 
         senderWallet = Wallet(JSONRPCWallet(port=28090, password=self.password))
-        walletInfo = get_info_from_wallet(wallet=senderWallet, private_info=False)
 
         amount = Decimal(self.parse_donate_amount(subject, senderWallet.balance()))
 
         if senderWallet.balance(True) < Decimal(amount):
+            walletInfo = get_info_from_wallet(wallet=senderWallet, private_info=False)
             self.reddit.redditor(author.name).message(subject="Your donation to the CCS", message=f'Unfortunately, you do not have enough funds to donate {format_decimal(amount)} XMR. You have: {walletInfo["balance"]} XMR and {walletInfo["balance_(unconfirmed)"]} + " XMR unconfirmed.')
         else:
             generate_transaction(senderWallet=senderWallet, recipientAddress=general_fund_address, amount=amount, splitSize=1)

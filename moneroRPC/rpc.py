@@ -1,7 +1,11 @@
 import shlex, subprocess
+import multiprocessing
 import time
 
 from logger import tipper_logger
+
+
+
 
 class RPC(object):
     """
@@ -15,8 +19,8 @@ class RPC(object):
     :param testnet: Whether or not to run on the Monero testnet or mainnet
     :param wallet_dir: Directory where all the wallets are kept
     :param disable_rpc_login: Whether or not to use --disable-rpc-login on the RPC
+    :param load_timeout: Timeout in seconds for how long to load an RPC
     """
-
     port = None
     wallet_file = None
     rpc_location = None
@@ -25,10 +29,11 @@ class RPC(object):
     wallet_dir = None
     disable_rpc_login = None
     process = None
+    load_timeout = None
 
     wallet_finished = False
 
-    def __init__(self, port, wallet_file=None, rpc_location="monero/monero-wallet-rpc", password="\"\"", testnet=True, wallet_dir=".", disable_rpc_login=True):
+    def __init__(self, port, wallet_file=None, rpc_location="monero/monero-wallet-rpc", password="\"\"", testnet=True, wallet_dir=".", disable_rpc_login=True, load_timeout=300):
         self.port = port
         self.wallet_file = wallet_file
         self.rpc_location = rpc_location
@@ -36,6 +41,7 @@ class RPC(object):
         self.testnet = testnet
         self.wallet_dir = wallet_dir
         self.disable_rpc_login = disable_rpc_login
+        self.load_timeout = 300
 
         # For opening an existing wallet
         if wallet_file is not None:
@@ -50,26 +56,32 @@ class RPC(object):
 
         self.process = subprocess.Popen(args, stdout=subprocess.PIPE)
 
+        if self.waitAndCheckWalletLoad() == False:
+            self.kill()
 
-
-
-    def isWalletLoaded(self):
+    def parseWalletOutput(self):
         if (self.wallet_finished == True):
             return True
 
-        if self.process.poll() != None: # An exit means there's an error we'll handle elsewhere
-            returned = self.process.poll()
-            print("We have an exit!! Returned " + str(returned))
-            return True
-
-        print("About to read from the process")
         rpc_out = self.process.stdout.readline()
-        print(rpc_out)
+        tipper_logger.log("About to read from the process")
+        tipper_logger.log(rpc_out)
 
-        if "starting wallet rpc server" in str(rpc_out.lower()):
-            print("Found out the RPC has started!")
+        if "starting wallet rpc server" in str(rpc_out.lower()) or "is opened by another wallet program" in str(rpc_out.lower()):
+            print("Found out the RPC has started (or failed)!")
             self.wallet_finished = True
         return self.wallet_finished
+
+    def isWalletLoaded(self):
+        while self.parseWalletOutput() == False:
+            print("I'm not loaded yet..")
+            time.sleep(0.01)
+
+    def waitAndCheckWalletLoad(self):
+        p = multiprocessing.Process(target=self.isWalletLoaded)
+        p.start()
+        p.join(timeout=self.load_timeout)
+        pass
 
 
     def kill(self):
@@ -78,3 +90,10 @@ class RPC(object):
         """
 
         self.process.kill()
+
+
+
+
+
+
+

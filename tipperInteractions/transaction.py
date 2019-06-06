@@ -1,4 +1,4 @@
-from helper import *
+from monero import prio
 from decimal import Decimal
 
 def generate_transaction(senderWallet, recipientAddress, amount, splitSize=6):
@@ -25,4 +25,4 @@ def generate_transaction(senderWallet, recipientAddress, amount, splitSize=6):
     # Add the remainder
     transactions.append((recipientAddress, Decimal(float(amount) - sum)))
 
-    return str(senderWallet.transfer_multiple(transactions))
+    return str(senderWallet.transfer_multiple(transactions, priority=prio.UNIMPORTANT))

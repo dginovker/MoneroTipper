@@ -47,11 +47,13 @@ def get_balance_too_low_message(senderWallet, amount):
 def tip(sender, recipient, amount, password):
     """
     Sends Monero from sender to recipient
+    If the sender and the recipient are the same, it creates only 1 rpc
+    Always closes RPCs, even on failure
 
     :param sender: wallet sending Monero
     :param recipient: wallet receiving
     :param amount: amount to send in XMR
-    :return info: dictionary of the txid, a private message and a public response
+    :return info: dictionary containing txid, a private message and a public response
     """
 
     info = {
@@ -66,19 +68,21 @@ def tip(sender, recipient, amount, password):
     sender = str(sender)
     rpcPrecipient = None
     rpcPsender = None
+    sender_port = 28088
+    recipient_port = 28089
 
     try:
-        rpcPsender = RPC(port=28088, wallet_file=sender, password=password)
-        rpcPrecipient = RPC(port=28089, wallet_file=recipient, password=password)
-
-        while rpcPsender.isWalletLoaded() == False or rpcPrecipient.isWalletLoaded() == False: #Add timeout
-            print("Someone's not loaded yet")
-            time.sleep(0.5)
+        rpcPsender = RPC(port=sender_port, wallet_file=sender, password=password)
+        if sender != recipient:
+            rpcPrecipient = RPC(port=recipient_port, wallet_file=recipient, password=password)
+        else:
+            rpcPrecipient = rpcPsender
+            recipient_port = sender_port
 
         print("We're loaded!!")
 
-        senderWallet = Wallet(JSONRPCWallet(port=28088, password=password))
-        recipientWallet = Wallet(JSONRPCWallet(port=28089, password=password))
+        senderWallet = Wallet(JSONRPCWallet(port=sender_port, password=password))
+        recipientWallet = Wallet(JSONRPCWallet(port=recipient_port, password=password))
     except Exception as e:
         tipper_logger.log(e)
         tipper_logger.log("Failed to open wallets for " + sender + " and " + recipient)

@@ -17,7 +17,12 @@ general_fund_address = '9tpz9KzNwpEQyM3yUEGaxSJUWmLqfd9iQRbWB6ndd9qEXVShKhxW4Fif
 # Allow for withdrawals directly to the CCS - Done
 # Introduce logging - Done
 # Make "Main error's" be forwarded to the user - Done
+# Make RPC loading more efficient - Done :)
 # Fix unconfirmed balance
+
+# TODO for 0.5 release:
+# Get the stacktrace report in request info for everything
+# Make replying to the tip bot not summon it
 
 
 def format_decimal(decimal):

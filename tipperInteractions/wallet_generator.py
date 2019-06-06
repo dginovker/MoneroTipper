@@ -41,8 +41,6 @@ def generate_wallet(name, password):
     name = str(name)
     rpcP = RPC(port=28087, wallet_dir=".", password=password)
 
-    time.sleep(10)
-
     url = "http://127.0.0.1:28087/json_rpc"
     headers = {'Content-Type': 'application/json'}
 
