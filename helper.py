@@ -18,11 +18,12 @@ general_fund_address = '9tpz9KzNwpEQyM3yUEGaxSJUWmLqfd9iQRbWB6ndd9qEXVShKhxW4Fif
 # Introduce logging - Done
 # Make "Main error's" be forwarded to the user - Done
 # Make RPC loading more efficient - Done :)
-# Fix unconfirmed balance
+# Fix unconfirmed balance - API issue?
+# Make replying to the tip bot not summon it - Done
 
 # TODO for 0.5 release:
 # Get the stacktrace report in request info for everything
-# Make replying to the tip bot not summon it
+# When sending the private info, add restore height info
 
 
 def format_decimal(decimal):

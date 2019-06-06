@@ -10,7 +10,7 @@ parser = ArgumentParser()
 parser.add_argument("-p", "--password", dest="password")
 args = parser.parse_args()
 
-reddit = praw.Reddit('tipbot', user_agent='Monero non-custodial tipper: v0.3 (by /u/OsrsNeedsF2P)')
+reddit = praw.Reddit('tipbot', user_agent='Monero non-custodial tipper: v0.4 (by /u/OsrsNeedsF2P)')
 replier = ReplyHandler(reddit=reddit, password=args.password)
 
 
@@ -28,7 +28,7 @@ def processMessage(subject, body, author, comment):
     :param comment: comment to parse for the command
     """
 
-    # tipper_logger.log(f'Received message: {subject} from {author.name}: {body}')
+    tipper_logger.log(f'Received message: {subject} from {author.name}: {body}')
 
     generate_wallet_if_doesnt_exist(name=author.name, password=args.password)
 
@@ -49,7 +49,7 @@ def processMessage(subject, body, author, comment):
         return
 
     # tipper_logger.log(f'Received message I don\t understand from {author.name}:\n\n {body}')
-    reddit.redditor(author.name).message(subject="I didn't understand your command", message=f'I didn\'t understand what you meant [here](" + comment.permalink() + "). You said: \n\n{body}\n\nIf you didn\'t mean to summon me, you\'re all good! If you\'re confused, please let my owner know by clicking Report a Bug!{signature}')
+    reddit.redditor(author.name).message(subject="I didn't understand your command", message=f'I didn\'t understand what you meant [here]({comment.permalink()}). You said: \n\n{body}\n\nIf you didn\'t mean to summon me, you\'re all good! If you\'re confused, please let my owner know by clicking Report a Bug!{signature}')
 
 
 def main():
@@ -61,8 +61,7 @@ def main():
     try:
         for message in reddit.inbox.stream():
             author = message.author.name
-            if message.created_utc > startTime:
-                #pprint.pprint(vars(message))
+            if message.created_utc > startTime and message.subreddit == None:
                 processMessage(subject=message.subject, body=message.body, author=message.author, comment=message)
     except Exception as e:
         try:
