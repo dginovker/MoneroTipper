@@ -2,7 +2,6 @@ from monero.wallet import Wallet
 from monero.backends.jsonrpc import JSONRPCWallet
 from moneroRPC.rpc import RPC
 from helper import *
-import time
 
 from tipperInteractions.wallet_generator import generate_wallet_if_doesnt_exist
 
@@ -17,7 +16,7 @@ def get_info_as_string(wallet_name, private_info=False, password="\"\""):
 
     info = get_info(wallet_name, private_info, password)
 
-    info_as_string = f'Public address: {info["address"]}\n\nBalance: {info["balance"]} ({info["balance_(unconfirmed)"]} unconfirmed){info["seed"]}'
+    info_as_string = f'Public address: {info["address"]}\n\nBalance: {info["balance"]} ({info["balance_(unconfirmed)"]} unconfirmed)\n\n{info["seed"]}'
     return info_as_string
 
 def get_info(wallet_name, private_info=False, password="\"\""):
@@ -55,7 +54,7 @@ def get_info_from_wallet(wallet, private_info=False):
         "address" : str(wallet.address()),
         "balance" : format_decimal(wallet.balance(unlocked=True)),
         "balance_(unconfirmed)" : str(format_decimal(wallet.balance(unlocked=False) - wallet.balance(unlocked=True))),
-        "seed" : "\n\nPrivate mnemonic seed (DO NOT SHARE): \n\n" + wallet.seed().phrase if private_info else ""
+        "seed" : "Private mnemonic seed: " + wallet.seed().phrase if private_info else "If you would like your **private** info, click [here](https://www.reddit.com/r/MoneroTipsBot/wiki/index#wiki_extracting_your_private_key)"
     }
 
 

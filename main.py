@@ -61,7 +61,7 @@ def main():
     try:
         for message in reddit.inbox.stream():
             author = message.author.name
-            if message.created_utc > startTime and message.subreddit == None:
+            if message.created_utc > startTime:
                 processMessage(subject=message.subject, body=message.body, author=message.author, comment=message)
     except Exception as e:
         try:

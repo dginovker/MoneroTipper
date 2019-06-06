@@ -147,7 +147,7 @@ class ReplyHandler(object):
         :return:
         """
         self.reddit.redditor(author.name).message(subject="Your " + ("private address and info" if private_info else "public address and balance"), message=get_info_as_string(wallet_name=author.name, private_info=private_info, password=self.password) + signature)
-        tipper_logger.log(f'Told {author.name} their {("private" if private_info else "public")} info.)')
+        tipper_logger.log(f'Told {author.name} their {("private" if private_info else "public")} info.')
 
 
     def parse_donate_amount(self, subject, senderBalance):
@@ -189,6 +189,6 @@ class ReplyHandler(object):
             generate_transaction(senderWallet=senderWallet, recipientAddress=general_fund_address, amount=amount, splitSize=1)
             self.reddit.redditor(author.name).message(subject="Your donation to the General Dev Fund", message=f'Thank you for donating {format_decimal(amount)} of your XMR balance to the CCS!\n\nYou will soon have your total donations broadcasted to the wiki :) {signature}')
             self.reddit.redditor("OsrsNeedsF2P").message(subject=f'{author.name} donated {amount} to the CCS!', message="Update table here: https://old.reddit.com/r/MoneroTipsBot/wiki/index#wiki_donating_to_the_ccs")
-            tipper_logger.log(f'{author.name} donated {format_decimal(amount)} + " to the CCS.')
+            tipper_logger.log(f'{author.name} donated {format_decimal(amount)} to the CCS.')
 
         rpcSender.kill()

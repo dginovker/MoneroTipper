@@ -17,14 +17,23 @@ general_fund_address = '9tpz9KzNwpEQyM3yUEGaxSJUWmLqfd9iQRbWB6ndd9qEXVShKhxW4Fif
 # Allow for withdrawals directly to the CCS - Done
 # Introduce logging - Done
 # Make "Main error's" be forwarded to the user - Done
-# Make RPC loading more efficient - Done :)
 # Fix unconfirmed balance - API issue?
-# Make replying to the tip bot not summon it - Done
 
 # TODO for 0.5 release:
+# Make RPC loading more efficient - Done :)
+
+# TODO for 0.6 release:
 # Get the stacktrace report in request info for everything
 # When sending the private info, add restore height info
 
+# TODO for sometime in the future..
+# Private donations
+# Withdrawls dm tx private key
+
+
+# Mainnet release notes:
+# Change all instances of 28081 to the mainnet node ; I should probably make this a constant though
+# Change the CCS donation address to a mainnet address O_O
 
 def format_decimal(decimal):
     """
