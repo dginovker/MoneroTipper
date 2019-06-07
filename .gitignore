@@ -1,0 +1,8 @@
+.idea/
+moneroRPC/__pycache__/
+tipperInteractions/__pycache__/
+wallets/
+praw.ini
+__pycache__/
+logs/
+monero/*

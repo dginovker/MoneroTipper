@@ -34,6 +34,7 @@ monerod_port = 28081
 # TODO for sometime in the future..
 # Private donations
 # Withdrawls dm tx private key
+# Tips break return change as well
 
 
 # Mainnet release notes:
