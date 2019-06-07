@@ -34,7 +34,7 @@ class RPC(object):
 
     wallet_finished = False
 
-    def __init__(self, port, wallet_file=None, rpc_location="monero/monero-wallet-rpc", password="\"\"", testnet=True, wallet_dir=".", disable_rpc_login=True, load_timeout=3):
+    def __init__(self, port, wallet_file=None, rpc_location="monero/monero-wallet-rpc", password="\"\"", testnet=True, wallet_dir=".", disable_rpc_login=True, load_timeout=300):
         self.port = port
         self.wallet_file = wallet_file
         self.rpc_location = rpc_location
@@ -67,7 +67,7 @@ class RPC(object):
         rpc_out = self.process.stdout.readline()
         tipper_logger.log(rpc_out)
 
-        if "starting wallet rpc server" in str(rpc_out.lower()) or "is opened by another wallet program" in str(rpc_out.lower()):
+        if "starting wallet rpc server" in str(rpc_out.lower()) or "error" in str(rpc_out.lower()):
             print("Found out the RPC has started (or failed)!")
             self.wallet_finished = True
         return self.wallet_finished

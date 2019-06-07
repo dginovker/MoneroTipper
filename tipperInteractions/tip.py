@@ -94,8 +94,9 @@ def tip(sender, recipient, amount, password):
 
     tipper_logger.log("Successfully initialized wallets..")
 
-    if senderWallet.balance(unlocked=True) < Decimal(amount):
-        tipper_logger.log("Can't send; " + senderWallet.balance(unlocked=True)) + " is < than " + Decimal(amount)
+    wallet_balance = Decimal(0) if senderWallet.balance(unlocked=True) == None else senderWallet.balance(unlocked=True)
+    if wallet_balance < Decimal(amount):
+        tipper_logger.log("Can't send; " + str(wallet_balance) + " is < than " + str(amount))
         info["response"] = "Not enough money to send! See your private message for details."
         info["message"] = get_balance_too_low_message(senderWallet, amount)
     else:

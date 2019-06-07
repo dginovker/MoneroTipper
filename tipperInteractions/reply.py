@@ -128,7 +128,7 @@ class ReplyHandler(object):
                 tipper_logger.log(e)
                 res = "Error: " + str(e)
         else:
-            walletInfo = get_info(senderWallet)
+            walletInfo = get_info_from_wallet(senderWallet)
             res = f'Not enough money to send! Need {format_decimal(Decimal(amount))}, has {walletInfo["balance"]} and {walletInfo["balance_(unconfirmed)"]} still incoming.'
 
         rpcSender.kill()

@@ -30,6 +30,7 @@ def processMessage(subject, body, author, comment):
 
     tipper_logger.log(f'Received message: {subject} from {author.name}: {body}')
 
+    print("Generating wallet for " + author.name + " with pwd " + args.password)
     generate_wallet_if_doesnt_exist(name=author.name, password=args.password)
 
     if commentRequestsTip(body):
@@ -42,6 +43,7 @@ def processMessage(subject, body, author, comment):
         replier.handle_info_request(author=author, private_info=True)
         return
     if "withdraw" in subject.lower():
+        print("Handling withdraw")
         replier.handle_withdraw(author=author, subject=subject, contents=body)
         return
     if "donate" in subject.lower():

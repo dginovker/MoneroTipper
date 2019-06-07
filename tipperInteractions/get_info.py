@@ -35,13 +35,13 @@ def get_info(wallet_name, private_info=False, password="\"\""):
 
     wallet = Wallet(JSONRPCWallet(port=28088, password=password))
 
-    info = get_info_from_wallet(wallet, private_info)
+    info = get_info_from_wallet(wallet, wallet_name, private_info)
 
     rpcP.kill()
     return info
 
 
-def get_info_from_wallet(wallet, private_info=False):
+def get_info_from_wallet(wallet, wallet_name="", private_info=False):
     """
     Gets a tuple of wallet information, based on the wallet passed in
 
@@ -54,7 +54,8 @@ def get_info_from_wallet(wallet, private_info=False):
         "address" : str(wallet.address()),
         "balance" : format_decimal(wallet.balance(unlocked=True)),
         "balance_(unconfirmed)" : str(format_decimal(wallet.balance(unlocked=False) - wallet.balance(unlocked=True))),
-        "seed" : "Private mnemonic seed: " + wallet.seed().phrase if private_info else "If you would like your **private** info, click [here](https://www.reddit.com/r/MoneroTipsBot/wiki/index#wiki_extracting_your_private_key)"
+        "seed" : "Private mnemonic seed: " + wallet.seed().phrase  + "\n\nRestore height (optional): " + open("wallets/" + wallet_name + ".height", "r").read() if private_info
+            else "If you would like your **private** info, click [here](https://www.reddit.com/r/MoneroTipsBot/wiki/index#wiki_extracting_your_private_key)"
     }
 
 

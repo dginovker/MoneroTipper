@@ -10,6 +10,9 @@ precision = 4
 # General dev fund holder address
 general_fund_address = '9tpz9KzNwpEQyM3yUEGaxSJUWmLqfd9iQRbWB6ndd9qEXVShKhxW4Fif4xQyuwWFYNfji1A9uvjAFDuqYzx9jgWPME8bNRU'
 
+# Port for monerod (currently testnet)
+monerod_port = 28081
+
 
 # TODO for 0.4 release:
 # Make "I didn't understand this comment" directly link the comment - Done :)
@@ -24,7 +27,9 @@ general_fund_address = '9tpz9KzNwpEQyM3yUEGaxSJUWmLqfd9iQRbWB6ndd9qEXVShKhxW4Fif
 
 # TODO for 0.6 release:
 # Get the stacktrace report in request info for everything
-# When sending the private info, add restore height info
+# Restore height is now part of the private info - Done
+# Add .gitignore to the repo
+# Test testnet from commandline server
 
 # TODO for sometime in the future..
 # Private donations
@@ -32,8 +37,8 @@ general_fund_address = '9tpz9KzNwpEQyM3yUEGaxSJUWmLqfd9iQRbWB6ndd9qEXVShKhxW4Fif
 
 
 # Mainnet release notes:
-# Change all instances of 28081 to the mainnet node ; I should probably make this a constant though
-# Change the CCS donation address to a mainnet address O_O
+# Change monerod port
+# Change the CCS donation address to a mainnet address (!!)
 
 def format_decimal(decimal):
     """

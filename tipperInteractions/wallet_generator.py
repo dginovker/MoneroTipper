@@ -1,3 +1,4 @@
+from helper import monerod_port
 from moneroRPC.rpc import RPC
 from logger import tipper_logger
 import json, requests
@@ -45,7 +46,7 @@ def generate_wallet(name, password):
     rpcP = RPC(port=28087, wallet_dir=".", password=password)
 
     wallet_url = "http://127.0.0.1:28087/json_rpc"
-    height_url = "http://127.0.0.1:28081/get_height"
+    height_url = "http://127.0.0.1:" + str(monerod_port) + "/get_height"
     headers = {'Content-Type': 'application/json'}
 
     payload = {
@@ -76,7 +77,7 @@ def generate_wallet(name, password):
     try:
         blockheight_response = requests.post(
             height_url, headers=headers).json()
-        print(blockheight_response["height"], file=open('wallets/' + name + ".height", 'w'))
+        print(blockheight_response["height"] - 10, file=open('wallets/' + name + ".height", 'w'))
     except Exception as e:
         tipper_logger.log(e)
 
