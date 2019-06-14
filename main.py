@@ -10,12 +10,12 @@ parser = ArgumentParser()
 parser.add_argument("-p", "--password", dest="password")
 args = parser.parse_args()
 
-reddit = praw.Reddit('tipbot', user_agent='Monero non-custodial tipper: v0.4 (by /u/OsrsNeedsF2P)')
+reddit = praw.Reddit('tipbot', user_agent='Monero non-custodial tipper: v0.5 (by /u/OsrsNeedsF2P)')
 replier = ReplyHandler(reddit=reddit, password=args.password)
 
 
 def commentRequestsTip(body):
-    m = re.search('/u/monerotipsbot (tip )?([\d\.]+?) (t)?xmr', str(body).lower())
+    m = re.search('/u/monerotipsbot (tip )?([\d\.]+?) xmr', str(body).lower())
     if m:
         return True
     return False
@@ -42,7 +42,7 @@ def processMessage(subject, body, author, comment):
         replier.handle_info_request(author=author, private_info=True)
         return
     if "withdraw" in subject.lower():
-        replier.handle_withdraw(author=author, subject=subject, contents=body)
+        replier.handle_withdraw_request(author=author, subject=subject, contents=body)
         return
     if "donate" in subject.lower():
         replier.handle_donation(author=author, subject=subject, contents=body)

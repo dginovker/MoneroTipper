@@ -6,6 +6,8 @@ from logger import tipper_logger
 import traceback
 import re
 
+from tipperInteractions.withdraw import handle_withdraw
+
 
 class ReplyHandler(object):
     """
@@ -98,9 +100,9 @@ class ReplyHandler(object):
             tipper_logger.log(e)
 
 
-    def handle_withdraw(self, author, subject, contents):
+    def handle_withdraw_request(self, author, subject, contents):
         """
-        Handles the withdrawl of Monero to a user's wallet
+        Handles the withdrawl request, setting up RPC and calling the withdraw function
 
         :param author: Wallet to withdraw from
         :param subject: The withdrawl request string
@@ -114,28 +116,14 @@ class ReplyHandler(object):
             return None
 
         rpcSender = RPC(port=28086, wallet_file=author.name, password=self.password)
-
         senderWallet = Wallet(JSONRPCWallet(port=28086, password=self.password))
 
-        res = None
-
-        if senderWallet.balance(unlocked=True) >= Decimal(amount):
-            tipper_logger.log(f'{author.name} is trying to send {contents} {amount} XMR')
-            try:
-                res = "Withdrawl success! Txid: "
-                res += generate_transaction(senderWallet=senderWallet, recipientAddress=contents, amount=Decimal(amount))
-            except Exception as e:
-                tipper_logger.log(e)
-                res = "Error: " + str(e)
-        else:
-            walletInfo = get_info_from_wallet(senderWallet)
-            res = f'Not enough money to send! Need {format_decimal(Decimal(amount))}, has {walletInfo["balance"]} and {walletInfo["balance_(unconfirmed)"]} still incoming.'
+        res = handle_withdraw(senderWallet, author.name, contents, amount)
 
         rpcSender.kill()
 
         self.reddit.redditor(author.name).message(subject="Your withdrawl", message=res + signature)
         tipper_logger.log("Told " + author.name + " their withdrawl status (" + res + ")")
-        return res
 
 
     def handle_info_request(self, author, private_info=False):
