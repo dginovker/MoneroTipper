@@ -49,7 +49,7 @@ def processMessage(subject, body, author, comment):
         return
 
     # tipper_logger.log(f'Received message I don\t understand from {author.name}:\n\n {body}')
-    reddit.redditor(author.name).message(subject="I didn't understand your command", message=f'I didn\'t understand what you meant [here]({comment.permalink()}). You said: \n\n{body}\n\nIf you didn\'t mean to summon me, you\'re all good! If you\'re confused, please let my owner know by clicking Report a Bug!{signature}')
+    reddit.redditor(author.name).message(subject="I didn't understand your command", message=f'I didn\'t understand what you meant last time you tagged me. You said: \n\n{body}\n\nIf you didn\'t mean to summon me, you\'re all good! If you\'re confused, please let my owner know by clicking Report a Bug!{signature}')
 
 
 def main():

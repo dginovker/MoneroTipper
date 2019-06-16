@@ -34,7 +34,7 @@ class RPC(object):
 
     wallet_finished = False
 
-    def __init__(self, port, wallet_file=None, rpc_location="monero/monero-wallet-rpc", password="\"\"", testnet=True, wallet_dir=".", disable_rpc_login=True, load_timeout=300):
+    def __init__(self, port, wallet_file=None, rpc_location="monero/monero-wallet-rpc", password="\"\"", testnet=False, wallet_dir=".", disable_rpc_login=True, load_timeout=300):
         self.port = port
         self.wallet_file = wallet_file
         self.rpc_location = rpc_location
