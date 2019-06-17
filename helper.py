@@ -8,7 +8,7 @@ signature = str("\n\n*****\n\n^\(っ◔◡◔)っ ^♡ ^| [^(Deposit)](https://w
 precision = 4
 
 # General dev fund holder address
-general_fund_address = '9tpz9KzNwpEQyM3yUEGaxSJUWmLqfd9iQRbWB6ndd9qEXVShKhxW4Fif4xQyuwWFYNfji1A9uvjAFDuqYzx9jgWPME8bNRU'
+general_fund_address = '46zarwyDHd8F2GXxVuETVz3wKvEnWic634eYykBS9Q6UbmQfm2y7XRt45KzF6rGT1Pj9YTp55iHRKXZsR7AaxDZM7XqtYRK'
 
 # Port for monerod (currently testnet)
 monerod_port = 18081 #18081 for mainet
