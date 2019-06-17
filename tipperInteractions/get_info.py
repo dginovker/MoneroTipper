@@ -16,7 +16,7 @@ def get_info_as_string(wallet_name, private_info=False, password="\"\""):
 
     info = get_info(wallet_name, private_info, password)
 
-    info_as_string = f'Public address: {info["address"]}\n\nBalance: {info["balance"]} ({info["balance_(unconfirmed)"]} unconfirmed)\n\n{info["seed"]}'
+    info_as_string = f'Public address: {info["address"]} [(QR code)](https://api.qrserver.com/v1/create-qr-code/?data={info["address"]}&size=220x220&margin=4)\n\nBalance: {info["balance"]} ({info["balance_(unconfirmed)"]} unconfirmed)\n\n{info["seed"]}'
     return info_as_string
 
 def get_info(wallet_name, private_info=False, password="\"\""):
@@ -33,7 +33,7 @@ def get_info(wallet_name, private_info=False, password="\"\""):
 
     rpcP = RPC(port=28088, wallet_file=wallet_name, password=password)
 
-    wallet = Wallet(JSONRPCWallet(port=28088, password=password))
+    wallet = Wallet(JSONRPCWallet(port=28088, password=password, timeout=300))
 
     info = get_info_from_wallet(wallet, wallet_name, private_info)
 

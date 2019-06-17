@@ -67,9 +67,13 @@ class RPC(object):
         rpc_out = self.process.stdout.readline()
         tipper_logger.log(rpc_out)
 
-        if "starting wallet rpc server" in str(rpc_out.lower()) or "error" in str(rpc_out.lower()):
-            print("Found out the RPC has started (or failed)!")
+        if "starting wallet rpc server" in str(rpc_out.lower()):
+            tipper_logger.log("Found out the RPC has started")
             self.wallet_finished = True
+        if "error" in str(rpc_out.lower()):
+            tipper_logger.log("Found out the RPC has failed")
+            self.wallet_finished = True
+
         return self.wallet_finished
 
     def isWalletLoaded(self):

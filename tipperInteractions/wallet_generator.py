@@ -14,7 +14,7 @@ def generate_wallet_if_doesnt_exist(name, password):
 
     name = str(name)
     if wallet_exists(name):
-        print("Wallet exists")
+        tipper_logger.log("Wallet exists")
         return False
 
     return generate_wallet(name=name, password=password)
@@ -27,7 +27,7 @@ def wallet_exists(name):
     :return: True if found, False otherwise
     """
 
-    print("Checking if wallet exists..")
+    tipper_logger.log("Checking if wallet exists..")
     name = str(name)
     return os.path.isfile('./wallets/' + name) or os.path.isfile('./wallets/' + name + '.keys') or os.path.isfile('./wallets/' + name + '.address.txt')
 
@@ -41,7 +41,7 @@ def generate_wallet(name, password):
     :return True on successful wallet generation, False otherwise
     """
 
-    print("Obviously it doesn't exist")
+    tipper_logger.log("Obviously it doesn't exist")
     name = str(name)
     rpcP = RPC(port=28087, wallet_dir=".", password=password)
 
@@ -66,7 +66,7 @@ def generate_wallet(name, password):
         "method" : "get_height"
     }
 
-    print("Generate_wallet about to call the fun stuff")
+    tipper_logger.log("Generate_wallet about to call the fun stuff")
 
     try:
         requests.post(
@@ -77,7 +77,7 @@ def generate_wallet(name, password):
     try:
         blockheight_response = requests.post(
             height_url, headers=headers).json()
-        print(blockheight_response["height"] - 10, file=open('wallets/' + name + ".height", 'w'))
+        tipper_logger.log(blockheight_response["height"] - 10, file=open('wallets/' + name + ".height", 'w'))
     except Exception as e:
         tipper_logger.log(e)
 

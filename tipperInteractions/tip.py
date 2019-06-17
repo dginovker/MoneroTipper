@@ -79,10 +79,10 @@ def tip(sender, recipient, amount, password):
             rpcPrecipient = rpcPsender
             recipient_port = sender_port
 
-        print("We're loaded!!")
+        tipper_logger.log("We're loaded!!")
 
-        senderWallet = Wallet(JSONRPCWallet(port=sender_port, password=password))
-        recipientWallet = Wallet(JSONRPCWallet(port=recipient_port, password=password))
+        senderWallet = Wallet(JSONRPCWallet(port=sender_port, password=password, timeout=300))
+        recipientWallet = Wallet(JSONRPCWallet(port=recipient_port, password=password, timeout=300))
     except Exception as e:
         tipper_logger.log(e)
         tipper_logger.log("Failed to open wallets for " + sender + " and " + recipient)

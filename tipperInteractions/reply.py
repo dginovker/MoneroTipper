@@ -115,8 +115,8 @@ class ReplyHandler(object):
             self.reddit.redditor(author.name).message(subject="I didn't understand your withdrawal!", message=f'You sent: "{subject}", but I couldn\'t figure out how much you wanted to send. See [this](https://www.reddit.com/r/MoneroTipsBot/wiki/index#wiki_withdrawing) guide if you need help, or click "Report a Bug" if you think there\'s a bug!' + signature)
             return None
 
-        rpcSender = RPC(port=28086, wallet_file=author.name, password=self.password)
-        senderWallet = Wallet(JSONRPCWallet(port=28086, password=self.password))
+        rpcSender = RPC(port=28086, wallet_file=author.name, password=self.password, timeout=300)
+        senderWallet = Wallet(JSONRPCWallet(port=28086, password=self.password, timeout=300))
 
         res = handle_withdraw(senderWallet, author.name, contents, amount)
 
