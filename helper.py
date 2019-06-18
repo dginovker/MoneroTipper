@@ -5,7 +5,7 @@
 signature = str("\n\n*****\n\n^\(っ◔◡◔)っ ^♡ ^| [^(Deposit)](https://www.reddit.com/message/compose/?to=MoneroTipsBot&subject=My+info&message=Hit+%27send%27+and+the+bot+will+tell+you+your+public+address+:\)) ^| [^(Withdraw)](https://www.reddit.com/message/compose/?to=MoneroTipsBot&subject=Withdraw+0+XMR&message=Replace+this+line+with+your+public+address!) ^|  [^(Show my balance)](https://www.reddit.com/message/compose/?to=MoneroTipsBot&subject=My+info&message=Hit+%27send%27+and+the+bot+will+tell+you+your+balance+:\)) ^| [^(Donate to the CCS)](https://old.reddit.com/r/MoneroTipsBot/wiki/index#wiki_donating_to_the_ccs) ^| [^(Report a bug)](https://old.reddit.com/r/MoneroTipsBot/wiki/index#wiki_report_a_bug) ^| ^♡\n\n^*Mainnet")
 
 # Number of decimal points to display
-precision = 4
+precision = 6
 
 # General dev fund holder address
 general_fund_address = '46zarwyDHd8F2GXxVuETVz3wKvEnWic634eYykBS9Q6UbmQfm2y7XRt45KzF6rGT1Pj9YTp55iHRKXZsR7AaxDZM7XqtYRK'

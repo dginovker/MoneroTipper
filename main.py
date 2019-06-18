@@ -15,7 +15,7 @@ replier = ReplyHandler(reddit=reddit, password=args.password)
 
 
 def commentRequestsTip(body):
-    m = re.search('/u/monerotipsbot (tip )?([\d\.]+?) xmr', str(body).lower())
+    m = re.search('/u/monerotipsbot (tip )?([\d\.]+?)( )?xmr', str(body).lower())
     if m:
         return True
     return False
