@@ -1,5 +1,6 @@
 from monero import prio
 from decimal import Decimal
+from logger import tipper_logger
 
 def generate_transaction(senderWallet, recipientAddress, amount, splitSize=6):
     """
@@ -18,6 +19,9 @@ def generate_transaction(senderWallet, recipientAddress, amount, splitSize=6):
     sum = 0
     transactions = []
     # Make multiple of the same output, but in smaller chunks
+    if senderWallet.balance() > Decimal(0.001) and senderWallet.balance() - Decimal(amount) < Decimal(0.001):
+        amount = senderWallet.balance() - Decimal(0.001)
+        tipper_logger.log("Reduced amount for the transaction...")
     for i in range(0, splitSize - 1):
         sum += float(amount)/splitSize
         transactions.append((recipientAddress, Decimal(float(amount) / splitSize)))

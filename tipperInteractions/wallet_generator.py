@@ -72,14 +72,14 @@ def generate_wallet(name, password):
         requests.post(
             wallet_url, data=json.dumps(payload), headers=headers).json()
     except Exception as e:
-        tipper_logger.log(e)
+        tipper_logger.log(str(e))
 
     try:
         blockheight_response = requests.post(
             height_url, headers=headers).json()
-        tipper_logger.log(blockheight_response["height"] - 10, file=open('wallets/' + name + ".height", 'w'))
+        print(blockheight_response["height"] - 10, file=open('wallets/' + name + ".height", 'w')) # DON'T CHANGE THIS DUMDUM
     except Exception as e:
-        tipper_logger.log(e)
+        tipper_logger.log(str(e))
 
     rpcP.kill()
 

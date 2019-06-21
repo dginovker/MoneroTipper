@@ -21,11 +21,13 @@ def get_error_response(e):
 
     # User does not have enough inputs
     if "Method 'transfer_split' failed with RPC Error of unknown code -4" in str(e):
-        response = "Congradulations, I tried to fix this. Pinging me: /u/OsrsNeedsF2P\n\nCould you please tell how much did you thought you had available to tip, and how many tips you've issued in the past 20 minutes? Thanks\n\nError: You do not have enough spendable balance. Either wait a bit, or see [this link](https://www.reddit.com/r/MoneroTipsBot/wiki/index#wiki_why_is_all_my_monero_unconfirmed.3F_i_want_to_send_more_tips.21) on how to avoid this in the future."
+        response = "Sorry, you do not have enough spendable balance. Wait a bit, or see [this guide](https://www.reddit.com/r/MoneroTipsBot/wiki/index#wiki_why_is_all_my_monero_unconfirmed.3F_i_want_to_send_more_tips.21) for a solution."
     if "of unknown code -3" in str(e):
-        response += "\n\n The tipbot node might be really out of sync. Checking on it soon"
+        response += "\n\n The tipbot node might be really out of sync. Checking on it soon; /u/OsrsNeedsF2P..."
+    if "not enough money" in str(e):
+        response +="\n\n Make sure you leave enough change for the network fee! Should be around 0.0001 XMR."
 
-    return response + "\n\n /u/OsrsNeedsF2P..."
+    return response
 
 
 def get_balance_too_low_message(senderWallet, amount):
@@ -37,7 +39,7 @@ def get_balance_too_low_message(senderWallet, amount):
     :return:
     """
 
-    message = f'Not enough money to send! Need {format_decimal(Decimal(amount))}, you have {format_decimal(senderWallet.balance(unlocked=True))} and {format_decimal(senderWallet.balance(unlocked=False))} still incoming.'
+    message = f'Not enough money to send! Need {format_decimal(Decimal(amount))}, you have {format_decimal(senderWallet.balance(unlocked=True), points=8)} and {format_decimal(senderWallet.balance(unlocked=False))} still incoming.'
     if senderWallet.balance(unlocked=True) == 0 and senderWallet.balance(unlocked=False) > 0:
         message += "\n\n[(Why is all my balance still incoming?)](https://www.reddit.com/r/MoneroTipsBot/wiki/index#wiki_why_is_all_my_monero_unconfirmed.3F_i_want_to_send_more_tips.21)"
 
@@ -103,8 +105,8 @@ def tip(sender, recipient, amount, password):
         try:
             txs = generate_transaction(senderWallet=senderWallet, recipientAddress=recipientWallet.address(), amount=amount)
 
-            info["txid"] = "https://testnet.xmrchain.com/search?value=" + str(txs)
-            info["response"] = "Successfully tipped /u/" + recipient + " " + amount + " tXMR!"
+            info["txid"] = "https://xmrchain.com/search?value=" + str(txs)
+            info["response"] = "Successfully tipped /u/" + recipient + " " + amount + " XMR!"
             tipper_logger.log("Successfully sent tip")
         except Exception as e:
             tipper_logger.log(e)

@@ -3,6 +3,7 @@ from decimal import Decimal
 from logger import tipper_logger
 from tipperInteractions.get_info import get_info_from_wallet
 from tipperInteractions.transaction import generate_transaction
+from tipperInteractions.tip import get_error_response
 
 from helper import *
 
@@ -29,7 +30,7 @@ def handle_withdraw(sender_wallet, sender_name, recipient_address, amount):
             res += ")"
         except Exception as e:
             tipper_logger.log(e)
-            res = "Error: " + str(e)
+            res = get_error_response(e)
     else:
         walletInfo = get_info_from_wallet(sender_wallet)
         res = f'Not enough money to send! Need {format_decimal(Decimal(amount))}, has {walletInfo["balance"]} and {walletInfo["balance_(unconfirmed)"]} still incoming.'

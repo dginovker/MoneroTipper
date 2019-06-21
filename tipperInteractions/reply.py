@@ -49,7 +49,7 @@ class ReplyHandler(object):
         :return: An amount, in XMR, that the bot will tip
         """
 
-        m = re.search('/u/monerotipsbot (tip )?([\d\.]+?) (t)?xmr', str(body).lower())
+        m = re.search('/u/monerotipsbot (tip )?([\d\.]+?)( )?xmr', str(body).lower())
         if m:
             return m.group(2)
         return None
@@ -115,7 +115,7 @@ class ReplyHandler(object):
             self.reddit.redditor(author.name).message(subject="I didn't understand your withdrawal!", message=f'You sent: "{subject}", but I couldn\'t figure out how much you wanted to send. See [this](https://www.reddit.com/r/MoneroTipsBot/wiki/index#wiki_withdrawing) guide if you need help, or click "Report a Bug" if you think there\'s a bug!' + signature)
             return None
 
-        rpcSender = RPC(port=28086, wallet_file=author.name, password=self.password, timeout=300)
+        rpcSender = RPC(port=28086, wallet_file=author.name, password=self.password)
         senderWallet = Wallet(JSONRPCWallet(port=28086, password=self.password, timeout=300))
 
         res = handle_withdraw(senderWallet, author.name, contents, amount)
@@ -170,9 +170,9 @@ class ReplyHandler(object):
 
         amount = Decimal(self.parse_donate_amount(subject, senderWallet.balance()))
 
-        if senderWallet.balance(True) < Decimal(amount):
+        if senderWallet.balance(True) + Decimal(0.00005) < Decimal(amount):
             walletInfo = get_info_from_wallet(wallet=senderWallet, private_info=False)
-            self.reddit.redditor(author.name).message(subject="Your donation to the CCS", message=f'Unfortunately, you do not have enough funds to donate {format_decimal(amount)} XMR. You have: {walletInfo["balance"]} XMR and {walletInfo["balance_(unconfirmed)"]} + " XMR unconfirmed.')
+            self.reddit.redditor(author.name).message(subject="Your donation to the CCS", message=f'Unfortunately, you do not have enough funds to donate {format_decimal(amount)} XMR. You have: {walletInfo["balance"]} XMR and {walletInfo["balance_(unconfirmed)"]} XMR unconfirmed.')
         else:
             generate_transaction(senderWallet=senderWallet, recipientAddress=general_fund_address, amount=amount, splitSize=1)
             self.reddit.redditor(author.name).message(subject="Your donation to the General Dev Fund", message=f'Thank you for donating {format_decimal(amount)} of your XMR balance to the CCS!\n\nYou will soon have your total donations broadcasted to the wiki :) {signature}')
