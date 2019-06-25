@@ -24,8 +24,8 @@ def get_error_response(e):
         response = "Sorry, you do not have enough spendable balance. Wait a bit, or see [this guide](https://www.reddit.com/r/MoneroTipsBot/wiki/index#wiki_why_is_all_my_monero_unconfirmed.3F_i_want_to_send_more_tips.21) for a solution."
     if "of unknown code -3" in str(e):
         response += "\n\n The tipbot node might be really out of sync. Checking on it soon; /u/OsrsNeedsF2P..."
-    if "not enough money" in str(e):
-        response +="\n\n Make sure you leave enough change for the network fee! Should be around 0.0001 XMR."
+    if "not enough money" in str(e) or "tx not possible" in str(e):
+        response +="\n\n You do not have a high enough balance to cover the network fee. If you would like to manually withdraw the rest of your balance (<1 cent), you may do so by extracting your private key"
 
     return response
 
@@ -97,8 +97,8 @@ def tip(sender, recipient, amount, password):
     tipper_logger.log("Successfully initialized wallets..")
 
     wallet_balance = Decimal(0) if senderWallet.balance(unlocked=True) == None else senderWallet.balance(unlocked=True)
-    if wallet_balance < Decimal(amount):
-        tipper_logger.log("Can't send; " + str(wallet_balance) + " is < than " + str(amount))
+    if wallet_balance + Decimal(0.0001) < Decimal(amount):
+        tipper_logger.log("Can't send; " + str(wallet_balance) + " is < than " + str(Decimal(amount) + Decimal(0.0001)))
         info["response"] = "Not enough money to send! See your private message for details."
         info["message"] = get_balance_too_low_message(senderWallet, amount)
     else:

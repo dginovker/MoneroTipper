@@ -21,7 +21,7 @@ def handle_withdraw(sender_wallet, sender_name, recipient_address, amount):
 
     res = ""
 
-    if sender_wallet.balance(unlocked=True) >= Decimal(amount):
+    if sender_wallet.balance(unlocked=True) + Decimal(0.0001) >= Decimal(amount):
         tipper_logger.log(f'{sender_name} is trying to send {recipient_address} {amount} XMR')
         try:
             res = "Withdrawl success! [Txid](https://xmrchain.net/search?value="
