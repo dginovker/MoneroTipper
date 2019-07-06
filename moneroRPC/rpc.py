@@ -79,12 +79,14 @@ class RPC(object):
     def isWalletLoaded(self):
         while self.parseWalletOutput() == False:
             time.sleep(0.01)
+        tipper_logger.log("Wallet loaded in time")
 
     def waitAndCheckWalletLoad(self):
         p = multiprocessing.Process(target=self.isWalletLoaded)
         p.start()
         p.join(timeout=self.load_timeout)
         p.kill()
+        tipper_logger.log("Killing rpc, hopefully it loaded")
 
 
     def kill(self):
