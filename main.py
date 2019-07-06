@@ -10,7 +10,7 @@ parser = ArgumentParser()
 parser.add_argument("-p", "--password", dest="password")
 args = parser.parse_args()
 
-reddit = praw.Reddit('tipbot', user_agent='Monero non-custodial tipper: v0.5 (by /u/OsrsNeedsF2P)')
+reddit = praw.Reddit('tipbot', user_agent='Monero non-custodial tipper: v0.7 (by /u/OsrsNeedsF2P)')
 replier = ReplyHandler(reddit=reddit, password=args.password)
 
 

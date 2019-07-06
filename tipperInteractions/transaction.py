@@ -29,4 +29,5 @@ def generate_transaction(senderWallet, recipientAddress, amount, splitSize=6):
     # Add the remainder
     transactions.append((recipientAddress, Decimal(float(amount) - sum)))
 
+    tipper_logger.log("About to broadcast transaction..")
     return str(senderWallet.transfer_multiple(transactions, priority=prio.UNIMPORTANT))

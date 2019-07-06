@@ -1,6 +1,7 @@
 import shlex, subprocess
 import multiprocessing
 import time
+import os
 from datetime import datetime
 
 from logger import tipper_logger
@@ -33,8 +34,9 @@ class RPC(object):
     load_timeout = None
 
     wallet_finished = False
+    locked = False
 
-    def __init__(self, port, wallet_file=None, rpc_location="monero/monero-wallet-rpc", password="\"\"", testnet=False, wallet_dir=".", disable_rpc_login=True, load_timeout=300):
+    def __init__(self, port, wallet_file=None, rpc_location="monero/monero-wallet-rpc", password="\"\"", testnet=False, wallet_dir=".", disable_rpc_login=True, load_timeout=300, attempt2=False):
         self.port = port
         self.wallet_file = wallet_file
         self.rpc_location = rpc_location
@@ -57,8 +59,15 @@ class RPC(object):
 
         self.process = subprocess.Popen(args, stdout=subprocess.PIPE)
 
-        if self.waitAndCheckWalletLoad() == False:
+        self.waitAndCheckWalletLoad()
+        if os.path.isfile("locked") and attempt2 == False:
+            print("Wallet locked - waiting 30 sec and trying again")
+            os.remove("locked")
             self.kill()
+            time.sleep(30)
+            self.process = subprocess.Popen(args, stdout=subprocess.PIPE)
+            self.waitAndCheckWalletLoad()
+
 
     def parseWalletOutput(self):
         if (self.wallet_finished == True):
@@ -71,7 +80,11 @@ class RPC(object):
             tipper_logger.log("Found out the RPC has started")
             self.wallet_finished = True
         if "error" in str(rpc_out.lower()):
-            tipper_logger.log("Found out the RPC has failed")
+            if "locking fd" in str(rpc_out.lower()):
+                tipper_logger.log("The wallet is already open (that's likely fine..)")
+                open("locked", "w").close();
+            else:
+                tipper_logger.log("Found out the RPC has failed")
             self.wallet_finished = True
 
         return self.wallet_finished

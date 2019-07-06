@@ -8,6 +8,8 @@ An on-chain, non-custodial, Reddit Monero tip bot written in Python.
 - 0.3: Usability enhancements with output splitting
 - 0.4: Logging and CCS donations
 - 0.5: Better RPC handling
+- 0.6: Mainnet release
+- 0.7: Background sync
 
 ## Pull Requests:
 

@@ -87,12 +87,12 @@ def tip(sender, recipient, amount, password):
         tipper_logger.log("Wallets loaded!!")
 
     except Exception as e:
-        tipper_logger.log(e)
-        tipper_logger.log("Failed to open wallets for " + sender + " and " + recipient)
-        info["response"] = "Could not open wallets properly! Perhaps my node is out of sync? (Try again shortly).\n\n^/u/OsrsNeedsF2P!!"
-        info["message"] = str(e)
         rpcPsender.kill()
         rpcPrecipient.kill()
+        tipper_logger.log("Failed to open wallets for " + sender + " and " + recipient + ". Message: ")
+        tipper_logger.log(e)
+        info["response"] = "Could not open wallets properly! Perhaps my node is out of sync? (Try again shortly).\n\n^/u/OsrsNeedsF2P!!"
+        info["message"] = str(e)
         return info
 
     tipper_logger.log("Successfully initialized wallets..")
