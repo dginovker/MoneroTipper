@@ -5,11 +5,11 @@ An on-chain, non-custodial, Reddit Monero tip bot written in Python.
 **Version history:**
 - 0.1: Initial release, testnet only
 - 0.2: Security and bugfixes
-- 0.3: Usability enhancements with output splitting
+- 0.3: Output splitting enhancements
 - 0.4: Logging and CCS donations
 - 0.5: Better RPC handling
 - 0.6: Mainnet release
-- 0.7: Background sync
+- 0.7: Lock handle and background sync
 
 ## Pull Requests:
 
@@ -26,7 +26,6 @@ Due to the nature of the project, it is unlikely I will merge pull requests. How
 - [jtgrassie](https://github.com/jtgrassie)
 
 *for answering all my questions :)*
-
 
 ### Donations
 
