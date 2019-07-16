@@ -27,9 +27,10 @@ def main():
             for i in os.listdir("wallets"):
                 if not "." in i:
                     #time.sleep(1)
+                    start = int(round(time.time() * 1000))
                     print("Opening " + i + "'s wallet\n\n")
                     get_info(i, False, args.password, port=28444, timeout=20)
-                    print("Closing wallet\n*************************\n")
+                    print("Ran for " + str(int(round(time.time() * 1000)) - start) + " - Closed " + i + "'s wallet\n*************************\n")
             #print("Opening wallet")
             #with HiddenPrints():
             #get_info("OsrsNeedsF2P", False, args.password)

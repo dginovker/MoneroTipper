@@ -39,7 +39,7 @@ def get_balance_too_low_message(senderWallet, amount):
     :return:
     """
 
-    message = f'Not enough money to send! Need {format_decimal(Decimal(amount))}, you have {format_decimal(senderWallet.balance(unlocked=True), points=8)} and {format_decimal(senderWallet.balance(unlocked=False))} still incoming.'
+    message = f'Not enough money to send! Need {format_decimal(Decimal(amount))}, you have {format_decimal(senderWallet.balance(unlocked=True), points=8)} and {format_decimal(senderWallet.balance(unlocked=False) - senderWallet.balance(unlocked=True))} still incoming.'
     if senderWallet.balance(unlocked=True) == 0 and senderWallet.balance(unlocked=False) > 0:
         message += "\n\n[(Why is all my balance still incoming?)](https://www.reddit.com/r/MoneroTipsBot/wiki/index#wiki_why_is_all_my_monero_unconfirmed.3F_i_want_to_send_more_tips.21)"
 
