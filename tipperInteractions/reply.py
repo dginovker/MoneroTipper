@@ -1,12 +1,14 @@
 from tipperInteractions.get_info import *
+from tipperInteractions.wallet_generator import *
+from tipperInteractions.withdraw import *
 from tipperInteractions.tip import *
-from decimal import Decimal
 from helper import *
+from decimal import Decimal
 from logger import tipper_logger
 import traceback
 import re
+import os
 
-from tipperInteractions.withdraw import handle_withdraw
 
 
 class ReplyHandler(object):
@@ -24,7 +26,7 @@ class ReplyHandler(object):
         self.password = password
 
 
-    def get_recipient(self, comment):
+    def get_tip_recipient(self, comment):
         """
         Determines the recipient of the tip, based on the comment requesting the tip
 
@@ -80,22 +82,20 @@ class ReplyHandler(object):
         :param comment: The comment itself that called the bot
         """
 
-        recipient = self.get_recipient(comment)
+        recipient = self.get_tip_recipient(comment)
         amount = self.parse_tip_amount(body)
         reply = None
 
         if recipient is not None and amount is not None:
             tipper_logger.log(f'{author.name} is sending {recipient} {amount} XMR.')
-            generate_wallet_if_doesnt_exist(recipient, self.password)
+            generate_wallet_if_doesnt_exist(recipient.lower(), self.password)
 
             res = tip(sender=author.name, recipient=recipient.name, amount=amount, password=self.password)
-            print("Here uh oh")
             if res["response"] is not None:
                 reply = f'{res["response"]}'
                 tipper_logger.log("The response is: " + reply)
             if res["message"] is not None:
                 self.reddit.redditor(author.name).message(subject="Your tip", message="Regarding your tip here: {comment}\n\n" + res["message"] + signature)
-            print("Second")
         else:
             reply = "Nothing interesting happens.\n\n*In case you were trying to tip, I didn't understand you.*"
 
@@ -120,7 +120,7 @@ class ReplyHandler(object):
             self.reddit.redditor(author.name).message(subject="I didn't understand your withdrawal!", message=f'You sent: "{subject}", but I couldn\'t figure out how much you wanted to send. See [this](https://www.reddit.com/r/MoneroTipsBot/wiki/index#wiki_withdrawing) guide if you need help, or click "Report a Bug" if you think there\'s a bug!' + signature)
             return None
 
-        rpcSender = RPC(port=28086, wallet_file=author.name, password=self.password)
+        rpcSender = RPC(port=28086, wallet_name=author.name.lower(), password=self.password)
         senderWallet = Wallet(JSONRPCWallet(port=28086, password=self.password, timeout=300))
 
         res = handle_withdraw(senderWallet, author.name, contents, amount)
@@ -139,7 +139,7 @@ class ReplyHandler(object):
         :param private_info: Whether or not to send the private key (mnemonic) along with the message
         :return:
         """
-        self.reddit.redditor(author.name).message(subject="Your " + ("private address and info" if private_info else "public address and balance"), message=get_info_as_string(wallet_name=author.name, private_info=private_info, password=self.password) + signature)
+        self.reddit.redditor(author.name).message(subject="Your " + ("private address and info" if private_info else "public address and balance"), message=get_info_as_string(wallet_name=author.name.lower(), private_info=private_info, password=self.password) + signature)
         tipper_logger.log(f'Told {author.name} their {("private" if private_info else "public")} info.')
 
 
@@ -169,7 +169,7 @@ class ReplyHandler(object):
         :param contents: Message body
         """
 
-        rpcSender = RPC(port=28090, wallet_file=author.name, password=self.password)
+        rpcSender = RPC(port=28090, wallet_name=author.name.lower(), password=self.password)
 
         senderWallet = Wallet(JSONRPCWallet(port=28090, password=self.password))
 
@@ -185,3 +185,46 @@ class ReplyHandler(object):
             tipper_logger.log(f'{author.name} donated {format_decimal(amount)} to the CCS.')
 
         rpcSender.kill()
+
+
+    def parse_anontip_amount(self, subject):
+        """
+
+        :param subject: in format "Anonymous tip USER AMOUNT xmr"
+        """
+        m = re.search('anonymous tip .+ (.+) xmr', subject.lower())
+        if m:
+            return m.group(1)
+
+
+    def parse_anontip_recipient(self, subject):
+        m = re.search('anonymous tip (.+) .+ xmr', subject.lower())
+        if m:
+            generate_wallet_if_doesnt_exist(m.group(1).lower(), self.password)
+            return m.group(1)
+
+
+    def handle_private_tip(self, author, subject, contents):
+        """
+        Allows people to send anonymous tips
+
+        :param author: Reddit account to withdraw from
+        :param subject: Subject line of the message, telling who to tip and how much
+        :param contents: Message body (ignored)
+        """
+        
+        recipient = self.parse_anontip_recipient(subject)
+        amount = self.parse_anontip_amount(subject)
+        reply = None
+
+        if recipient is None or amount is None:
+            self.reddit.redditor(author.name).message(subject="Your anonymous tip", message="Nothing interesting happens.\n\n*Your recipient or amount wasn't clear to me*" + signature)
+            return
+
+        tipper_logger.log(author.name + " is trying to send " + self.parse_anontip_amount(subject) + " XMR to " + self.parse_anontip_recipient(subject))
+        res = tip(sender=author.name, recipient=recipient, amount=amount, password=self.password)
+        if res["message"] is not None:
+            self.reddit.redditor(author.name).message(subject="Your anonymous tip", message=res["message"] + signature)
+        else:
+            self.reddit.redditor(author.name).message(subject="Anonymous tip successful",  message=res["response"] + signature)
+            self.reddit.redditor(recipient).message("You have recieved an anonymous Monero tip!", message="The tipper attached the following message:\n\n" + contents + signature)

@@ -36,8 +36,8 @@ def tip(sender, recipient, amount, password):
     If the sender and the recipient are the same, it creates only 1 rpc
     Always closes RPCs, even on failure
 
-    :param sender: wallet sending Monero
-    :param recipient: wallet receiving
+    :param sender: name of wallet sending Monero
+    :param recipient: name of wallet receiving
     :param amount: amount to send in XMR
     :return info: dictionary containing txid, a private message and a public response
     """
@@ -58,9 +58,9 @@ def tip(sender, recipient, amount, password):
     recipient_port = 28089
 
     try:
-        rpcPsender = RPC(port=sender_port, wallet_file=sender, password=password)
-        if sender != recipient:
-            rpcPrecipient = RPC(port=recipient_port, wallet_file=recipient, password=password)
+        rpcPsender = RPC(port=sender_port, wallet_name=sender.lower(), password=password)
+        if sender.lower() != recipient.lower():
+            rpcPrecipient = RPC(port=recipient_port, wallet_name=recipient.lower(), password=password)
         else:
             rpcPrecipient = rpcPsender
             recipient_port = sender_port
@@ -91,7 +91,7 @@ def tip(sender, recipient, amount, password):
             txs = generate_transaction(senderWallet=senderWallet, recipientAddress=recipientWallet.address(), amount=amount)
 
             info["txid"] = str(txs)
-            info["response"] = "[Successfully](https://xmrchain.com/search?value={txs}) tipped /u/" + recipient + " " + amount + " XMR!"
+            info["response"] = "Successfully tipped /u/" + recipient + " " + amount + " XMR! [^(txid)](https://xmrchain.com/search?value={txs})"
             tipper_logger.log("Successfully sent tip")
         except Exception as e:
             tipper_logger.log(e)

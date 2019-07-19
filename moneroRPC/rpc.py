@@ -16,7 +16,7 @@ class RPC(object):
     wallet dir and wallet files are started in the ./wallets directory
 
     :param port: Port for the Monero RPC to run on
-    :param wallet_file: Wallet to open on this RPC session
+    :param wallet_name: Wallet name to open on this RPC session
     :param rpc_location: Location on disk where the RPC program sits
     :param testnet: Whether or not to run on the Monero testnet or mainnet
     :param wallet_dir: Directory where all the wallets are kept
@@ -24,7 +24,7 @@ class RPC(object):
     :param load_timeout: Timeout in seconds for how long to load an RPC
     """
     port = None
-    wallet_file = None
+    wallet_name = None
     rpc_location = None
     password = None
     testnet = None
@@ -36,9 +36,9 @@ class RPC(object):
     wallet_finished = False
     locked = False
 
-    def __init__(self, port, wallet_file=None, rpc_location="monero/monero-wallet-rpc", password="\"\"", testnet=False, wallet_dir=".", disable_rpc_login=True, load_timeout=300, attempt2=False):
+    def __init__(self, port, wallet_name=None, rpc_location="monero/monero-wallet-rpc", password="\"\"", testnet=False, wallet_dir=".", disable_rpc_login=True, load_timeout=300, attempt2=False):
         self.port = port
-        self.wallet_file = wallet_file
+        self.wallet_name = wallet_name
         self.rpc_location = rpc_location
         self.password = password
         self.testnet = testnet
@@ -47,8 +47,8 @@ class RPC(object):
         self.load_timeout = load_timeout
 
         # For opening an existing wallet
-        if wallet_file is not None:
-            command = f'{rpc_location} --wallet-file ./wallets/{wallet_file} --password {password} --rpc-bind-port {port}{" --testnet" if testnet else ""}{" --disable-rpc-login" if disable_rpc_login else ""}'
+        if wallet_name is not None:
+            command = f'{rpc_location} --wallet-file ./wallets/{wallet_name} --password {password} --rpc-bind-port {port}{" --testnet" if testnet else ""}{" --disable-rpc-login" if disable_rpc_login else ""}'
 
         # For creating a new wallet
         else:

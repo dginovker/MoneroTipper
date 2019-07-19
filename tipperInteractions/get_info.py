@@ -31,7 +31,7 @@ def get_info(wallet_name, private_info=False, password="\"\"", port=28088, timeo
 
     generate_wallet_if_doesnt_exist(wallet_name, password)
 
-    rpcP = RPC(port=port, wallet_file=wallet_name, password=password)
+    rpcP = RPC(port=port, wallet_name=wallet_name, password=password)
 
     wallet = Wallet(JSONRPCWallet(port=port, password=password, timeout=timeout))
 
