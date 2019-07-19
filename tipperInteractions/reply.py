@@ -91,7 +91,7 @@ class ReplyHandler(object):
             res = tip(sender=author.name, recipient=recipient.name, amount=amount, password=self.password)
             print("Here uh oh")
             if res["response"] is not None:
-                reply = f'Response message: {res["response"]}\n\n[Txid]({res["txid"]})'
+                reply = f'{res["response"]}'
                 tipper_logger.log("The response is: " + reply)
             if res["message"] is not None:
                 self.reddit.redditor(author.name).message(subject="Your tip", message="Regarding your tip here: {comment}\n\n" + res["message"] + signature)

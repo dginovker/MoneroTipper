@@ -90,8 +90,8 @@ def tip(sender, recipient, amount, password):
         try:
             txs = generate_transaction(senderWallet=senderWallet, recipientAddress=recipientWallet.address(), amount=amount)
 
-            info["txid"] = "https://xmrchain.com/search?value=" + str(txs)
-            info["response"] = "Successfully tipped /u/" + recipient + " " + amount + " XMR!"
+            info["txid"] = str(txs)
+            info["response"] = "[Successfully](https://xmrchain.com/search?value={txs}) tipped /u/" + recipient + " " + amount + " XMR!"
             tipper_logger.log("Successfully sent tip")
         except Exception as e:
             tipper_logger.log(e)
