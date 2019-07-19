@@ -30,22 +30,6 @@ def get_error_response(e):
     return response
 
 
-def get_balance_too_low_message(senderWallet, amount):
-    """
-    Determines the private message to send to a user who tried to tip more than their balance
-
-    :param senderWallet:
-    :param amount:
-    :return:
-    """
-
-    message = f'Not enough money to send! Need {format_decimal(Decimal(amount))}, you have {format_decimal(senderWallet.balance(unlocked=True), points=8)} and {format_decimal(senderWallet.balance(unlocked=False) - senderWallet.balance(unlocked=True))} still incoming.'
-    if senderWallet.balance(unlocked=True) == 0 and senderWallet.balance(unlocked=False) > 0:
-        message += "\n\n[(Why is all my balance still incoming?)](https://www.reddit.com/r/MoneroTipsBot/wiki/index#wiki_why_is_all_my_monero_unconfirmed.3F_i_want_to_send_more_tips.21)"
-
-    return message
-
-
 def tip(sender, recipient, amount, password):
     """
     Sends Monero from sender to recipient
@@ -101,7 +85,7 @@ def tip(sender, recipient, amount, password):
     if wallet_balance + Decimal(0.0001) < Decimal(amount):
         tipper_logger.log("Can't send; " + str(wallet_balance) + " is < than " + str(Decimal(amount) + Decimal(0.0001)))
         info["response"] = "Not enough money to send! See your private message for details."
-        info["message"] = get_balance_too_low_message(senderWallet, amount)
+        info["message"] =  f'Not enough money to send! Need {format_decimal(Decimal(amount))}, you have {format_decimal(senderWallet.balance(unlocked=True), points=8)} and {format_decimal(senderWallet.balance(unlocked=False) - senderWallet.balance(unlocked=True))} still incoming.'
     else:
         try:
             txs = generate_transaction(senderWallet=senderWallet, recipientAddress=recipientWallet.address(), amount=amount)
@@ -111,8 +95,8 @@ def tip(sender, recipient, amount, password):
             tipper_logger.log("Successfully sent tip")
         except Exception as e:
             tipper_logger.log(e)
-            info["response"] = get_error_response(e)
-            info["message"] = None
+            info["response"] = None
+            info["message"] = get_error_response(e)
 
     rpcPsender.kill()
     rpcPrecipient.kill()

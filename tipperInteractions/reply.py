@@ -72,6 +72,8 @@ class ReplyHandler(object):
     def handle_tip_request(self, author, body, comment):
         """
         Handles the tipping interaction, called by a Redditor's comment
+        Replies to the user if the response is not None
+        Sends user a message if message is not None
 
         :param body: The contents of a comment that called the bot
         :param author: The username of the entity that created the comment
@@ -87,10 +89,13 @@ class ReplyHandler(object):
             generate_wallet_if_doesnt_exist(recipient, self.password)
 
             res = tip(sender=author.name, recipient=recipient.name, amount=amount, password=self.password)
-            reply = f'Response message: {res["response"]}\n\n[Txid]({res["txid"]})'
-            tipper_logger.log("The response is: " + reply)
+            print("Here uh oh")
+            if res["response"] is not None:
+                reply = f'Response message: {res["response"]}\n\n[Txid]({res["txid"]})'
+                tipper_logger.log("The response is: " + reply)
             if res["message"] is not None:
-                self.reddit.redditor(author.name).message(subject="Your tip", message=res["message"] + signature)
+                self.reddit.redditor(author.name).message(subject="Your tip", message="Regarding your tip here: {comment}\n\n" + res["message"] + signature)
+            print("Second")
         else:
             reply = "Nothing interesting happens.\n\n*In case you were trying to tip, I didn't understand you.*"
 

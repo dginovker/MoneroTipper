@@ -61,10 +61,10 @@ class RPC(object):
 
         self.waitAndCheckWalletLoad()
         if os.path.isfile("locked") and attempt2 == False:
-            print("Wallet locked - waiting 30 sec and trying again")
+            print("Wallet locked - waiting 90 sec and trying again")
             os.remove("locked")
             self.kill()
-            time.sleep(30)
+            time.sleep(90)
             self.process = subprocess.Popen(args, stdout=subprocess.PIPE)
             self.waitAndCheckWalletLoad()
 
