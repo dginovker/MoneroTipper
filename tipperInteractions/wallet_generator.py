@@ -3,6 +3,7 @@ from moneroRPC.rpc import RPC
 from logger import tipper_logger
 import json, requests
 import os
+import traceback
 
 def generate_wallet_if_doesnt_exist(name, password):
     """
@@ -80,6 +81,7 @@ def generate_wallet(name, password):
 
     if wallet_exists(name):
         tipper_logger.log("Generated a wallet for " + name)
+        traceback.print_stack()
         return True
     tipper_logger.log("Failed to generate a wallet for " + name)
     return False

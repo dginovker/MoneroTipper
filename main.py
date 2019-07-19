@@ -30,7 +30,7 @@ def processMessage(subject, body, author, comment):
 
     tipper_logger.log(f'Received message: {subject} from {author.name}: {body}')
 
-    generate_wallet_if_doesnt_exist(name=author.name, password=args.password)
+    generate_wallet_if_doesnt_exist(name=author.name.lower(), password=args.password)
 
     if commentRequestsTip(body):
         replier.handle_tip_request(author, body, comment)

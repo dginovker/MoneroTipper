@@ -179,7 +179,10 @@ class ReplyHandler(object):
             walletInfo = get_info_from_wallet(wallet=senderWallet, private_info=False)
             self.reddit.redditor(author.name).message(subject="Your donation to the CCS", message=f'Unfortunately, you do not have enough funds to donate {format_decimal(amount)} XMR. You have: {walletInfo["balance"]} XMR and {walletInfo["balance_(unconfirmed)"]} XMR unconfirmed.')
         else:
-            generate_transaction(senderWallet=senderWallet, recipientAddress=general_fund_address, amount=amount, splitSize=1)
+            try:
+                generate_transaction(senderWallet=senderWallet, recipientAddress=general_fund_address, amount=amount, splitSize=1)
+            except Exception as e:
+                tipper_logger.log("Caught an error during a donation to CCS: " + e)
             self.reddit.redditor(author.name).message(subject="Your donation to the General Dev Fund", message=f'Thank you for donating {format_decimal(amount)} of your XMR balance to the CCS!\n\nYou will soon have your total donations broadcasted to the wiki :) {signature}')
             self.reddit.redditor("OsrsNeedsF2P").message(subject=f'{author.name} donated {amount} to the CCS!', message="Update table here: https://old.reddit.com/r/MoneroTipsBot/wiki/index#wiki_donating_to_the_ccs")
             tipper_logger.log(f'{author.name} donated {format_decimal(amount)} to the CCS.')
@@ -227,4 +230,4 @@ class ReplyHandler(object):
             self.reddit.redditor(author.name).message(subject="Your anonymous tip", message=res["message"] + signature)
         else:
             self.reddit.redditor(author.name).message(subject="Anonymous tip successful",  message=res["response"] + signature)
-            self.reddit.redditor(recipient).message("You have recieved an anonymous Monero tip!", message="The tipper attached the following message:\n\n" + contents + signature)
+            self.reddit.redditor(recipient).message("You have recieved an anonymous tip of " + amount + " XMR!", message="The tipper attached the following message:\n\n" + contents + signature)
