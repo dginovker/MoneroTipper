@@ -95,12 +95,13 @@ class ReplyHandler(object):
                 reply = f'{res["response"]}'
                 tipper_logger.log("The response is: " + reply)
             if res["message"] is not None:
-                self.reddit.redditor(author.name).message(subject="Your tip", message="Regarding your tip here: {comment}\n\n" + res["message"] + signature)
+                self.reddit.redditor(author.name).message(subject="Your tip", message=f"Regarding your tip here: {comment}\n\n" + res["message"] + signature)
         else:
             reply = "Nothing interesting happens.\n\n*In case you were trying to tip, I didn't understand you.*"
 
         try:
-            self.reddit.comment(str(comment)).reply(reply + signature)
+            if reply is not None:
+                self.reddit.comment(str(comment)).reply(reply + signature)
         except Exception as e:
             tipper_logger.log(e)
 
@@ -177,7 +178,7 @@ class ReplyHandler(object):
 
         if senderWallet.balance(True) + Decimal(0.00005) < Decimal(amount) or senderWallet.balance(True) == Decimal(0):
             walletInfo = get_info_from_wallet(wallet=senderWallet, private_info=False)
-            self.reddit.redditor(author.name).message(subject="Your donation to the CCS", message=f'Unfortunately, you do not have enough funds to donate {format_decimal(amount)} XMR. You have: {walletInfo["balance"]} XMR and {walletInfo["balance_(unconfirmed)"]} XMR unconfirmed.')
+            self.reddit.redditor(author.name).message(subject="Your donation to the CCS", message=f'Unfortunately, you do not have enough funds to donate - You need {format_decimal(Decimal(amount))}, you have {format_decimal(senderWallet.balance(unlocked=True))} and {format_decimal(senderWallet.balance(unlocked=False) - senderWallet.balance(unlocked=True))} still incoming.')
         else:
             try:
                 generate_transaction(senderWallet=senderWallet, recipientAddress=general_fund_address, amount=amount, splitSize=1)
@@ -185,6 +186,7 @@ class ReplyHandler(object):
                 self.reddit.redditor("OsrsNeedsF2P").message(subject=f'{author.name} donated {amount} to the CCS!', message="Update table here: https://old.reddit.com/r/MoneroTipsBot/wiki/index#wiki_donating_to_the_ccs")
                 tipper_logger.log(f'{author.name} donated {format_decimal(amount)} to the CCS.')
             except Exception as e:
+                self.reddit.redditor(author.name).message(subject="Your donation to the CCS failed", message=f'Please send the following to /u/OsrsNeedsF2P:\n\n' + str(e) + signature)
                 tipper_logger.log("Caught an error during a donation to CCS: " + str(e))
 
         rpcSender.kill()

@@ -82,10 +82,10 @@ def tip(sender, recipient, amount, password):
     tipper_logger.log("Successfully initialized wallets..")
 
     wallet_balance = Decimal(0) if senderWallet.balance(unlocked=True) == None else senderWallet.balance(unlocked=True)
-    if wallet_balance + Decimal(0.0001) < Decimal(amount):
-        tipper_logger.log("Can't send; " + str(wallet_balance) + " is < than " + str(Decimal(amount) + Decimal(0.0001)))
+    if wallet_balance + Decimal(0.00005) < Decimal(amount):
+        tipper_logger.log("Can't send; " + str(wallet_balance + Decimal(0.00005)) + " is < than " + str(Decimal(amount)))
         info["response"] = "Not enough money to send! See your private message for details."
-        info["message"] =  f'Not enough money to send! Need {format_decimal(Decimal(amount))}, you have {format_decimal(senderWallet.balance(unlocked=True), points=8)} and {format_decimal(senderWallet.balance(unlocked=False) - senderWallet.balance(unlocked=True))} still incoming.'
+        info["message"] =  f'Not enough money to send! Need {format_decimal(Decimal(amount))}, you have {format_decimal(senderWallet.balance(unlocked=True))} and {format_decimal(senderWallet.balance(unlocked=False) - senderWallet.balance(unlocked=True))} still incoming.'
     else:
         try:
             txs = generate_transaction(senderWallet=senderWallet, recipientAddress=recipientWallet.address(), amount=amount)

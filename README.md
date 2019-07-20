@@ -10,6 +10,7 @@ An on-chain, non-custodial, Reddit Monero tip bot written in Python.
 - 0.5: Better RPC handling
 - 0.6: Mainnet release
 - 0.7: Lock handle and background sync
+- 0.8: Anonymous tips and UX
 
 ## Pull Requests:
 
