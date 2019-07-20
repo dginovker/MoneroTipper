@@ -81,7 +81,6 @@ def generate_wallet(name, password):
 
     if wallet_exists(name):
         tipper_logger.log("Generated a wallet for " + name)
-        traceback.print_stack()
         return True
     tipper_logger.log("Failed to generate a wallet for " + name)
     return False

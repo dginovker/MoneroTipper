@@ -88,7 +88,7 @@ class ReplyHandler(object):
 
         if recipient is not None and amount is not None:
             tipper_logger.log(f'{author.name} is sending {recipient} {amount} XMR.')
-            generate_wallet_if_doesnt_exist(recipient.lower(), self.password)
+            generate_wallet_if_doesnt_exist(recipient.name.lower(), self.password)
 
             res = tip(sender=author.name, recipient=recipient.name, amount=amount, password=self.password)
             if res["response"] is not None:
@@ -175,17 +175,17 @@ class ReplyHandler(object):
 
         amount = Decimal(self.parse_donate_amount(subject, senderWallet.balance()))
 
-        if senderWallet.balance(True) + Decimal(0.00005) < Decimal(amount):
+        if senderWallet.balance(True) + Decimal(0.00005) < Decimal(amount) or senderWallet.balance(True) == Decimal(0):
             walletInfo = get_info_from_wallet(wallet=senderWallet, private_info=False)
             self.reddit.redditor(author.name).message(subject="Your donation to the CCS", message=f'Unfortunately, you do not have enough funds to donate {format_decimal(amount)} XMR. You have: {walletInfo["balance"]} XMR and {walletInfo["balance_(unconfirmed)"]} XMR unconfirmed.')
         else:
             try:
                 generate_transaction(senderWallet=senderWallet, recipientAddress=general_fund_address, amount=amount, splitSize=1)
+                self.reddit.redditor(author.name).message(subject="Your donation to the General Dev Fund", message=f'Thank you for donating {format_decimal(amount)} of your XMR balance to the CCS!\n\nYou will soon have your total donations broadcasted to the wiki :) {signature}')
+                self.reddit.redditor("OsrsNeedsF2P").message(subject=f'{author.name} donated {amount} to the CCS!', message="Update table here: https://old.reddit.com/r/MoneroTipsBot/wiki/index#wiki_donating_to_the_ccs")
+                tipper_logger.log(f'{author.name} donated {format_decimal(amount)} to the CCS.')
             except Exception as e:
-                tipper_logger.log("Caught an error during a donation to CCS: " + e)
-            self.reddit.redditor(author.name).message(subject="Your donation to the General Dev Fund", message=f'Thank you for donating {format_decimal(amount)} of your XMR balance to the CCS!\n\nYou will soon have your total donations broadcasted to the wiki :) {signature}')
-            self.reddit.redditor("OsrsNeedsF2P").message(subject=f'{author.name} donated {amount} to the CCS!', message="Update table here: https://old.reddit.com/r/MoneroTipsBot/wiki/index#wiki_donating_to_the_ccs")
-            tipper_logger.log(f'{author.name} donated {format_decimal(amount)} to the CCS.')
+                tipper_logger.log("Caught an error during a donation to CCS: " + str(e))
 
         rpcSender.kill()
 
