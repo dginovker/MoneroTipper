@@ -118,7 +118,7 @@ class ReplyHandler(object):
 
         amount = self.parse_withdrawl_amount(subject)
         if amount == None:
-            self.reddit.redditor(author.name).message(subject="I didn't understand your withdrawal!", message=f'You sent: "{subject}", but I couldn\'t figure out how much you wanted to send. See [this](https://www.reddit.com/r/MoneroTipsBot/wiki/index#wiki_withdrawing) guide if you need help, or click "Report a Bug" if you think there\'s a bug!' + signature)
+            self.reddit.redditor(author.name).message(subject="I didn't understand your withdrawal!", message=f'You sent: "{subject}", but I couldn\'t figure out how much you wanted to send. See [this](https://www.reddit.com/r/MoneroTipsBot/wiki/index#wiki_withdrawing) guide if you need help, or click "Report a Bug" under "Get Started"  if you think there\'s a bug!' + signature)
             return None
 
         rpcSender = RPC(port=28086, wallet_name=author.name.lower(), password=self.password)

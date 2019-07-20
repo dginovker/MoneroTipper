@@ -25,7 +25,7 @@ def get_error_response(e):
     if "of unknown code -3" in str(e):
         response += "\n\n The tipbot node might be really out of sync. Checking on it soon; /u/OsrsNeedsF2P..."
     if "not enough money" in str(e) or "tx not possible" in str(e):
-        response +="\n\n You do not have a high enough balance to cover the network fee. If you would like to manually withdraw the rest of your balance (<1 cent), you may do so by extracting your private key"
+        response +="\n\n You do not have a high enough balance to cover the network fee. If you would like to manually withdraw the rest of your balance (<1 cent), you can try to by extracting your private key"
 
     return response
 

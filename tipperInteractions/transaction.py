@@ -21,7 +21,9 @@ def generate_transaction(senderWallet, recipientAddress, amount, splitSize=6):
     # Make multiple of the same output, but in smaller chunks
     if senderWallet.balance() - Decimal(amount) < Decimal(0.0005):
         tipper_logger.log("Sending sweep_all transaction...")
-        return str(senderWallet.sweep_all(recipientAddress, priority=prio.UNIMPORTANT))
+        temp = str(senderWallet.sweep_all(recipientAddress, priority=prio.UNIMPORTANT)[0][0])
+        print("Temp is " + temp)
+        return temp
 
     for i in range(0, splitSize - 1):
         sum += float(amount)/splitSize
@@ -31,4 +33,4 @@ def generate_transaction(senderWallet, recipientAddress, amount, splitSize=6):
     transactions.append((recipientAddress, Decimal(float(amount) - sum)))
 
     tipper_logger.log("About to broadcast transaction..")
-    return str(senderWallet.transfer_multiple(transactions, priority=prio.UNIMPORTANT))
+    return str(senderWallet.transfer_multiple(transactions, priority=prio.UNIMPORTANT)[0].hash)
