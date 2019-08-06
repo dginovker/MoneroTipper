@@ -42,6 +42,10 @@ def tip(sender, recipient, amount, password):
     :return info: dictionary containing txid, a private message and a public response
     """
 
+    if recipient == "automoderator":
+        tipper_logger.log("Changing recipient to MoneroTipsBot to prevent abuse")
+        recipient = "monerotipsbot"
+
     info = {
         "txid" : "None",
         "response" : "None",

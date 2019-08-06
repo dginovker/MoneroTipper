@@ -206,6 +206,8 @@ class ReplyHandler(object):
         m = re.search('anonymous tip (.+) .+ xmr', subject.lower())
         if m:
             generate_wallet_if_doesnt_exist(m.group(1).lower(), self.password)
+            if m.group(1) == "automoderator":
+                return "monerotripsbot"
             return m.group(1)
 
 
