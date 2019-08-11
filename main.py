@@ -15,11 +15,8 @@ replier = ReplyHandler(reddit=reddit, password=args.password)
 
 
 def commentRequestsTip(body):
-    m = re.search('/u/monerotipsbot (tip )?([\d\.]+?)( )?xmr', str(body).lower())
-    if m:
-        return True
-    return False
-
+    is_monero_tip = re.search('/u/monerotipsbot (tip )?([\d\.]+?)( )?xmr', str(body).lower())
+    return is_monero_tip
 
 def processMessage(subject, body, author, comment):
     """
