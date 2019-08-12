@@ -41,7 +41,6 @@ def tip(sender, recipient, amount, password):
     :param amount: amount to send in XMR
     :return info: dictionary containing txid, a private message and a public response
     """
-
     info = {
         "txid" : "None",
         "response" : "None",
@@ -80,7 +79,6 @@ def tip(sender, recipient, amount, password):
         return info
 
     tipper_logger.log("Successfully initialized wallets..")
-
     wallet_balance = Decimal(0) if senderWallet.balance(unlocked=True) == None else senderWallet.balance(unlocked=True)
     if wallet_balance + Decimal(0.00005) < Decimal(amount):
         tipper_logger.log("Can't send; " + str(wallet_balance + Decimal(0.00005)) + " is < than " + str(Decimal(amount)))

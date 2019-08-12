@@ -1,18 +1,10 @@
-from tipperInteractions.reply import *
+from tipperInteractions.reply import ReplyHandler, generate_wallet_if_doesnt_exist
+import re
 from argparse import ArgumentParser
 from logger import tipper_logger
 import datetime
 import praw
 import traceback
-
-
-parser = ArgumentParser()
-parser.add_argument("-p", "--password", dest="password")
-args = parser.parse_args()
-
-reddit = praw.Reddit('tipbot', user_agent='Monero non-custodial tipper: v0.8 (by /u/OsrsNeedsF2P)')
-replier = ReplyHandler(reddit=reddit, password=args.password)
-
 
 def commentRequestsTip(body):
     is_monero_tip = re.search('/u/monerotipsbot (tip )?([\d\.]+?)( )?xmr', str(body).lower())
@@ -77,4 +69,11 @@ def main():
 
 
 if __name__ == "__main__":
+    parser = ArgumentParser()
+    parser.add_argument("-p", "--password", dest="password")
+    args = parser.parse_args()
+
+    reddit = praw.Reddit('tipbot', user_agent='Monero non-custodial tipper: v0.8 (by /u/OsrsNeedsF2P)')
+    replier = ReplyHandler(reddit=reddit, password=args.password)
+
     main()
