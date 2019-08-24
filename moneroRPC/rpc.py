@@ -36,7 +36,7 @@ class RPC(object):
     wallet_finished = False
     locked = False
 
-    def __init__(self, port, wallet_name=None, rpc_location="monero/monero-wallet-rpc", password="\"\"", testnet=False, wallet_dir=".", disable_rpc_login=True, load_timeout=300, attempt2=False):
+    def __init__(self, port, wallet_name=None, rpc_location="monero/monero-wallet-rpc", password="\"\"", testnet=False, wallet_dir=".", disable_rpc_login=True, load_timeout=300):
         self.port = port
         self.wallet_name = wallet_name
         self.rpc_location = rpc_location
@@ -60,7 +60,7 @@ class RPC(object):
         self.process = subprocess.Popen(args, stdout=subprocess.PIPE)
 
         self.waitAndCheckWalletLoad()
-        if os.path.isfile("locked") and attempt2 == False:
+        if os.path.isfile("locked"):
             print("Wallet locked - waiting 90 sec and trying again")
             os.remove("locked")
             self.kill()
@@ -70,22 +70,19 @@ class RPC(object):
 
 
     def parseWalletOutput(self):
-        if (self.wallet_finished == True):
-            return True
-
         rpc_out = self.process.stdout.readline()
-        tipper_logger.log(rpc_out)
+        tipper_logger.log("RPC:" + rpc_out)
 
-        if "starting wallet rpc server" in str(rpc_out.lower()):
-            tipper_logger.log("Found out the RPC has started")
-            self.wallet_finished = True
         if "error" in str(rpc_out.lower()):
             if "locking fd" in str(rpc_out.lower()):
                 tipper_logger.log("The wallet is already open (that's likely fine..)")
-                open("locked", "w").close();
+                open("locked", "w").close()
             else:
-                tipper_logger.log("Found out the RPC has failed")
-            self.wallet_finished = True
+                tipper_logger.log("Found out the RPC has an error (FAIL)")
+            return True
+        if "starting wallet rpc server" in str(rpc_out.lower()):
+            tipper_logger.log("Found out the RPC has started (SUCCESS)")
+            return True
 
         return self.wallet_finished
 

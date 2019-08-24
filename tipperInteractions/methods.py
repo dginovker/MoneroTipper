@@ -11,7 +11,7 @@ import os
 
 
 
-class ReplyHandler(object):
+class MethodHandler(object):
     """
     Handles the different replies and interactions possible with the bot
 

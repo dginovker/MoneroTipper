@@ -1,4 +1,4 @@
-from tipperInteractions.reply import *
+from tipperInteractions.methods import *
 from argparse import ArgumentParser
 from logger import tipper_logger
 import datetime
@@ -11,7 +11,7 @@ parser.add_argument("-p", "--password", dest="password")
 args = parser.parse_args()
 
 reddit = praw.Reddit('tipbot', user_agent='Monero non-custodial tipper: v0.8 (by /u/OsrsNeedsF2P)')
-replier = ReplyHandler(reddit=reddit, password=args.password)
+replier = MethodHandler(reddit=reddit, password=args.password)
 
 
 def commentRequestsTip(body):
