@@ -1,12 +1,13 @@
 from decimal import Decimal
 from monero.wallet import Wallet
 from monero.backends.jsonrpc import JSONRPCWallet
-from moneroRPC.rpc import RPC
+from wallet_rpc.rpc import RPC
 from logger import tipper_logger
 from helper import *
 import time
 
 from tipperInteractions.transaction import generate_transaction
+from wallet_rpc.safe_wallet import safe_wallet
 
 
 def get_error_response(e):
@@ -54,29 +55,25 @@ def tip(sender, recipient, amount, password):
 
     tipper_logger.log(sender + " is trying to send " + recipient + " " + amount + " XMR")
 
-    recipient = str(recipient)
     sender = str(sender)
-    rpcPrecipient = None
-    rpcPsender = None
+    recipient = str(recipient)
+    sender_rpc_n_wallet = None
+    recipient_rpc_n_wallet = None
     sender_port = 28088
     recipient_port = 28089
 
     try:
-        rpcPsender = RPC(port=sender_port, wallet_name=sender.lower(), password=password)
+        sender_rpc_n_wallet = safe_wallet(port=sender_port, wallet_name=sender.lower(), password=password)
         if sender.lower() != recipient.lower():
-            rpcPrecipient = RPC(port=recipient_port, wallet_name=recipient.lower(), password=password)
+            recipient_rpc_n_wallet = safe_wallet(port=recipient_port, wallet_name=recipient.lower(), password=password)
         else:
-            rpcPrecipient = rpcPsender
+            recipient_rpc_n_wallet = sender_rpc_n_wallet
             recipient_port = sender_port
-
-        senderWallet = Wallet(JSONRPCWallet(port=sender_port, password=password, timeout=300))
-        recipientWallet = Wallet(JSONRPCWallet(port=recipient_port, password=password, timeout=300))
-
         tipper_logger.log("Wallets loaded!!")
 
     except Exception as e:
-        rpcPsender.kill()
-        rpcPrecipient.kill()
+        sender_rpc_n_wallet.kill_rpc()
+        recipient_rpc_n_wallet.kill_rpc()
         tipper_logger.log("Failed to open wallets for " + sender + " and " + recipient + ". Message: ")
         tipper_logger.log(e)
         info["response"] = "Could not open wallets properly! Perhaps my node is out of sync? (Try again shortly).\n\n^/u/OsrsNeedsF2P!!"
@@ -85,14 +82,14 @@ def tip(sender, recipient, amount, password):
 
     tipper_logger.log("Successfully initialized wallets..")
 
-    wallet_balance = Decimal(0) if senderWallet.balance(unlocked=True) == None else senderWallet.balance(unlocked=True)
+    wallet_balance = Decimal(0) if sender_rpc_n_wallet.wallet.balance(unlocked=True) == None else sender_rpc_n_wallet.wallet.balance(unlocked=True)
     if wallet_balance + Decimal(0.00005) < Decimal(amount):
         tipper_logger.log("Can't send; " + str(wallet_balance + Decimal(0.00005)) + " is < than " + str(Decimal(amount)))
         info["response"] = "Not enough money to send! See your private message for details."
-        info["message"] =  f'Not enough money to send! Need {format_decimal(Decimal(amount))}, you have {format_decimal(senderWallet.balance(unlocked=True))} and {format_decimal(senderWallet.balance(unlocked=False) - senderWallet.balance(unlocked=True))} still incoming.'
+        info["message"] =  f'Not enough money to send! Need {format_decimal(Decimal(amount))}, you have {format_decimal(sender_rpc_n_wallet.wallet.balance(unlocked=True))} and {format_decimal(sender_rpc_n_wallet.wallet.balance(unlocked=False) - sender_rpc_n_wallet.wallet.balance(unlocked=True))} still incoming.'
     else:
         try:
-            txs = generate_transaction(senderWallet=senderWallet, recipientAddress=recipientWallet.address(), amount=amount)
+            txs = generate_transaction(senderWallet=sender_rpc_n_wallet.wallet, recipientAddress=recipient_rpc_n_wallet.wallet.address(), amount=amount)
 
             info["txid"] = str(txs)
             info["response"] = "Successfully tipped /u/" + recipient + " " + amount + " XMR! [^(txid)](https://xmrchain.com/search?value=" + str(txs) + ")"
@@ -102,8 +99,8 @@ def tip(sender, recipient, amount, password):
             info["response"] = None
             info["message"] = get_error_response(e)
 
-    rpcPsender.kill()
-    rpcPrecipient.kill()
+    sender_rpc_n_wallet.kill_rpc()
+    recipient_rpc_n_wallet.kill_rpc()
 
     tipper_logger.log("Tip function completed without crashing")
 

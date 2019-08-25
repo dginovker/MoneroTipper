@@ -1,5 +1,5 @@
 from helper import monerod_port
-from moneroRPC.rpc import RPC
+from wallet_rpc.rpc import RPC
 from logger import tipper_logger
 import json, requests
 import os

@@ -72,7 +72,6 @@ def main():
             tipper_logger.log("Blame " + author)
             traceback.print_exc()
             reddit.redditor(author).message(subject="Something broke!!", message="If you tried to do something, please send the following error to /u/OsrsNeedsF2P:\n\n" + str(e))
-            author = None
         except Exception as e:
             tipper_logger.log("Just wow." + str(e))
         main()

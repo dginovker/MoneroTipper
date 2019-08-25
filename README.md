@@ -11,6 +11,14 @@ An on-chain, non-custodial, Reddit Monero tip bot written in Python.
 - 0.6: Mainnet release
 - 0.7: Lock handle and background sync
 - 0.8: Anonymous tips and UX
+- 0.9: Security and RPC refactor
+
+## How to run (Testnet)
+
+- Have praw.ini in main dir
+- Have Monero software in `/monero` dir
+- Run `monerod`
+- Run `main.py -p <password>`
 
 ## Credits:
 

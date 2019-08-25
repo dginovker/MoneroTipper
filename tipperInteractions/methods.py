@@ -1,3 +1,5 @@
+from pprint import pprint
+
 from tipperInteractions.get_info import *
 from tipperInteractions.wallet_generator import *
 from tipperInteractions.withdraw import *
@@ -95,7 +97,7 @@ class MethodHandler(object):
                 reply = f'{res["response"]}'
                 tipper_logger.log("The response is: " + reply)
             if res["message"] is not None:
-                self.reddit.redditor(author.name).message(subject="Your tip", message=f"Regarding your tip here: {comment}\n\n" + res["message"] + signature)
+                self.reddit.redditor(author.name).message(subject="Your tip", message=f"Regarding your tip here: {comment.context}\n\n" + res["message"] + signature)
         else:
             reply = "Nothing interesting happens.\n\n*In case you were trying to tip, I didn't understand you.*"
 
@@ -121,12 +123,11 @@ class MethodHandler(object):
             self.reddit.redditor(author.name).message(subject="I didn't understand your withdrawal!", message=f'You sent: "{subject}", but I couldn\'t figure out how much you wanted to send. See [this](https://www.reddit.com/r/MoneroTipsBot/wiki/index#wiki_withdrawing) guide if you need help, or click "Report a Bug" under "Get Started"  if you think there\'s a bug!' + signature)
             return None
 
-        rpcSender = RPC(port=28086, wallet_name=author.name.lower(), password=self.password)
-        senderWallet = Wallet(JSONRPCWallet(port=28086, password=self.password, timeout=300))
+        sender_rpc_n_wallet = safe_wallet(port=28086, wallet_name=author.name.lower(), password=self.password)
 
-        res = handle_withdraw(senderWallet, author.name, contents, amount)
+        res = handle_withdraw(sender_rpc_n_wallet.wallet, author.name, contents, amount)
 
-        rpcSender.kill()
+        sender_rpc_n_wallet.kill_rpc()
 
         self.reddit.redditor(author.name).message(subject="Your withdrawl", message=res + signature)
         tipper_logger.log("Told " + author.name + " their withdrawl status (" + res + ")")
@@ -170,18 +171,15 @@ class MethodHandler(object):
         :param contents: Message body
         """
 
-        rpcSender = RPC(port=28090, wallet_name=author.name.lower(), password=self.password)
+        sender_rpc_n_wallet = safe_wallet(port=28090, wallet_name=author.name.lower(), password=self.password)
 
-        senderWallet = Wallet(JSONRPCWallet(port=28090, password=self.password))
+        amount = Decimal(self.parse_donate_amount(subject, sender_rpc_n_wallet.wallet.balance()))
 
-        amount = Decimal(self.parse_donate_amount(subject, senderWallet.balance()))
-
-        if senderWallet.balance(True) + Decimal(0.00005) < Decimal(amount) or senderWallet.balance(True) == Decimal(0):
-            walletInfo = get_info_from_wallet(wallet=senderWallet, private_info=False)
-            self.reddit.redditor(author.name).message(subject="Your donation to the CCS", message=f'Unfortunately, you do not have enough funds to donate - You need {format_decimal(Decimal(amount))}, you have {format_decimal(senderWallet.balance(unlocked=True))} and {format_decimal(senderWallet.balance(unlocked=False) - senderWallet.balance(unlocked=True))} still incoming.')
+        if sender_rpc_n_wallet.wallet.balance(True) + Decimal(0.00005) < Decimal(amount) or sender_rpc_n_wallet.wallet.balance(True) == Decimal(0):
+            self.reddit.redditor(author.name).message(subject="Your donation to the CCS", message=f'Unfortunately, you do not have enough funds to donate - You need {format_decimal(Decimal(amount))}, you have {format_decimal(sender_rpc_n_wallet.wallet.balance(unlocked=True))} and {format_decimal(sender_rpc_n_wallet.wallet.balance(unlocked=False) - sender_rpc_n_wallet.wallet.balance(unlocked=True))} still incoming.')
         else:
             try:
-                generate_transaction(senderWallet=senderWallet, recipientAddress=general_fund_address, amount=amount, splitSize=1)
+                generate_transaction(senderWallet=sender_rpc_n_wallet.wallet, recipientAddress=general_fund_address, amount=amount, splitSize=1)
                 self.reddit.redditor(author.name).message(subject="Your donation to the General Dev Fund", message=f'Thank you for donating {format_decimal(amount)} of your XMR balance to the CCS!\n\nYou will soon have your total donations broadcasted to the wiki :) {signature}')
                 self.reddit.redditor("OsrsNeedsF2P").message(subject=f'{author.name} donated {amount} to the CCS!', message="Update table here: https://old.reddit.com/r/MoneroTipsBot/wiki/index#wiki_donating_to_the_ccs")
                 tipper_logger.log(f'{author.name} donated {format_decimal(amount)} to the CCS.')
@@ -189,12 +187,11 @@ class MethodHandler(object):
                 self.reddit.redditor(author.name).message(subject="Your donation to the CCS failed", message=f'Please send the following to /u/OsrsNeedsF2P:\n\n' + str(e) + signature)
                 tipper_logger.log("Caught an error during a donation to CCS: " + str(e))
 
-        rpcSender.kill()
+        sender_rpc_n_wallet.kill_rpc()
 
 
     def parse_anontip_amount(self, subject):
         """
-
         :param subject: in format "Anonymous tip USER AMOUNT xmr"
         """
         m = re.search('anonymous tip .+ (.+) xmr', subject.lower())
@@ -203,11 +200,14 @@ class MethodHandler(object):
 
 
     def parse_anontip_recipient(self, subject):
+        """
+        :param subject: in format "Anonymous tip USER AMOUNT xmr"
+        """
         m = re.search('anonymous tip (.+) .+ xmr', subject.lower())
         if m:
             generate_wallet_if_doesnt_exist(m.group(1).lower(), self.password)
             if m.group(1) == "automoderator":
-                return "monerotripsbot"
+                return "monerotipsbot"
             return m.group(1)
 
 
@@ -222,7 +222,6 @@ class MethodHandler(object):
         
         recipient = self.parse_anontip_recipient(subject)
         amount = self.parse_anontip_amount(subject)
-        reply = None
 
         if recipient is None or amount is None:
             self.reddit.redditor(author.name).message(subject="Your anonymous tip", message="Nothing interesting happens.\n\n*Your recipient or amount wasn't clear to me*" + signature)
