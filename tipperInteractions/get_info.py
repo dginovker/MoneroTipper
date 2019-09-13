@@ -1,9 +1,7 @@
-from monero.wallet import Wallet
-from monero.backends.jsonrpc import JSONRPCWallet
-from moneroRPC.rpc import RPC
 from helper import *
 
 from tipperInteractions.wallet_generator import generate_wallet_if_doesnt_exist
+from wallet_rpc.safe_wallet import safe_wallet
 
 
 def get_info_as_string(wallet_name, private_info=False, password="\"\""):
@@ -31,13 +29,11 @@ def get_info(wallet_name, private_info=False, password="\"\"", port=28088, timeo
 
     generate_wallet_if_doesnt_exist(wallet_name, password)
 
-    rpcP = RPC(port=port, wallet_name=wallet_name, password=password)
+    rpc_n_wallet = safe_wallet(port=port, wallet_name=wallet_name, password=password, timeout=timeout)
 
-    wallet = Wallet(JSONRPCWallet(port=port, password=password, timeout=timeout))
+    info = get_info_from_wallet(rpc_n_wallet.wallet, wallet_name, private_info)
 
-    info = get_info_from_wallet(wallet, wallet_name, private_info)
-
-    rpcP.kill()
+    rpc_n_wallet.kill_rpc()
     return info
 
 
@@ -45,11 +41,11 @@ def get_info_from_wallet(wallet, wallet_name="", private_info=False):
     """
     Gets a tuple of wallet information, based on the wallet passed in
 
-    :param wallet: Wallet to extract information from
+    :param wallet_name: Username/wallet name
+    :param wallet: Wallet object to extract information from
     :param private_info: A boolean that determines whether or not to add the user's private info
     :return: Returns a tuple containing the user's address, balance, unconfirmed balance, and if private_info is True then their private mnemonic
     """
-
     return {
         "address" : str(wallet.address()),
         "balance" : format_decimal(wallet.balance(unlocked=True)),
