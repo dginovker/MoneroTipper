@@ -1,0 +1,2 @@
+monero-python
+praw
