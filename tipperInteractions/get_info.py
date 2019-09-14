@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from helper import *
 
 from tipperInteractions.wallet_generator import generate_wallet_if_doesnt_exist
@@ -37,6 +39,25 @@ def get_info(wallet_name, private_info=False, password="\"\"", port=28088, timeo
     return info
 
 
+def get_balance(wallet, confirmed):
+    """
+
+    :param wallet: Wallet to check balance
+    :param confirmed: Getting confirmed balance or not
+    :return: Returns either confirmed or unconfirmed balance, with additional note if balance is too low to present but exists
+    """
+    conf_balance = wallet.balance(unlocked=True)
+    unconf_balance = wallet.balance(unlocked=False) - wallet.balance(unlocked=True)
+    dust_message = ""
+
+    if conf_balance > Decimal(0) and conf_balance < 0.0001:
+        dust_message = "(Miniscule balance exists, export private key to view it)"
+    if unconf_balance > Decimal(0) and unconf_balance < 0.0001:
+        dust_message = "(Miniscule unconf balance exists, export private key to view it)"
+
+    return format_decimal(conf_balance) + dust_message if confirmed \
+        else format_decimal(unconf_balance) + dust_message
+
 def get_info_from_wallet(wallet, wallet_name="", private_info=False):
     """
     Gets a tuple of wallet information, based on the wallet passed in
@@ -48,7 +69,7 @@ def get_info_from_wallet(wallet, wallet_name="", private_info=False):
     """
     return {
         "address" : str(wallet.address()),
-        "balance" : format_decimal(wallet.balance(unlocked=True)),
+        "balance" : get_balance(wallet, True), #format_decimal(wallet.balance(unlocked=True)),
         "balance_(unconfirmed)" : str(format_decimal(wallet.balance(unlocked=False) - wallet.balance(unlocked=True))),
         "seed" : "Private mnemonic seed: " + wallet.seed().phrase  + "\n\nRestore height (optional): " + open("wallets/" + wallet_name + ".height", "r").read() if private_info
             else "If you would like your **private** info, click [here](https://www.reddit.com/r/MoneroTipsBot/wiki/index#wiki_extracting_your_private_key)"
