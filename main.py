@@ -1,4 +1,5 @@
 from tipperInteractions.comment_parse import *
+from tipperInteractions.methods import *
 from argparse import ArgumentParser
 from logger import tipper_logger
 import datetime
