@@ -7,3 +7,4 @@ __pycache__/
 venv/
 logs/*
 monero/*
+tests/_trial_temp/
