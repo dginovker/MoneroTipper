@@ -1,4 +1,3 @@
-from tipperInteractions.reply import ReplyHandler, generate_wallet_if_doesnt_exist
 from tipperInteractions.methods import *
 from argparse import ArgumentParser
 from logger import tipper_logger
@@ -60,7 +59,7 @@ def main():
             tipper_logger.log("Main error: " + str(e))
             tipper_logger.log("Blame " + author)
             traceback.print_exc()
-            reddit.redditor(author).message(subject="Something broke!!", message="If you tried to do something, please send the following error to /u/OsrsNeedsF2P:\n\n" + str(e))
+            reddit.redditor(author).message(subject="Something broke!!", message="If you tried to do something, please send the following error to /u/OsrsNeedsF2P:\n\n" + str(e) + signature)
         except Exception as e:
             tipper_logger.log("Just wow." + str(e))
         main()
@@ -73,6 +72,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     reddit = praw.Reddit('tipbot', user_agent='Monero non-custodial tipper: v0.8 (by /u/OsrsNeedsF2P)')
-    replier = ReplyHandler(reddit=reddit, password=args.password)
+    replier = MethodHandler(reddit=reddit, password=args.password)
 
     main()
