@@ -1,10 +1,4 @@
-from decimal import Decimal
-from monero.wallet import Wallet
-from monero.backends.jsonrpc import JSONRPCWallet
-from wallet_rpc.rpc import RPC
 from logger import tipper_logger
-from helper import *
-import time
 
 from tipperInteractions.transaction import generate_transaction
 from wallet_rpc.safe_wallet import safe_wallet
@@ -82,23 +76,16 @@ def tip(sender, recipient, amount, password):
 
     tipper_logger.log("Successfully initialized wallets..")
 
-    wallet_balance = Decimal(0) if sender_rpc_n_wallet.wallet.balance(unlocked=True) == None else sender_rpc_n_wallet.wallet.balance(unlocked=True)
+    try:
+        txs = generate_transaction(senderWallet=sender_rpc_n_wallet.wallet, recipientAddress=recipient_rpc_n_wallet.wallet.address(), amount=amount)
 
-    if wallet_balance + Decimal(0.00005) < Decimal(amount):
-        tipper_logger.log("Can't send; " + str(wallet_balance + Decimal(0.00005)) + " is < than " + str(Decimal(amount)))
-        info["response"] = "Not enough money to send! See your private message for details."
-        info["message"] =  f'Not enough money to send! Need {format_decimal(Decimal(amount))}, you have {format_decimal(sender_rpc_n_wallet.wallet.balance(unlocked=True))} and {format_decimal(sender_rpc_n_wallet.wallet.balance(unlocked=False) - sender_rpc_n_wallet.wallet.balance(unlocked=True))} still incoming.'
-    else:
-        try:
-            txs = generate_transaction(senderWallet=sender_rpc_n_wallet.wallet, recipientAddress=recipient_rpc_n_wallet.wallet.address(), amount=amount)
-
-            info["txid"] = str(txs)
-            info["response"] = "Successfully tipped /u/" + recipient + " " + amount + " XMR! [^(txid)](https://xmrchain.com/search?value=" + str(txs) + ")"
-            tipper_logger.log("Successfully sent tip")
-        except Exception as e:
-            tipper_logger.log(e)
-            info["response"] = None
-            info["message"] = get_error_response(e)
+        info["txid"] = str(txs)
+        info["response"] = "Successfully tipped /u/" + recipient + " " + amount + " XMR! [^(txid)](https://xmrchain.com/search?value=" + str(txs) + ")"
+        tipper_logger.log("Successfully sent tip")
+    except Exception as e:
+        tipper_logger.log(e)
+        info["response"] = None
+        info["message"] = get_error_response(e)
 
     sender_rpc_n_wallet.kill_rpc()
     recipient_rpc_n_wallet.kill_rpc()
