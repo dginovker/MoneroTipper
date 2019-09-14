@@ -29,8 +29,8 @@ def main():
                     #time.sleep(1)
                     start = int(round(time.time() * 1000))
                     print("Opening " + i + "'s wallet")
-                    with HiddenPrints():
-                        get_info(i, False, args.password, port=28444, timeout=60)
+                    #with HiddenPrints():
+                    get_info(i, False, args.password, port=28444, timeout=60)
                     if int(round(time.time()*1000))-start > 50000:
                         print("Warn: " + i + "'s wallet is likely unsynced")
                     #print("Ran for " + str(int(round(time.time() * 1000)) - start) + " - Closed " + i + "'s wallet\n*************************\n")
