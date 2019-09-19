@@ -189,7 +189,7 @@ class MethodHandler(object):
         """
         m = re.search('anonymous tip .+ (.+) (m)?xmr', subject.lower())
         if m:
-            return m.group(1)
+            return Decimal(m.group(1))/1000 if m.lastindex == 2 else m.group(1)
 
 
     def parse_anontip_recipient(self, subject):
