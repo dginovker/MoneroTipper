@@ -1,5 +1,3 @@
-from pprint import pprint
-
 from tipperInteractions.get_info import *
 from tipperInteractions.wallet_generator import *
 from tipperInteractions.withdraw import *
@@ -7,9 +5,7 @@ from tipperInteractions.tip import *
 from helper import *
 from decimal import Decimal
 from logger import tipper_logger
-import traceback
 import re
-import os
 
 
 
@@ -53,9 +49,9 @@ class MethodHandler(object):
         :return: An amount, in XMR, that the bot will tip
         """
 
-        m = re.search('/u/monerotipsbot (tip )?([\d\.]+?)( )?xmr', str(body).lower())
+        m = re.search('/u/monerotipsbot (tip )?([\d\.]+?)( )?(m)?xmr', str(body).lower())
         if m:
-            return m.group(2)
+            return Decimal(m.group(2))/1000 if m.lastindex == 3 else m.group(2) #Divide by 1000 if mXMR
         return None
 
 
@@ -67,9 +63,9 @@ class MethodHandler(object):
         :return: Ann amount, in XMR, that the bot will withdraw
         """
 
-        m = re.search('withdraw ([\d\.]+?) (t)?xmr', str(subject).lower())
+        m = re.search('withdraw ([\d\.]+?) (m)?xmr', str(subject).lower())
         if m:
-            return m.group(1)
+            return Decimal(m.group(1))/1000 if m.lastindex == 2 else Decimal(m.group(1))
         return None
 
 
@@ -153,9 +149,9 @@ class MethodHandler(object):
         :param senderBalance: Their current balance, used to calculate when sending a percentage
         :return: Final amount in XMR they wish to donate
         """
-        m = re.search('donate (.+) xmr', subject.lower())
+        m = re.search('donate (.+) (m)?xmr', subject.lower())
         if m:
-            return m.group(1)
+            return Decimal(m.group(1))/1000 if m.lastindex == 2 else m.group(1)
         m = re.search('donate (.+)% of my balance', subject.lower())
         if m:
             return float(m.group(1))*float(senderBalance)/100
@@ -191,7 +187,7 @@ class MethodHandler(object):
         """
         :param subject: in format "Anonymous tip USER AMOUNT xmr"
         """
-        m = re.search('anonymous tip .+ (.+) xmr', subject.lower())
+        m = re.search('anonymous tip .+ (.+) (m)?xmr', subject.lower())
         if m:
             return m.group(1)
 
@@ -200,7 +196,7 @@ class MethodHandler(object):
         """
         :param subject: in format "Anonymous tip USER AMOUNT xmr"
         """
-        m = re.search('anonymous tip (.+) .+ xmr', subject.lower())
+        m = re.search('anonymous tip (.+) .+ (m)?xmr', subject.lower())
         if m:
             generate_wallet_if_doesnt_exist(m.group(1).lower(), self.password)
             if m.group(1) == "automoderator":

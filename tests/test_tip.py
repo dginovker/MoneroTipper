@@ -1,6 +1,7 @@
 import unittest
 from decimal import Decimal
 import decimal
+
 try:
     from unittest.mock import patch, Mock, MagicMock
 except ImportError:

@@ -1,4 +1,4 @@
-from tipperInteractions.methods import *
+from tipperInteractions.comment_parse import *
 from argparse import ArgumentParser
 from logger import tipper_logger
 import datetime
@@ -6,7 +6,7 @@ import praw
 import traceback
 
 def commentRequestsTip(body):
-    is_monero_tip = re.search('/u/monerotipsbot (tip )?([\d\.]+?)( )?xmr', str(body).lower())
+    is_monero_tip = re.search('/u/monerotipsbot (tip )?([\d\.]+?)( )?(m)?xmr', str(body).lower())
     return is_monero_tip
 
 def processMessage(subject, body, author, comment):
