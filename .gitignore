@@ -4,6 +4,7 @@ tipperInteractions/__pycache__/
 wallets/
 praw.ini
 __pycache__/
+tests/_trial_temp/
 venv/
 logs/*
 monero/*
