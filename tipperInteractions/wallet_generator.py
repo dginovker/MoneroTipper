@@ -12,7 +12,6 @@ def generate_wallet_if_doesnt_exist(name, password):
 
     :param name: Name of user generating the wallet
     :param password: Password for the user wallet
-    :param testnet: True if on testnet
     :return: True if a wallet was generated, False otherwise
     """
 

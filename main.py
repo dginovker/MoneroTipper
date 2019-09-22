@@ -1,5 +1,4 @@
 from tipperInteractions.comment_parse import *
-from tipperInteractions.methods import *
 from argparse import ArgumentParser
 from logger import tipper_logger
 import datetime
@@ -80,6 +79,6 @@ if __name__ == "__main__":
         helper.testnet = True
     else:
         reddit = praw.Reddit('tipbot', user_agent='Monero non-custodial tipper: v0.9 (by /u/OsrsNeedsF2P)')
-    replier = MethodHandler(reddit=reddit, password=args.password, testnet=args.testnet)
+    replier = MethodHandler(reddit=reddit, password=args.password)
 
     main()

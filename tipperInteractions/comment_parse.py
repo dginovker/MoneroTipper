@@ -18,12 +18,10 @@ class MethodHandler(object):
 
     reddit = None
     password = None
-    testnet = False
 
-    def __init__(self, reddit, password="\"\"", testnet=False):
+    def __init__(self, reddit, password="\"\""):
         self.reddit = reddit
         self.password = password
-        self.testnet = testnet
 
 
     def get_tip_recipient(self, comment):
