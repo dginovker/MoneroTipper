@@ -10,8 +10,11 @@ precision = 4
 # General dev fund holder address
 general_fund_address = '46zarwyDHd8F2GXxVuETVz3wKvEnWic634eYykBS9Q6UbmQfm2y7XRt45KzF6rGT1Pj9YTp55iHRKXZsR7AaxDZM7XqtYRK'
 
-# Port for monerod (currently testnet)
+# Port for monerod (Mainnet)
 monerod_port = 18081
+
+# If we are on testnet
+testnet = False
 
 
 # TODO for sometime in the future..
