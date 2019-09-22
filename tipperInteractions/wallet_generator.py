@@ -3,13 +3,16 @@ from wallet_rpc.rpc import RPC
 from logger import tipper_logger
 import json, requests
 import os
-import traceback
+
+import helper
 
 def generate_wallet_if_doesnt_exist(name, password):
     """
     Generates a new user wallet, if the user doesn't already have one
 
     :param name: Name of user generating the wallet
+    :param password: Password for the user wallet
+    :param testnet: True if on testnet
     :return: True if a wallet was generated, False otherwise
     """
 
@@ -27,8 +30,8 @@ def wallet_exists(name):
     :return: True if found, False otherwise
     """
 
-    name = str(name)
-    return os.path.isfile('./wallets/' + name) or os.path.isfile('./wallets/' + name + '.keys') or os.path.isfile('./wallets/' + name + '.address.txt')
+    path = "./wallets/" + ("testnet/" if helper.testnet else "mainnet/") + str(name)
+    return os.path.isfile(path)
 
 
 def generate_wallet(name, password):
@@ -41,7 +44,7 @@ def generate_wallet(name, password):
     """
 
     name = str(name)
-    rpcP = RPC(port=28087, wallet_dir=".", password=password)
+    rpcP = RPC(port=28087, password=password)
 
     rpc_url = "http://127.0.0.1:28087/json_rpc"
     function_url = "http://127.0.0.1:" + str(monerod_port) + "/get_height"
@@ -67,7 +70,7 @@ def generate_wallet(name, password):
     try:
         blockheight_response = requests.post(
             function_url, headers=headers).json()
-        print(blockheight_response["height"] - 10, file=open('wallets/' + name + ".height", 'w')) # DON'T CHANGE THIS DUMDUM
+        print(blockheight_response["height"] - 10, file=open('wallets/' + ("testnet/" if helper.testnet else "mainnet/") + name + ".height", 'w')) # DON'T CHANGE THIS DUMDUM
     except Exception as e:
         tipper_logger.log(str(e))
 

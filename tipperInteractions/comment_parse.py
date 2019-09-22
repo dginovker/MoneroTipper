@@ -18,10 +18,12 @@ class MethodHandler(object):
 
     reddit = None
     password = None
+    testnet = False
 
-    def __init__(self, reddit, password="\"\""):
+    def __init__(self, reddit, password="\"\"", testnet=False):
         self.reddit = reddit
         self.password = password
+        self.testnet = testnet
 
 
     def get_tip_recipient(self, comment):
@@ -51,7 +53,7 @@ class MethodHandler(object):
 
         m = re.search('/u/monerotipsbot (tip )?([\d\.]+?)( )?(m)?xmr', str(body).lower())
         if m:
-            return Decimal(m.group(2))/1000 if m.lastindex == 3 else m.group(2) #Divide by 1000 if mXMR
+            return str(Decimal(m.group(2))/1000) if m.lastindex == 3 else m.group(2) #Divide by 1000 if mXMR
         return None
 
 
@@ -65,7 +67,7 @@ class MethodHandler(object):
 
         m = re.search('withdraw ([\d\.]+?) (m)?xmr', str(subject).lower())
         if m:
-            return Decimal(m.group(1))/1000 if m.lastindex == 2 else Decimal(m.group(1))
+            return str(Decimal(m.group(1))/1000) if m.lastindex == 2 else Decimal(m.group(1))
         return None
 
 
@@ -151,7 +153,7 @@ class MethodHandler(object):
         """
         m = re.search('donate (.+) (m)?xmr', subject.lower())
         if m:
-            return Decimal(m.group(1))/1000 if m.lastindex == 2 else m.group(1)
+            return str(Decimal(m.group(1))/1000) if m.lastindex == 2 else m.group(1)
         m = re.search('donate (.+)% of my balance', subject.lower())
         if m:
             return float(m.group(1))*float(senderBalance)/100
@@ -189,7 +191,7 @@ class MethodHandler(object):
         """
         m = re.search('anonymous tip .+ (.+) (m)?xmr', subject.lower())
         if m:
-            return Decimal(m.group(1))/1000 if m.lastindex == 2 else m.group(1)
+            return str(Decimal(m.group(1))/1000) if m.lastindex == 2 else m.group(1)
 
 
     def parse_anontip_recipient(self, subject):

@@ -5,6 +5,7 @@ from logger import tipper_logger
 import datetime
 import praw
 import traceback
+import helper
 
 def commentRequestsTip(body):
     is_monero_tip = re.search('/u/monerotipsbot (tip )?([\d\.]+?)( )?(m)?xmr', str(body).lower())
@@ -70,9 +71,15 @@ def main():
 if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument("-p", "--password", dest="password")
+    parser.add_argument("-t", "--testnet", dest="testnet")
     args = parser.parse_args()
 
-    reddit = praw.Reddit('tipbot', user_agent='Monero non-custodial tipper: v0.8 (by /u/OsrsNeedsF2P)')
-    replier = MethodHandler(reddit=reddit, password=args.password)
+    if args.testnet:
+        reddit = praw.Reddit('testnetbot', user_agent='Monero non-custodial testnet tipper: v0.9 (by /u/OsrsNeedsF2P)')
+        helper.monerod_port = 28081 # Testnet monerod port
+        helper.testnet = True
+    else:
+        reddit = praw.Reddit('tipbot', user_agent='Monero non-custodial tipper: v0.9 (by /u/OsrsNeedsF2P)')
+    replier = MethodHandler(reddit=reddit, password=args.password, testnet=args.testnet)
 
     main()
