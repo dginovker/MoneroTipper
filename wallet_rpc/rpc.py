@@ -7,6 +7,7 @@ from _signal import SIGTERM
 import psutil
 
 from logger import tipper_logger
+import helper
 
 
 class RPC(object):
@@ -18,7 +19,6 @@ class RPC(object):
     :param port: Port for the Monero RPC to run on
     :param wallet_name: Wallet name to open on this RPC session
     :param rpc_location: Location on disk where the RPC program sits
-    :param testnet: Whether or not to run on the Monero testnet or mainnet
     :param wallet_dir: Directory where all the wallets are kept
     :param disable_rpc_login: Whether or not to use --disable-rpc-login on the RPC
     :param load_timeout: Timeout in seconds for how long to load an RPC
@@ -27,26 +27,22 @@ class RPC(object):
     wallet_name = None
     rpc_location = None
     password = None
-    testnet = None
-    wallet_dir = None
     disable_rpc_login = None
     rpc_process = None
     load_timeout = None
 
-    def __init__(self, port, wallet_name=None, rpc_location="monero/monero-wallet-rpc", password="\"\"", testnet=False, wallet_dir=".", disable_rpc_login=True, load_timeout=300):
+    def __init__(self, port, wallet_name=None, rpc_location="monero/monero-wallet-rpc", password="\"\"", disable_rpc_login=True, load_timeout=300):
         self.port = port
         self.wallet_name = wallet_name
         self.rpc_location = rpc_location
         self.password = password
-        self.testnet = testnet
-        self.wallet_dir = wallet_dir
         self.disable_rpc_login = disable_rpc_login
         self.load_timeout = load_timeout
 
         if wallet_name is not None:  # Open wallet
-            rpc_command = f'{rpc_location} --wallet-file ./wallets/{wallet_name} --password {password} --rpc-bind-port {port}{" --testnet" if testnet else ""}{" --disable-rpc-login" if disable_rpc_login else ""}'
+            rpc_command = f'{rpc_location} --wallet-file ./wallets/{"testnet/" if helper.testnet else "mainnet/"}{wallet_name} --password {password} --rpc-bind-port {port}{" --testnet" if helper.testnet else ""}{" --disable-rpc-login" if disable_rpc_login else ""}'
         else:  # Create new wallet
-            rpc_command = f'{rpc_location} --wallet-dir ./wallets/{wallet_dir} --rpc-bind-port {port}{" --testnet" if testnet else ""}{" --disable-rpc-login" if disable_rpc_login else ""}'
+            rpc_command = f'{rpc_location} --wallet-dir ./wallets/{"testnet/" if helper.testnet else "mainnet/"} --rpc-bind-port {port}{" --testnet" if helper.testnet else ""}{" --disable-rpc-login" if disable_rpc_login else ""}'
 
         tipper_logger.log(rpc_command)
         rpc_command_shelled = shlex.split(rpc_command)
