@@ -1,5 +1,7 @@
 # MoneroTipsBot
 
+## Censorship free donations, for your favorite Reddit contributors.
+
 An on-chain, non-custodial, Reddit Monero tip bot written in Python.
 
 **Version history:**
