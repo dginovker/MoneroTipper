@@ -9,6 +9,7 @@ import os, sys
 
 parser = ArgumentParser()
 parser.add_argument("-p", "--password", dest="password")
+parser.add_argument("-t", "--testnet", dest="testnet")
 args = parser.parse_args()
 
 
@@ -25,11 +26,11 @@ def main():
 
     try:
         while True:
-            for i in os.listdir("wallets"):
+            for i in os.listdir("wallets/" + ("testnet/" if testnet else "mainnet/")):
                 if not "." in i:
                     start = int(round(time.time() * 1000))
                     print("Opening " + i + "'s wallet")
-                    get_info(i, False, args.password, port=helper.ports.wallet_sync_port, timeout=60)
+                    get_info(i, False, password=args.password, port=helper.ports.wallet_sync_port, timeout=60)
                     if int(round(time.time()*1000))-start > 50000:
                         print("Warn: " + i + "'s wallet is likely unsynced")
 

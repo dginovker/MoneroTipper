@@ -21,7 +21,7 @@ def get_info_as_string(wallet_name, private_info=False, password="\"\""):
     return info_as_string
 
 
-def get_info(wallet_name, private_info=False, password="\"\"", timeout=300):
+def get_info(wallet_name, private_info=False, port=helper.ports.get_info_port, password="\"\"", timeout=300):
     """
     Gets a tuple of wallet information, based on the user's name passed in
 
@@ -33,7 +33,7 @@ def get_info(wallet_name, private_info=False, password="\"\"", timeout=300):
 
     generate_wallet_if_doesnt_exist(wallet_name, password)
 
-    rpc_n_wallet = safe_wallet(port=helper.ports.get_info_port, wallet_name=wallet_name, password=password, timeout=timeout)
+    rpc_n_wallet = safe_wallet(port=port, wallet_name=wallet_name, password=password, timeout=timeout)
 
     info = get_info_from_wallet(rpc_n_wallet.wallet, wallet_name, private_info)
 
