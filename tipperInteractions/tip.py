@@ -1,5 +1,6 @@
 import helper
 from logger import tipper_logger
+from decimal import Decimal
 
 from tipperInteractions.transaction import generate_transaction
 from wallet_rpc.safe_wallet import safe_wallet
@@ -79,6 +80,8 @@ def tip(sender, recipient, amount, password):
 
         info["txid"] = str(txs)
         info["response"] = "Successfully tipped /u/" + recipient + " " + amount + " XMR! [^(txid)](https://xmrchain.com/search?value=" + str(txs) + ")"
+        if int(helper.format_decimal(Decimal(amount))) == 0:
+            info["message"] = "Warning: Tip amount is below default minimum visibility threshold. User will have to export their private key to view balance"
         tipper_logger.log("Successfully sent tip")
     except Exception as e:
         tipper_logger.log(e)
