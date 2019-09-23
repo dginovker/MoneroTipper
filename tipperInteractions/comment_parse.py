@@ -51,7 +51,7 @@ class MethodHandler(object):
 
         m = re.search('/u/monerotipsbot (tip )?([\d\.]+?)( )?(m)?xmr', str(body).lower())
         if m:
-            return str(Decimal(m.group(2))/1000) if m.lastindex == 3 else m.group(2) #Divide by 1000 if mXMR
+            return str(Decimal(m.group(2))/1000) if m.group(m.lastindex) == "m" else m.group(2) #Divide by 1000 if mXMR
         return None
 
 
