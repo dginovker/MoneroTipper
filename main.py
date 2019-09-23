@@ -75,7 +75,7 @@ if __name__ == "__main__":
 
     if args.testnet:
         reddit = praw.Reddit('testnetbot', user_agent='Monero non-custodial testnet tipper: v0.9 (by /u/OsrsNeedsF2P)')
-        helper.monerod_port = 28081 # Testnet monerod port
+        helper.ports.ports_to_testnet()
         helper.testnet = True
     else:
         reddit = praw.Reddit('tipbot', user_agent='Monero non-custodial tipper: v0.9 (by /u/OsrsNeedsF2P)')

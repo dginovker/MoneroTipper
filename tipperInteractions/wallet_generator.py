@@ -43,9 +43,9 @@ def generate_wallet(name, password):
     """
 
     name = str(name)
-    rpcP = RPC(port=28087, password=password)
+    rpcP = RPC(port=helper.ports.generate_wallet_port, password=password)
 
-    rpc_url = "http://127.0.0.1:28087/json_rpc"
+    rpc_url = f"http://127.0.0.1:{helper.ports.generate_wallet_port}/json_rpc"
     function_url = "http://127.0.0.1:" + str(monerod_port) + "/get_height"
     headers = {'Content-Type': 'application/json'}
 

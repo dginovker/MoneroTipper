@@ -1,3 +1,4 @@
+import helper
 from logger import tipper_logger
 
 from tipperInteractions.transaction import generate_transaction
@@ -53,16 +54,13 @@ def tip(sender, recipient, amount, password):
     recipient = str(recipient)
     sender_rpc_n_wallet = None
     recipient_rpc_n_wallet = None
-    sender_port = 28088
-    recipient_port = 28089
 
     try:
-        sender_rpc_n_wallet = safe_wallet(port=sender_port, wallet_name=sender.lower(), password=password)
+        sender_rpc_n_wallet = safe_wallet(port=helper.ports.tip_sender_port, wallet_name=sender.lower(), password=password)
         if sender.lower() != recipient.lower():
-            recipient_rpc_n_wallet = safe_wallet(port=recipient_port, wallet_name=recipient.lower(), password=password)
+            recipient_rpc_n_wallet = safe_wallet(port=helper.ports.tip_recipient_port, wallet_name=recipient.lower(), password=password)
         else:
             recipient_rpc_n_wallet = sender_rpc_n_wallet
-            recipient_port = sender_port
         tipper_logger.log("Wallets loaded!!")
 
     except Exception as e:

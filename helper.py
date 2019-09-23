@@ -10,8 +10,28 @@ precision = 4
 # General dev fund holder address
 general_fund_address = '46zarwyDHd8F2GXxVuETVz3wKvEnWic634eYykBS9Q6UbmQfm2y7XRt45KzF6rGT1Pj9YTp55iHRKXZsR7AaxDZM7XqtYRK'
 
-# Port for monerod (Mainnet)
-monerod_port = 18081
+class Ports:
+    monerod_port = 18081
+    wallet_sync_port = 18085
+    generate_wallet_port = 18086
+    get_info_port = 18087
+    tip_sender_port = 18088
+    tip_recipient_port = 18089
+    donation_sender_port = 18090
+    withdraw_sender_port = 18091
+
+    def ports_to_testnet(self):
+        self.monerod_port += 10000
+        self.wallet_sync_port += 10000
+        self.generate_wallet_port += 10000
+        self.get_info_port += 10000
+        self.tip_sender_port += 10000
+        self.tip_recipient_port += 10000
+        self.donation_sender_port += 10000
+        self.withdraw_sender_port += 10000
+
+
+ports = Ports()
 
 # If we are on testnet
 testnet = False
