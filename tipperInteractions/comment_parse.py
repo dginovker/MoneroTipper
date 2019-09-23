@@ -51,7 +51,7 @@ class MethodHandler(object):
 
         m = re.search('/u/monerotipsbot (tip )?([\d\.]+?)( )?(m)?xmr', str(body).lower())
         if m:
-            return str(Decimal(m.group(2))/1000) if m.lastindex == 3 else m.group(2) #Divide by 1000 if mXMR
+            return str(Decimal(m.group(2))/1000) if m.group(m.lastindex) == "m" else m.group(2) #Divide by 1000 if mXMR
         return None
 
 
@@ -59,13 +59,13 @@ class MethodHandler(object):
         """
         Tries to parse the amount a Redditor wishes to withdraw from their wallet
 
-        :param subject: The subject line of the withdrawl message
+        :param subject: Subject line in form "Withdraw xyz XMR"
         :return: Ann amount, in XMR, that the bot will withdraw
         """
 
-        m = re.search('withdraw ([\d\.]+?) (m)?xmr', str(subject).lower())
+        m = re.search('withdraw ([\d\.]+?)( )?(m)?xmr', str(subject).lower())
         if m:
-            return str(Decimal(m.group(1))/1000) if m.lastindex == 2 else Decimal(m.group(1))
+            return str(Decimal(m.group(1))/1000) if m.group(m.lastindex) == "m" else str(Decimal(m.group(1)))
         return None
 
 
@@ -145,16 +145,20 @@ class MethodHandler(object):
         """
         Parses the amount a user wishes to donate to the CSS based on their message.
 
-        :param subject: Subject line of message being sent
+        :param subject: Subject line in form "Donate xyz XMR" or "Donate xyz% of my balance"
         :param senderBalance: Their current balance, used to calculate when sending a percentage
         :return: Final amount in XMR they wish to donate
         """
-        m = re.search('donate (.+) (m)?xmr', subject.lower())
+
+        # "Donate xyz XMR"
+        m = re.search('donate ([\\d\\.]+)( )?(m)?xmr', subject.lower())
         if m:
-            return str(Decimal(m.group(1))/1000) if m.lastindex == 2 else m.group(1)
-        m = re.search('donate (.+)% of my balance', subject.lower())
+            return str(Decimal(m.group(1))/1000) if m.group(m.lastindex) == "m" else m.group(1)
+        
+        # "Donate xyz% of my balance"
+        m = re.search('donate ([\\d\\.]+)% of my balance', subject.lower())
         if m:
-            return float(m.group(1))*float(senderBalance)/100
+            return str(float(m.group(1))*float(senderBalance)/100)
 
 
     def handle_donation(self, author, subject, contents):
