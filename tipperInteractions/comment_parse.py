@@ -119,7 +119,7 @@ class MethodHandler(object):
             self.reddit.redditor(author.name).message(subject="I didn't understand your withdrawal!", message=f'You sent: "{subject}", but I couldn\'t figure out how much you wanted to send. See [this](https://www.reddit.com/r/MoneroTipsBot/wiki/index#wiki_withdrawing) guide if you need help, or click "Report a Bug" under "Get Started"  if you think there\'s a bug!' + signature)
             return None
 
-        sender_rpc_n_wallet = safe_wallet(port=28086, wallet_name=author.name.lower(), password=self.password)
+        sender_rpc_n_wallet = safe_wallet(port=helper.ports.withdraw_sender_port, wallet_name=author.name.lower(), password=self.password)
 
         res = handle_withdraw(sender_rpc_n_wallet.wallet, author.name, contents, amount)
 
@@ -167,7 +167,7 @@ class MethodHandler(object):
         :param contents: Message body
         """
 
-        sender_rpc_n_wallet = safe_wallet(port=28090, wallet_name=author.name.lower(), password=self.password)
+        sender_rpc_n_wallet = safe_wallet(port=helper.ports.donation_sender_port, wallet_name=author.name.lower(), password=self.password)
 
         amount = Decimal(self.parse_donate_amount(subject, sender_rpc_n_wallet.wallet.balance()))
 
