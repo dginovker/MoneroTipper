@@ -14,7 +14,7 @@ class Ports:
     monerod_port = 18081
     wallet_sync_port = 18085
     generate_wallet_port = 18086
-    get_info_default_port = 18087
+    get_info_port = 18087
     tip_sender_port = 18088
     tip_recipient_port = 18089
     donation_sender_port = 18090
@@ -24,7 +24,7 @@ class Ports:
         self.monerod_port += 10000
         self.wallet_sync_port += 10000
         self.generate_wallet_port += 10000
-        self.get_info_default_port += 10000
+        self.get_info_port += 10000
         self.tip_sender_port += 10000
         self.tip_recipient_port += 10000
         self.donation_sender_port += 10000
