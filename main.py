@@ -37,7 +37,7 @@ def processMessage(subject, body, author, comment):
         replier.handle_donation(author=author, subject=subject, contents=body)
         return
     if "anonymous tip" in subject.lower():
-        replier.handle_private_tip(author=author, subject=subject, contents=body)
+        replier.handle_anonymous_tip(author=author, subject=subject, contents=body)
         return
 
     # tipper_logger.log(f'Received message I don\t understand from {author.name}:\n\n {body}')
