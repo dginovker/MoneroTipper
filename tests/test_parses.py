@@ -7,6 +7,10 @@ except ImportError:
     from mock import patch, Mock
 
 class mainTestCase(unittest.TestCase):
+    """
+    NOTICE: Some of these testcases rely on coingecko's API when calling method_handler.get_xmr_val.
+     It is possible that these tests will fail when the value changes during the assert.
+    """
 
     method_handler = MethodHandler(None)
 
@@ -21,6 +25,9 @@ class mainTestCase(unittest.TestCase):
         self.assertTrue(self.method_handler.parse_tip_amount("/u/monerotipsbot tip 1 mxmr") == "0.001")
         self.assertTrue(self.method_handler.parse_tip_amount("/u/monerotipsbot tip 1mxmr") == "0.001")
 
+        self.assertTrue(self.method_handler.parse_tip_amount("/u/monerotipsbot 1.0$") == str(self.method_handler.get_xmr_val(1)))
+        self.assertTrue(self.method_handler.parse_tip_amount("/u/monerotipsbot $1") == str(self.method_handler.get_xmr_val(1)))
+
     def test_parse_withdrawal_amount(self):
         self.assertTrue(self.method_handler.parse_withdrawl_amount("withdraw 1.0 xmr") == "1.0")
         self.assertTrue(self.method_handler.parse_withdrawl_amount("withdraw 1xmr") == "1")
@@ -28,13 +35,28 @@ class mainTestCase(unittest.TestCase):
         self.assertTrue(self.method_handler.parse_withdrawl_amount("withdraw 1 mxmr") == "0.001")
         self.assertTrue(self.method_handler.parse_withdrawl_amount("withdraw 1mxmr") == "0.001")
 
-    def test_parse_donate_amount(self):
-        self.assertTrue(self.method_handler.parse_donate_amount("donate 1.0 xmr", 1) == "1.0")
-        self.assertTrue(self.method_handler.parse_donate_amount("donate 1xmr", 1) == "1")
+        self.assertTrue(self.method_handler.parse_withdrawl_amount("withdraw 1.0$") == str(self.method_handler.get_xmr_val(1)))
+        self.assertTrue(self.method_handler.parse_withdrawl_amount("withdraw $1") == str(self.method_handler.get_xmr_val(1)))
 
-        self.assertTrue(self.method_handler.parse_donate_amount("donate 1 mxmr", 1) == "0.001")
-        self.assertTrue(self.method_handler.parse_donate_amount("donate 1mxmr", 1) == "0.001")
+    def test_parse_donate_amount(self):
+        self.assertTrue(self.method_handler.parse_donate_amount("donate 1.0 xmr", 0) == "1.0")
+        self.assertTrue(self.method_handler.parse_donate_amount("donate 1xmr", 0) == "1")
+
+        self.assertTrue(self.method_handler.parse_donate_amount("donate 1 mxmr", 0) == "0.001")
+        self.assertTrue(self.method_handler.parse_donate_amount("donate 1mxmr", 0) == "0.001")
 
         self.assertTrue(self.method_handler.parse_donate_amount("donate 100% of my balance", 1) == "1.0")
         self.assertTrue(self.method_handler.parse_donate_amount("donate 50% of my balance", 1) == "0.5")
         self.assertTrue(self.method_handler.parse_donate_amount("donate 0% of my balance", 1) == "0.0")
+
+        self.assertTrue(self.method_handler.parse_donate_amount("donate 1.0$", 0) == str(self.method_handler.get_xmr_val(1)))
+        self.assertTrue(self.method_handler.parse_donate_amount("donate $1", 0) == str(self.method_handler.get_xmr_val(1)))
+
+    def test_parse_anontip_amount(self):
+        self.assertTrue(self.method_handler.parse_anontip_amount("anonymous tip monerotipsbot 1 xmr") == "1")
+        self.assertTrue(self.method_handler.parse_anontip_amount("anonymous tip monerotipsbot 1xmr") == "1")
+        self.assertTrue(self.method_handler.parse_anontip_amount("anonymous tip monerotipsbot 1 mxmr") == "0.001")
+        self.assertTrue(self.method_handler.parse_anontip_amount("anonymous tip monerotipsbot 1mxmr") == "0.001")
+
+        self.assertTrue(self.method_handler.parse_anontip_amount("anonymous tip monerotipsbot 1$") == str(self.method_handler.get_xmr_val(1)))
+        self.assertTrue(self.method_handler.parse_anontip_amount("anonymous tip monerotipsbot $1.0") == str(self.method_handler.get_xmr_val(1)))

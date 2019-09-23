@@ -6,7 +6,7 @@ from helper import *
 from decimal import Decimal
 from logger import tipper_logger
 import re
-
+import json
 
 
 class MethodHandler(object):
@@ -22,6 +22,19 @@ class MethodHandler(object):
     def __init__(self, reddit, password="\"\""):
         self.reddit = reddit
         self.password = password
+
+    def get_xmr_val(self, dollars):
+        """
+        Converts USD to XMR with coingecko API
+
+        :param dollars: dollars in USD
+        :return: XMR representing dollar amount
+        """
+        response = requests.get('https://api.coingecko.com/api/v3/simple/price',
+                                headers={'accept': 'application/json'},
+                                params=(('ids', 'monero'), ('vs_currencies', 'usd')))
+
+        return float(dollars)/float(json.loads(response.content)["monero"]["usd"])
 
 
     def get_tip_recipient(self, comment):
@@ -49,9 +62,13 @@ class MethodHandler(object):
         :return: An amount, in XMR, that the bot will tip
         """
 
-        m = re.search('/u/monerotipsbot (tip )?([\d\.]+?)( )?(m)?xmr', str(body).lower())
+        m = re.search('/u/monerotipsbot (tip )?([\\d\\.]+)( )?(m)?xmr', str(body).lower())
         if m:
             return str(Decimal(m.group(2))/1000) if m.group(m.lastindex) == "m" else m.group(2) #Divide by 1000 if mXMR
+
+        m = re.search('/u/monerotipsbot (tip )?(\\$)?(?P<dollar_amt>[\\d\\.]+)(\\$)?', str(body).lower())
+        if m:
+            return str(self.get_xmr_val(m.group("dollar_amt")))
         return None
 
 
@@ -63,9 +80,13 @@ class MethodHandler(object):
         :return: Ann amount, in XMR, that the bot will withdraw
         """
 
-        m = re.search('withdraw ([\d\.]+?)( )?(m)?xmr', str(subject).lower())
+        m = re.search('withdraw ([\\d\\.]+)( )?(m)?xmr', str(subject).lower())
         if m:
             return str(Decimal(m.group(1))/1000) if m.group(m.lastindex) == "m" else str(Decimal(m.group(1)))
+
+        m = re.search('withdraw (\\$)?(?P<dollar_amt>[\\d\\.]+)(\\$)?', str(subject).lower())
+        if m:
+            return str(self.get_xmr_val(m.group("dollar_amt")))
         return None
 
 
@@ -154,11 +175,17 @@ class MethodHandler(object):
         m = re.search('donate ([\\d\\.]+)( )?(m)?xmr', subject.lower())
         if m:
             return str(Decimal(m.group(1))/1000) if m.group(m.lastindex) == "m" else m.group(1)
-        
+
         # "Donate xyz% of my balance"
         m = re.search('donate ([\\d\\.]+)% of my balance', subject.lower())
         if m:
             return str(float(m.group(1))*float(senderBalance)/100)
+
+        # "Donate xyz$
+        m = re.search('donate (\\$)?(?P<dollar_amt>[\\d\\.]+)(\\$)?', str(subject).lower())
+        if m:
+            return str(self.get_xmr_val(m.group("dollar_amt")))
+
 
 
     def handle_donation(self, author, subject, contents):
@@ -191,9 +218,13 @@ class MethodHandler(object):
         """
         :param subject: in format "Anonymous tip USER AMOUNT xmr"
         """
-        m = re.search('anonymous tip .+ (.+) (m)?xmr', subject.lower())
+        m = re.search('anonymous tip [^ ]+ ([\\d\\.]+)( )?(m)?xmr', subject.lower())
         if m:
-            return str(Decimal(m.group(1))/1000) if m.lastindex == 2 else m.group(1)
+            return str(Decimal(m.group(1))/1000) if m.group(m.lastindex) == 'm' else m.group(1)
+
+        m = re.search('anonymous tip [^ ]+ (\\$)?(?P<dollar_amt>[\\d\\.]+)(\\$)?', str(subject).lower())
+        if m:
+            return str(self.get_xmr_val(m.group("dollar_amt")))
 
 
     def parse_anontip_recipient(self, subject):
@@ -216,7 +247,7 @@ class MethodHandler(object):
         :param subject: Subject line of the message, telling who to tip and how much
         :param contents: Message body (ignored)
         """
-        
+
         recipient = self.parse_anontip_recipient(subject)
         amount = self.parse_anontip_amount(subject)
 

@@ -1,4 +1,3 @@
-from helper import monerod_port
 from wallet_rpc.rpc import RPC
 from logger import tipper_logger
 import json, requests
