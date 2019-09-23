@@ -29,7 +29,7 @@ def main():
                 if not "." in i:
                     start = int(round(time.time() * 1000))
                     print("Opening " + i + "'s wallet")
-                    get_info(i, False, args.password, port=helper.ports.wallet_sync_port, timeout=60)
+                    get_info(i, False, password=args.password, port=helper.ports.wallet_sync_port, timeout=60)
                     if int(round(time.time()*1000))-start > 50000:
                         print("Warn: " + i + "'s wallet is likely unsynced")
 

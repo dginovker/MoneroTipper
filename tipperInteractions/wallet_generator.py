@@ -1,4 +1,3 @@
-from helper import monerod_port
 from wallet_rpc.rpc import RPC
 from logger import tipper_logger
 import json, requests
@@ -46,7 +45,7 @@ def generate_wallet(name, password):
     rpcP = RPC(port=helper.ports.generate_wallet_port, password=password)
 
     rpc_url = f"http://127.0.0.1:{helper.ports.generate_wallet_port}/json_rpc"
-    function_url = "http://127.0.0.1:" + str(monerod_port) + "/get_height"
+    function_url = "http://127.0.0.1:" + str(helper.ports.generate_wallet_port) + "/get_height"
     headers = {'Content-Type': 'application/json'}
 
     payload = {
