@@ -14,7 +14,7 @@ class mainTestCase(unittest.TestCase):
 
     def test_comment_requests_tip(self):
         self.assertTrue(commentRequestsTip("/u/monerotipsbot 1.0 xmr monero is great"))
-        self.assertFalse(commentRequestsTip("/u/monerotipsbot infinity xmr"))
+        self.assertFalse(commentRequestsTip(" infinity xmr"))
 
     def test_process_message(self):
         subject = "Withdraw .1 XMR"

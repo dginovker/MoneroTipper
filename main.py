@@ -69,16 +69,16 @@ def main():
 
 if __name__ == "__main__":
     parser = ArgumentParser()
-    parser.add_argument("-p", "--password", dest="password")
-    parser.add_argument("-t", "--testnet", dest="testnet")
+    parser.add_argument("-p", "--password", dest="password", help="Password to Monero wallets")
+    parser.add_argument("-a" "--account", dest="account_name", help="Reddit account username. Must match praw.ini.")
+    parser.add_argument("-t", "--testnet", action="store_true", help="Whether to run MoneroTipper on testnet")
     args = parser.parse_args()
 
+    reddit = praw.Reddit(args.account_name, user_agent='Monero non-custodial testnet tipper: v0.9 (by /u/OsrsNeedsF2P)')
+    replier = MethodHandler(reddit=reddit, botname=reddit.user.me(), password=args.password)
+
     if args.testnet:
-        reddit = praw.Reddit('testnetbot', user_agent='Monero non-custodial testnet tipper: v0.9 (by /u/OsrsNeedsF2P)')
         helper.ports.ports_to_testnet()
         helper.testnet = True
-    else:
-        reddit = praw.Reddit('tipbot', user_agent='Monero non-custodial tipper: v0.9 (by /u/OsrsNeedsF2P)')
-    replier = MethodHandler(reddit=reddit, password=args.password)
 
     main()

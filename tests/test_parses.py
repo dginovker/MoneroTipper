@@ -12,21 +12,21 @@ class mainTestCase(unittest.TestCase):
      It is possible that these tests will fail when the value changes during the assert.
     """
 
-    method_handler = MethodHandler(None)
+    method_handler = MethodHandler(None, botname="monerotip")
 
     def test_parse_tip_amount(self):
-        self.assertTrue(self.method_handler.parse_tip_amount("/u/monerotipsbot 1.0 xmr") == "1.0")
-        self.assertTrue(self.method_handler.parse_tip_amount("/u/monerotipsbot 1xmr") == "1")
-        self.assertTrue(self.method_handler.parse_tip_amount("/u/monerotipsbot tip 1 xmr") == "1")
-        self.assertTrue(self.method_handler.parse_tip_amount("/u/monerotipsbot tip 1xmr") == "1")
+        self.assertTrue(self.method_handler.parse_tip_amount("/u/monerotip 1.0 xmr") == "1.0")
+        self.assertTrue(self.method_handler.parse_tip_amount("/u/monerotip 1xmr") == "1")
+        self.assertTrue(self.method_handler.parse_tip_amount("/u/monerotip tip 1 xmr") == "1")
+        self.assertTrue(self.method_handler.parse_tip_amount("/u/monerotip tip 1xmr") == "1")
 
-        self.assertTrue(self.method_handler.parse_tip_amount("/u/monerotipsbot 1 mxmr") == "0.001")
-        self.assertTrue(self.method_handler.parse_tip_amount("/u/monerotipsbot 1mxmr") == "0.001")
-        self.assertTrue(self.method_handler.parse_tip_amount("/u/monerotipsbot tip 1 mxmr") == "0.001")
-        self.assertTrue(self.method_handler.parse_tip_amount("/u/monerotipsbot tip 1mxmr") == "0.001")
+        self.assertTrue(self.method_handler.parse_tip_amount("/u/monerotip 1 mxmr") == "0.001")
+        self.assertTrue(self.method_handler.parse_tip_amount("/u/monerotip 1mxmr") == "0.001")
+        self.assertTrue(self.method_handler.parse_tip_amount("/u/monerotip tip 1 mxmr") == "0.001")
+        self.assertTrue(self.method_handler.parse_tip_amount("/u/monerotip tip 1mxmr") == "0.001")
 
-        self.assertTrue(self.method_handler.parse_tip_amount("/u/monerotipsbot 1.0$") == str(self.method_handler.get_xmr_val(1)))
-        self.assertTrue(self.method_handler.parse_tip_amount("/u/monerotipsbot $1") == str(self.method_handler.get_xmr_val(1)))
+        self.assertTrue(self.method_handler.parse_tip_amount("/u/monerotip 1.0$") == str(self.method_handler.get_xmr_val(1)))
+        self.assertTrue(self.method_handler.parse_tip_amount("/u/monerotip $1") == str(self.method_handler.get_xmr_val(1)))
 
     def test_parse_withdrawal_amount(self):
         self.assertTrue(self.method_handler.parse_withdrawl_amount("withdraw 1.0 xmr") == "1.0")
