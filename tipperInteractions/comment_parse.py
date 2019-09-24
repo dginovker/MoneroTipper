@@ -241,7 +241,7 @@ class MethodHandler(object):
             return m.group(1)
 
 
-    def handle_private_tip(self, author, subject, contents):
+    def handle_anonymous_tip(self, author, subject, contents):
         """
         Allows people to send anonymous tips
 
@@ -263,4 +263,5 @@ class MethodHandler(object):
             self.reddit.redditor(author.name).message(subject="Your anonymous tip", message=res["message"] + signature)
         else:
             self.reddit.redditor(author.name).message(subject="Anonymous tip successful",  message=res["response"] + signature)
-            self.reddit.redditor(recipient).message("You have recieved an anonymous tip of " + amount + " XMR!", message="The tipper attached the following message:\n\n" + contents + signature)
+            recipient_message = signature if contents == "Edit this line to send a message, or leave it exactly the same to attach no message at all!" else "The tipper attached the following message:\n\n" + contents + signature
+            self.reddit.redditor(recipient).message("You have recieved an anonymous tip of " + amount + " XMR!", message=recipient_message)
