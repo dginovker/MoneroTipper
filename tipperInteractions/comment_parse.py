@@ -18,10 +18,12 @@ class MethodHandler(object):
 
     reddit = None
     password = None
+    botname = None
 
-    def __init__(self, reddit, password="\"\""):
+    def __init__(self, reddit, botname, password="\"\""):
         self.reddit = reddit
         self.password = password
+        self.botname = botname
 
     def get_xmr_val(self, dollars):
         """
@@ -62,11 +64,11 @@ class MethodHandler(object):
         :return: An amount, in XMR, that the bot will tip
         """
 
-        m = re.search('/u/monerotipsbot (tip )?([\\d\\.]+)( )?(m)?xmr', str(body).lower())
+        m = re.search(f'/u/{self.botname} (tip )?([\\d\\.]+)( )?(m)?xmr', str(body).lower())
         if m:
             return str(Decimal(m.group(2))/1000) if m.group(m.lastindex) == "m" else m.group(2) #Divide by 1000 if mXMR
 
-        m = re.search('/u/monerotipsbot (tip )?(\\$)?(?P<dollar_amt>[\\d\\.]+)(\\$)?', str(body).lower())
+        m = re.search(f'/u/{self.botname} (tip )?(\\$)?(?P<dollar_amt>[\\d\\.]+)(\\$)?', str(body).lower())
         if m:
             return str(self.get_xmr_val(m.group("dollar_amt")))
         return None
