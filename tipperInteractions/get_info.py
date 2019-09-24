@@ -15,7 +15,7 @@ def get_info_as_string(wallet_name, private_info=False, password="\"\""):
     :return formatted string of content
     """
 
-    info = get_info(wallet_name, private_info, password)
+    info = get_info(wallet_name=wallet_name, private_info=private_info, password=password)
 
     info_as_string = f'Public address: {info["address"]} [(QR code)](https://api.qrserver.com/v1/create-qr-code/?data={info["address"]}&size=220x220&margin=4)\n\nBalance: {info["balance"]} ({info["balance_(unconfirmed)"]} unconfirmed)\n\n{info["seed"]}'
     return info_as_string
