@@ -15,18 +15,18 @@ class mainTestCase(unittest.TestCase):
     method_handler = MethodHandler(None, botname="monerotip")
 
     def test_parse_tip_amount(self):
-        self.assertTrue(self.method_handler.parse_tip_amount("/u/monerotip 1.0 xmr") == "1.0")
-        self.assertTrue(self.method_handler.parse_tip_amount("/u/monerotip 1xmr") == "1")
-        self.assertTrue(self.method_handler.parse_tip_amount("/u/monerotip tip 1 xmr") == "1")
-        self.assertTrue(self.method_handler.parse_tip_amount("/u/monerotip tip 1xmr") == "1")
+        self.assertTrue(self.method_handler.parse_tip_amount(f"/u/{self.method_handler.botname} 1.0 xmr") == "1.0")
+        self.assertTrue(self.method_handler.parse_tip_amount(f"/u/{self.method_handler.botname} 1xmr") == "1")
+        self.assertTrue(self.method_handler.parse_tip_amount(f"/u/{self.method_handler.botname} tip 1 xmr") == "1")
+        self.assertTrue(self.method_handler.parse_tip_amount(f"/u/{self.method_handler.botname} tip 1xmr") == "1")
 
-        self.assertTrue(self.method_handler.parse_tip_amount("/u/monerotip 1 mxmr") == "0.001")
-        self.assertTrue(self.method_handler.parse_tip_amount("/u/monerotip 1mxmr") == "0.001")
-        self.assertTrue(self.method_handler.parse_tip_amount("/u/monerotip tip 1 mxmr") == "0.001")
-        self.assertTrue(self.method_handler.parse_tip_amount("/u/monerotip tip 1mxmr") == "0.001")
+        self.assertTrue(self.method_handler.parse_tip_amount(f"/u/{self.method_handler.botname} 1 mxmr") == "0.001")
+        self.assertTrue(self.method_handler.parse_tip_amount(f"/u/{self.method_handler.botname} 1mxmr") == "0.001")
+        self.assertTrue(self.method_handler.parse_tip_amount(f"/u/{self.method_handler.botname} tip 1 mxmr") == "0.001")
+        self.assertTrue(self.method_handler.parse_tip_amount(f"/u/{self.method_handler.botname} tip 1mxmr") == "0.001")
 
-        self.assertTrue(self.method_handler.parse_tip_amount("/u/monerotip 1.0$") == str(self.method_handler.get_xmr_val(1)))
-        self.assertTrue(self.method_handler.parse_tip_amount("/u/monerotip $1") == str(self.method_handler.get_xmr_val(1)))
+        self.assertTrue(self.method_handler.parse_tip_amount(f"/u/{self.method_handler.botname} 1.0$") == str(self.method_handler.get_xmr_val(1)))
+        self.assertTrue(self.method_handler.parse_tip_amount(f"/u/{self.method_handler.botname} $1") == str(self.method_handler.get_xmr_val(1)))
 
     def test_parse_withdrawal_amount(self):
         self.assertTrue(self.method_handler.parse_withdrawl_amount("withdraw 1.0 xmr") == "1.0")
@@ -53,10 +53,10 @@ class mainTestCase(unittest.TestCase):
         self.assertTrue(self.method_handler.parse_donate_amount("donate $1", 0) == str(self.method_handler.get_xmr_val(1)))
 
     def test_parse_anontip_amount(self):
-        self.assertTrue(self.method_handler.parse_anontip_amount("anonymous tip monerotipsbot 1 xmr") == "1")
-        self.assertTrue(self.method_handler.parse_anontip_amount("anonymous tip monerotipsbot 1xmr") == "1")
-        self.assertTrue(self.method_handler.parse_anontip_amount("anonymous tip monerotipsbot 1 mxmr") == "0.001")
-        self.assertTrue(self.method_handler.parse_anontip_amount("anonymous tip monerotipsbot 1mxmr") == "0.001")
+        self.assertTrue(self.method_handler.parse_anontip_amount(f"anonymous tip {self.method_handler.botname} 1 xmr") == "1")
+        self.assertTrue(self.method_handler.parse_anontip_amount(f"anonymous tip {self.method_handler.botname} 1xmr") == "1")
+        self.assertTrue(self.method_handler.parse_anontip_amount(f"anonymous tip {self.method_handler.botname} 1 mxmr") == "0.001")
+        self.assertTrue(self.method_handler.parse_anontip_amount(f"anonymous tip {self.method_handler.botname} 1mxmr") == "0.001")
 
-        self.assertTrue(self.method_handler.parse_anontip_amount("anonymous tip monerotipsbot 1$") == str(self.method_handler.get_xmr_val(1)))
-        self.assertTrue(self.method_handler.parse_anontip_amount("anonymous tip monerotipsbot $1.0") == str(self.method_handler.get_xmr_val(1)))
+        self.assertTrue(self.method_handler.parse_anontip_amount(f"anonymous tip {self.method_handler.botname} 1$") == str(self.method_handler.get_xmr_val(1)))
+        self.assertTrue(self.method_handler.parse_anontip_amount(f"anonymous tip {self.method_handler.botname} $1.0") == str(self.method_handler.get_xmr_val(1)))
