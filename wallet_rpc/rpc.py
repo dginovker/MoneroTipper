@@ -40,7 +40,7 @@ class RPC(object):
         self.load_timeout = load_timeout
 
         if wallet_name is not None:  # Open wallet
-            rpc_command = f'{rpc_location} --wallet-file ./wallets/{"testnet/" if helper.testnet else "mainnet/"}{wallet_name} --password {password} --rpc-bind-port {port}{" --testnet" if helper.testnet else ""}{" --disable-rpc-login" if disable_rpc_login else ""}'
+            rpc_command = f'{rpc_location} --wallet-file ./wallets/{"testnet/" if helper.testnet else "mainnet/"}{wallet_name} --password {password} --rpc-bind-port {port} {"--testnet" if helper.testnet else ""} {"--disable-rpc-login" if disable_rpc_login else ""}'
         else:  # Create new wallet
             rpc_command = f'{rpc_location} --wallet-dir ./wallets/{"testnet/" if helper.testnet else "mainnet/"} --rpc-bind-port {port}{" --testnet" if helper.testnet else ""}{" --disable-rpc-login" if disable_rpc_login else ""}'
 
