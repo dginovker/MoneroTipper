@@ -20,6 +20,8 @@ class MethodHandler(object):
     password = None
     botname = None
 
+    below_threshold_message = f"The minimum tip you can send it 1 mXMR, or 0.001 XMR, since that's the minimum I show in the [balance page](https://www.reddit.com/message/compose/?to=MoneroTipsBot&subject=My%20info&message=Hit%20%27send%27%20and%20the%20bot%20will%20tell%20you%20your%20balance%20:\))!"
+
     def __init__(self, reddit, botname, password="\"\""):
         self.reddit = reddit
         self.password = password
@@ -107,7 +109,11 @@ class MethodHandler(object):
         amount = self.parse_tip_amount(body)
         reply = None
 
-        if recipient is not None and amount is not None:
+        if recipient is None or amount is None:
+            reply = "Nothing interesting happens.\n\n*In case you were trying to tip, I didn't understand you.*"
+        elif Decimal(amount) < 0.001:
+            reply = self.below_threshold_message
+        else:
             tipper_logger.log(f'{author.name} is sending {recipient} {amount} XMR.')
             generate_wallet_if_doesnt_exist(recipient.name.lower(), self.password)
 
@@ -117,8 +123,6 @@ class MethodHandler(object):
                 tipper_logger.log("The response is: " + reply)
             if res["message"] is not None:
                 self.reddit.redditor(author.name).message(subject="Your tip", message=f"Regarding your tip here: {comment.context}\n\n" + res["message"] + signature)
-        else:
-            reply = "Nothing interesting happens.\n\n*In case you were trying to tip, I didn't understand you.*"
 
         try:
             if reply is not None:
@@ -255,6 +259,9 @@ class MethodHandler(object):
 
         if recipient is None or amount is None:
             self.reddit.redditor(author.name).message(subject="Your anonymous tip", message="Nothing interesting happens.\n\n*Your recipient or amount wasn't clear to me*" + signature)
+            return
+        if Decimal(amount) < 0.001: #  Less than amount displayed in balance page
+            self.reddit.redditor(author.name).message(subject="Your anonymous tip", message=self.below_threshold_message + signature)
             return
 
         tipper_logger.log(author.name + " is trying to send " + self.parse_anontip_amount(subject) + " XMR to " + self.parse_anontip_recipient(subject))
