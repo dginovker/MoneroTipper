@@ -29,7 +29,7 @@ class replyTestCase(unittest.TestCase):
     def test_handle_tip_request(self, mock_logger, mock_generate_wallet_if_doesnt_exist):
         pass
         #author = MagicMock()
-        #author.name.return_value="/u/tiedtoastar"
+        #author.return_value="/u/tiedtoastar"
         #body = "/u/monerotipsbot 1.0 xmr monero is great"
         #comment = MagicMock()
         #comment.parent.author.return_value="/u/OsrsNeedsF2P"

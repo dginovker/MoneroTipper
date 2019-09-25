@@ -8,7 +8,7 @@ from logger import tipper_logger
 from tipbot.backend.rpc import RPC
 
 
-class safe_wallet(object):
+class SafeWallet(object):
 
     wallet = None
     rpc = None

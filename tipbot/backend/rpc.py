@@ -19,7 +19,6 @@ class RPC(object):
     :param port: Port for the Monero RPC to run on
     :param wallet_name: Wallet name to open on this RPC session
     :param rpc_location: Location on disk where the RPC program sits
-    :param wallet_dir: Directory where all the wallets are kept
     :param disable_rpc_login: Whether or not to use --disable-rpc-login on the RPC
     :param load_timeout: Timeout in seconds for how long to load an RPC
     """
@@ -67,8 +66,8 @@ class RPC(object):
                         proc.send_signal(SIGTERM)
                         print("MURDERING THE SIGNAL")
                         # TODO: Sleep until it's dead, timeout 20 seconds?
-            except:
-                ""
+            except Exception:
+                tipper_logger.log("RPC BAD: Something bad happened with trying to kill the RPC?")
 
     def wait_for_rpc_to_load(self):
         """

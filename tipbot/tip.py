@@ -6,7 +6,7 @@ from helper import signature, get_xmr_val
 from logger import tipper_logger
 
 from tipbot.backend.transaction import generate_transaction
-from tipbot.backend.safe_wallet import safe_wallet
+from tipbot.backend.safewallet import SafeWallet
 from tipbot.backend.wallet_generator import generate_wallet_if_doesnt_exist
 
 
@@ -22,7 +22,7 @@ def parse_tip_amount(body, botname=helper.botname):
     # "/u/MoneroTip 5 XMR"
     m = re.search(f'/u/{botname} (tip )?([\\d\\.]+)( )?(m)?xmr', str(body).lower())
     if m:
-        return str(Decimal(m.group(2))/1000) if m.group(m.lastindex) == "m" else m.group(2) #Divide by 1000 if mXMR
+        return str(Decimal(m.group(2))/1000) if m.group(m.lastindex) == "m" else m.group(2)  # Divide by 1000 if mXMR
 
     # "/u/MoneroTip 5$"
     m = re.search(f'/u/{botname} (tip )?(\\$)?(?P<dollar_amt>[\\d\\.]+)(\\$)?', str(body).lower())
@@ -42,7 +42,7 @@ def get_tip_recipient(comment):
     author = None
     try:
         author = comment.parent().author
-    except Exception as e:
+    except Exception:
         tipper_logger.log("Somehow there's no parent at all?")
 
     return author
@@ -68,15 +68,15 @@ def handle_tip_request(author, body, comment):
     elif Decimal(amount) < 0.001:
         reply = helper.below_threshold_message
     else:
-        tipper_logger.log(f'{author.name} is sending {recipient} {amount} XMR.')
+        tipper_logger.log(f'{author} is sending {recipient} {amount} XMR.')
         generate_wallet_if_doesnt_exist(recipient.name.lower())
 
-        res = tip(sender=author.name, recipient=recipient.name, amount=amount)
+        res = tip(sender=author, recipient=recipient.name, amount=amount)
         if res["response"] is not None:
             reply = f'{res["response"]}'
             tipper_logger.log("The response is: " + reply)
         if res["message"] is not None:
-            helper.praw.redditor(author.name).message(subject="Your tip", message=f"Regarding your tip here: {comment.context}\n\n" + res["message"] + signature)
+            helper.praw.redditor(author).message(subject="Your tip", message=f"Regarding your tip here: {comment.context}\n\n" + res["message"] + signature)
 
     try:
         if reply is not None:
@@ -115,9 +115,9 @@ def tip(sender, recipient, amount):
     recipient_rpc_n_wallet = None
 
     try:
-        sender_rpc_n_wallet = safe_wallet(port=helper.ports.tip_sender_port, wallet_name=sender.lower())
+        sender_rpc_n_wallet = SafeWallet(port=helper.ports.tip_sender_port, wallet_name=sender.lower())
         if sender.lower() != recipient.lower():
-            recipient_rpc_n_wallet = safe_wallet(port=helper.ports.tip_recipient_port, wallet_name=recipient.lower())
+            recipient_rpc_n_wallet = SafeWallet(port=helper.ports.tip_recipient_port, wallet_name=recipient.lower())
         else:
             recipient_rpc_n_wallet = sender_rpc_n_wallet
         tipper_logger.log("Wallets loaded!!")
@@ -162,11 +162,11 @@ def get_error_response(e):
     # Default
     response = "Error: " + str(e)
 
-    if "Method 'transfer_split' failed with RPC Error of unknown code -4" in str(e): #  Not enough spendable inputs
+    if "Method 'transfer_split' failed with RPC Error of unknown code -4" in str(e):  # Not enough spendable inputs
         response = "Sorry, you do not have enough spendable balance. Wait a bit, or see [this guide](https://www.reddit.com/r/MoneroTipsBot/wiki/index#wiki_why_is_all_my_monero_unconfirmed.3F_i_want_to_send_more_tips.21) for a solution."
-    if "of unknown code -3" in str(e): #  Node out of sync
+    if "of unknown code -3" in str(e):  # Node out of sync
         response += "\n\n The tipbot node might be really out of sync. Checking on it soon; /u/OsrsNeedsF2P..."
-    if "not enough money" in str(e) or "tx not possible" in str(e): #  Can't afford fee
-        response +="\n\n You do not have a high enough balance to cover the network fee. If you would like to manually withdraw the rest of your balance (<1 cent), you can try to by extracting your private key"
+    if "not enough money" in str(e) or "tx not possible" in str(e):  # Can't afford fee
+        response += "\n\n You do not have a high enough balance to cover the network fee. If you would like to manually withdraw the rest of your balance (<1 cent), you can try to by extracting your private key"
 
     return response

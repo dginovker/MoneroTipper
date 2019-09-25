@@ -4,7 +4,7 @@ from decimal import Decimal
 import helper
 from helper import general_fund_address, format_decimal, signature, get_xmr_val
 from logger import tipper_logger
-from tipbot.backend.safe_wallet import safe_wallet
+from tipbot.backend.safewallet import SafeWallet
 from tipbot.backend.transaction import generate_transaction
 
 
@@ -42,17 +42,17 @@ def handle_donation(author, subject):
     :param subject: Subject line of the message, telling how much to withdraw
     """
 
-    sender_rpc_n_wallet = safe_wallet(port=helper.ports.donation_sender_port, wallet_name=author.name.lower())
+    sender_rpc_n_wallet = SafeWallet(port=helper.ports.donation_sender_port, wallet_name=author.lower())
 
     amount = Decimal(parse_donate_amount(subject, sender_rpc_n_wallet.wallet.balance()))
 
     try:
         generate_transaction(sender_wallet=sender_rpc_n_wallet.wallet, recipient_address=general_fund_address, amount=amount, split_size=1)
-        helper.praw.redditor(author.name).message(subject="Your donation to the General Dev Fund", message=f'Thank you for donating {format_decimal(amount)} of your XMR balance to the CCS!\n\nYou will soon have your total donations broadcasted to the wiki :) {signature}')
-        helper.praw.redditor("OsrsNeedsF2P").message(subject=f'{author.name} donated {amount} to the CCS!', message="Update table here: https://old.reddit.com/r/MoneroTipsBot/wiki/index#wiki_donating_to_the_ccs")
-        tipper_logger.log(f'{author.name} donated {format_decimal(amount)} to the CCS.')
+        helper.praw.redditor(author).message(subject="Your donation to the General Dev Fund", message=f'Thank you for donating {format_decimal(amount)} of your XMR balance to the CCS!\n\nYou will soon have your total donations broadcasted to the wiki :) {signature}')
+        helper.praw.redditor("OsrsNeedsF2P").message(subject=f'{author} donated {amount} to the CCS!', message="Update table here: https://old.reddit.com/r/MoneroTipsBot/wiki/index#wiki_donating_to_the_ccs")
+        tipper_logger.log(f'{author} donated {format_decimal(amount)} to the CCS.')
     except Exception as e:
-        helper.praw.redditor(author.name).message(subject="Your donation to the CCS failed", message=f'Please send the following to /u/OsrsNeedsF2P:\n\n' + str(e) + signature)
+        helper.praw.redditor(author).message(subject="Your donation to the CCS failed", message=f'Please send the following to /u/OsrsNeedsF2P:\n\n' + str(e) + signature)
         tipper_logger.log("Caught an error during a donation to CCS: " + str(e))
 
     sender_rpc_n_wallet.kill_rpc()

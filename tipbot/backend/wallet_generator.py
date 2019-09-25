@@ -44,7 +44,7 @@ def generate_wallet(name, password=helper.password):
     """
 
     name = str(name)
-    rpcP = RPC(port=helper.ports.generate_wallet_port)
+    rpc = RPC(port=helper.ports.generate_wallet_port)
 
     rpc_url = f"http://127.0.0.1:{helper.ports.generate_wallet_port}/json_rpc"
     function_url = "http://127.0.0.1:" + str(helper.ports.generate_wallet_port) + "/get_height"
@@ -74,7 +74,7 @@ def generate_wallet(name, password=helper.password):
     except Exception as e:
         tipper_logger.log(str(e))
 
-    rpcP.kill()
+    rpc.kill()
 
     if wallet_exists(name):
         tipper_logger.log("Generated a wallet for " + name)

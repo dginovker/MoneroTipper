@@ -5,7 +5,7 @@ from helper import signature
 from logger import tipper_logger
 
 from tipbot.backend.wallet_generator import generate_wallet_if_doesnt_exist
-from tipbot.backend.safe_wallet import safe_wallet
+from tipbot.backend.safewallet import SafeWallet
 
 
 def get_info_as_string(wallet_name, private_info=False):
@@ -31,12 +31,13 @@ def get_info(wallet_name, private_info=False, port=helper.ports.get_info_port, p
     :param private_info: Boolean determining if the private mnemonic is included
     :param port: Port to tell safe_wallet to open on
     :param password: Password to open the wallet
+    :param timeout: Time until RPC is aborted
     :return: Tuple containing the address, balance, unconfirmed balance and private seed if private_info is True
     """
 
     generate_wallet_if_doesnt_exist(wallet_name)
 
-    rpc_n_wallet = safe_wallet(port=port, wallet_name=wallet_name, password=password, timeout=timeout)
+    rpc_n_wallet = SafeWallet(port=port, wallet_name=wallet_name, password=password, timeout=timeout)
 
     info = get_info_from_wallet(rpc_n_wallet.wallet, wallet_name, private_info)
 
@@ -56,10 +57,10 @@ def get_balance(wallet, confirmed):
     unconf_balance = wallet.balance(unlocked=False) - wallet.balance(unlocked=True)
     dust_message = ""
 
-    if conf_balance > Decimal(0) and conf_balance < 0.0001:
-        dust_message = "(Miniscule balance exists, export private key to view it)"
-    if unconf_balance > Decimal(0) and unconf_balance < 0.0001:
-        dust_message = "(Miniscule unconf balance exists, export private key to view it)"
+    if Decimal(0) < conf_balance < 0.0001:
+        dust_message += " (Miniscule balance exists, export private key to view it)"
+    if Decimal(0) < unconf_balance < 0.0001:
+        dust_message += " (Miniscule unconf balance exists, export private key to view it)"
 
     return helper.format_decimal(conf_balance) + dust_message if confirmed \
         else helper.format_decimal(unconf_balance) + dust_message
@@ -92,7 +93,7 @@ def handle_info_request(author, private_info=False):
     :param private_info: Whether or not to send the private key (mnemonic) along with the message
     :return:
     """
-    helper.praw.redditor(author.name).message(
+    helper.praw.redditor(author).message(
         subject="Your " + ("private address and info" if private_info else "public address and balance"),
-        message=get_info_as_string(wallet_name=author.name.lower(), private_info=private_info) + signature)
-    tipper_logger.log(f'Told {author.name} their {("private" if private_info else "public")} info.')
+        message=get_info_as_string(wallet_name=author.lower(), private_info=private_info) + signature)
+    tipper_logger.log(f'Told {author} their {("private" if private_info else "public")} info.')

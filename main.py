@@ -14,22 +14,25 @@ from tipbot.tip import handle_tip_request
 from tipbot.withdraw import handle_withdraw_request
 
 
-def commentRequestsTip(body):
-    is_monero_tip = re.search('/u/monerotipsbot (tip )?([\\d\\.]+?)( )?(m)?xmr', str(body).lower())
-    return is_monero_tip
+def comment_requests_tip(body):
+    return re.search(f'/u/{helper.botname} (tip )?($)?([\\d\\.]+?)( )?(m)?(xmr)?($)?', str(body).lower())
 
-def processMessage(subject, body, author, comment):
+
+def process_message(subject, body, author, comment):
     """
     Handles the comment command a user tried to execute
 
+    :param subject: Subject line of private message
+    :param body: Body of message
+    :param author: Username of author
     :param comment: comment to parse for the command
     """
 
-    tipper_logger.log(f'Received message: {subject} from {author.name}: {body}')
+    tipper_logger.log(f'Received message: {subject} from {author}: {body}')
 
-    generate_wallet_if_doesnt_exist(name=author.name.lower(), password=args.password)
+    generate_wallet_if_doesnt_exist(name=author.lower(), password=args.password)
 
-    if commentRequestsTip(body):
+    if comment_requests_tip(body):
         handle_tip_request(author=author, body=body, comment=comment)
         return
     if subject.lower() in "my info":
@@ -48,31 +51,31 @@ def processMessage(subject, body, author, comment):
         handle_anonymous_tip(author=author, subject=subject, contents=body)
         return
 
-    # tipper_logger.log(f'Received message I don\t understand from {author.name}:\n\n {body}')
-    helper.praw.redditor(author.name).message(subject="I didn't understand your command", message=f'I didn\'t understand what you meant last time you tagged me. You said: \n\n{body}\n\nIf you didn\'t mean to summon me, you\'re all good! If you\'re confused, please let my owner know by clicking Report a Bug!{helper.signature}')
+    # tipper_logger.log(f'Received message I don\t understand from {author}:\n\n {body}')
+    helper.praw.redditor(author).message(subject="I didn't understand your command", message=f'I didn\'t understand what you meant last time you tagged me. You said: \n\n{body}\n\nIf you didn\'t mean to summon me, you\'re all good! If you\'re confused, please let my owner know by clicking Report a Bug!{helper.signature}')
 
 
 def main():
-
     tipper_logger.log("Searching for new messages")
-    startTime = datetime.datetime.now().timestamp()
+    start_time = datetime.datetime.now().timestamp()
 
     author = None
     try:
         for message in helper.praw.inbox.stream():
             author = message.author.name
-            if message.created_utc > startTime:
-                processMessage(subject=message.subject, body=message.body, author=message.author, comment=message)
+            if message.created_utc > start_time:
+                process_message(subject=message.subject, body=message.body, author=author, comment=message)
     except Exception as e:
         try:
             tipper_logger.log("Main error: " + str(e))
             tipper_logger.log("Blame " + author)
             traceback.print_exc()
-            helper.praw.redditor(author).message(subject="Something broke!!", message="If you tried to do something, please send the following error to /u/OsrsNeedsF2P:\n\n" + str(e) + helper.signature)
+            helper.praw.redditor(author).message(subject="Something broke!!",
+                                                 message="If you tried to do something, please send the following error to /u/OsrsNeedsF2P:\n\n" + str(
+                                                     e) + helper.signature)
         except Exception as e:
             tipper_logger.log("Just wow." + str(e))
         main()
-
 
 
 if __name__ == "__main__":
