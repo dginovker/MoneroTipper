@@ -1,4 +1,4 @@
-from wallet_rpc.rpc import RPC
+from tipbot.backend.rpc import RPC
 from logger import tipper_logger
 import json, requests
 import os

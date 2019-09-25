@@ -6,7 +6,7 @@ try:
     from unittest.mock import patch, Mock, MagicMock
 except ImportError:
     from mock import patch, Mock
-from tipperInteractions.tip import tip
+from tipbot.tip import tip
 
 class tipTestCase(unittest.TestCase):
     accounts_result = {'id': 0,
@@ -31,7 +31,7 @@ class tipTestCase(unittest.TestCase):
 
     @patch('logger.tipper_logger.log')
     @patch('monero.backends.jsonrpc.requests.post')
-    @patch('tipperInteractions.tip.RPC')
+    @patch('tipbot.tip.RPC')
     def test_tip(self, mock_logger, mock_post, mock_rpc):
         mock_rpc.return_value = MagicMock()
         mock_post.return_value.status_code = 200

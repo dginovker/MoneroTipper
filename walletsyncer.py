@@ -1,4 +1,4 @@
-from tipperInteractions.get_info import *
+from tipbot.get_info import *
 from argparse import ArgumentParser
 from logger import tipper_logger
 import helper

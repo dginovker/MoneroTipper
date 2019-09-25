@@ -4,7 +4,7 @@ from monero.backends.jsonrpc import JSONRPCWallet
 from monero.wallet import Wallet
 
 from logger import tipper_logger
-from wallet_rpc.rpc import RPC
+from tipbot.backend.rpc import RPC
 
 
 class safe_wallet(object):

@@ -2,9 +2,11 @@ from decimal import Decimal
 
 import helper
 from helper import *
+from helper import signature
+from logger import tipper_logger
 
-from tipperInteractions.wallet_generator import generate_wallet_if_doesnt_exist
-from wallet_rpc.safe_wallet import safe_wallet
+from tipbot.backend.wallet_generator import generate_wallet_if_doesnt_exist
+from tipbot.backend.safe_wallet import safe_wallet
 
 
 def get_info_as_string(wallet_name, private_info=False, password="\"\""):
@@ -78,3 +80,13 @@ def get_info_from_wallet(wallet, wallet_name="", private_info=False):
     }
 
 
+def handle_info_request(author, private_info=False):
+    """
+    Allows Reddit users to see their wallet address, balance, and optionally their private key.
+
+    :param author: Username of the entity requesting their info
+    :param private_info: Whether or not to send the private key (mnemonic) along with the message
+    :return:
+    """
+    helper.bot_handler.reddit.redditor(author.name).message(subject="Your " + ("private address and info" if private_info else "public address and balance"), message=get_info_as_string(wallet_name=author.name.lower(), private_info=private_info, password=helper.bot_handler.password) + signature)
+    tipper_logger.log(f'Told {author.name} their {("private" if private_info else "public")} info.')

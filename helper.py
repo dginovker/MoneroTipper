@@ -2,6 +2,10 @@
 ### Constants ###
 
 # Signature to add to the end of each reply
+import json
+
+import requests
+
 signature = str("\n\n*****\n\n^\(っ◔◡◔)っ ^♡ ^| [^(Get Started)](https://old.reddit.com/r/MoneroTipsBot/wiki/index) ^| [^(Show my balance)](https://www.reddit.com/message/compose/?to=MoneroTipsBot&subject=My%20info&message=Hit%20%27send%27%20and%20the%20bot%20will%20tell%20you%20your%20balance%20:\)) ^| [^(Donate to the CCS)](https://old.reddit.com/r/MoneroTipsBot/wiki/index#wiki_donating_to_the_ccs) ^| ^♡\n\n ^(NOTICE: Bot is currently in Beta mode for a bit, expect downtime. Back up your seed!)")
 
 # Number of decimal points to display
@@ -32,13 +36,10 @@ class Ports:
 
 
 ports = Ports()
+bot_handler = None
 
 # If we are on testnet
 testnet = False
-
-
-# TODO for sometime in the future..
-# Add unconfirmed balance function to safe_wallet.py
 
 
 def format_decimal(decimal, points=precision):
@@ -49,3 +50,17 @@ def format_decimal(decimal, points=precision):
     :return: Number as a formatted string
     """
     return ("{:." + str(points) + "f}").format(decimal)
+
+
+def get_xmr_val(dollars):
+    """
+    Converts USD to XMR with coingecko API
+
+    :param dollars: dollars in USD
+    :return: XMR representing dollar amount
+    """
+    response = requests.get('https://api.coingecko.com/api/v3/simple/price',
+                            headers={'accept': 'application/json'},
+                            params=(('ids', 'monero'), ('vs_currencies', 'usd')))
+
+    return float(dollars)/float(json.loads(response.content)["monero"]["usd"])

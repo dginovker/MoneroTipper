@@ -1,11 +1,14 @@
 import unittest
 from decimal import Decimal
 import decimal
+
+from tipbot.tip import parse_tip_amount
+
 try:
     from unittest.mock import patch, Mock, MagicMock
 except ImportError:
     from mock import patch, Mock
-from tipperInteractions.reply import ReplyHandler
+from tipbot.reply import ReplyHandler
 
 class replyTestCase(unittest.TestCase):
     author = ""
@@ -19,10 +22,10 @@ class replyTestCase(unittest.TestCase):
 
     def test_parse_tip_amount(self):
         body = "/u/monerotipsbot 1.0 xmr I love this monero community member"
-        self.assertEqual(self.replier.parse_tip_amount(body), "1.0")
+        self.assertEqual(parse_tip_amount(self.replier.botname, body), "1.0")
 
     @patch('logger.tipper_logger.log')
-    @patch('tipperInteractions.wallet_generator.generate_wallet_if_doesnt_exist')
+    @patch('tipbot.wallet_generator.generate_wallet_if_doesnt_exist')
     def test_handle_tip_request(self, mock_logger, mock_generate_wallet_if_doesnt_exist):
         pass
         #author = MagicMock()

@@ -1,10 +1,16 @@
-from tipperInteractions.comment_parse import *
+from tipbot.anon_tip import handle_anonymous_tip
+from tipbot.comment_parse import *
 from argparse import ArgumentParser
 from logger import tipper_logger
 import datetime
 import praw
 import traceback
 import helper
+from tipbot.donate import handle_donation
+from tipbot.get_info import handle_info_request
+from tipbot.tip import handle_tip_request
+from tipbot.withdraw import handle_withdraw_request
+
 
 def commentRequestsTip(body):
     is_monero_tip = re.search('/u/monerotipsbot (tip )?([\d\.]+?)( )?(m)?xmr', str(body).lower())
@@ -22,22 +28,22 @@ def processMessage(subject, body, author, comment):
     generate_wallet_if_doesnt_exist(name=author.name.lower(), password=args.password)
 
     if commentRequestsTip(body):
-        replier.handle_tip_request(author, body, comment)
+        handle_tip_request(author=author, body=body, comment=comment)
         return
     if subject.lower() in "my info":
-        replier.handle_info_request(author=author, private_info=False)
+        handle_info_request(author=author, private_info=False)
         return
     if subject.lower() in "my private info":
-        replier.handle_info_request(author=author, private_info=True)
+        handle_info_request(author=author, private_info=True)
         return
     if "withdraw" in subject.lower():
-        replier.handle_withdraw_request(author=author, subject=subject, contents=body)
+        handle_withdraw_request(author=author, subject=subject, contents=body)
         return
     if "donate" in subject.lower():
-        replier.handle_donation(author=author, subject=subject, contents=body)
+        handle_donation(author=author, subject=subject)
         return
     if "anonymous tip" in subject.lower():
-        replier.handle_anonymous_tip(author=author, subject=subject, contents=body)
+        handle_anonymous_tip(author=author, subject=subject, contents=body)
         return
 
     # tipper_logger.log(f'Received message I don\t understand from {author.name}:\n\n {body}')
@@ -75,7 +81,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     reddit = praw.Reddit(args.account_name, user_agent='Monero non-custodial testnet tipper: v0.9 (by /u/OsrsNeedsF2P)')
-    replier = MethodHandler(reddit=reddit, botname=reddit.user.me(), password=args.password)
+    helper.bot_handler = BotHandler(reddit=reddit, botname=reddit.user.me(), wallet_password=args.password)
 
     if args.testnet:
         helper.ports.ports_to_testnet()
