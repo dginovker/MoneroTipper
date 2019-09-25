@@ -20,12 +20,12 @@ def parse_tip_amount(body, botname=helper.botname):
     """
 
     # "/u/MoneroTip 5 XMR"
-    m = re.search(f'/u/{botname} (tip )?([\\d\\.]+)( )?(m)?xmr', str(body).lower())
+    m = re.search(f'/u/{botname.lower()} (tip )?([\\d\\.]+)( )?(m)?xmr', str(body).lower())
     if m:
         return str(Decimal(m.group(2))/1000) if m.group(m.lastindex) == "m" else m.group(2)  # Divide by 1000 if mXMR
 
     # "/u/MoneroTip 5$"
-    m = re.search(f'/u/{botname} (tip )?(\\$)?(?P<dollar_amt>[\\d\\.]+)(\\$)?', str(body).lower())
+    m = re.search(f'/u/{botname.lower()} (tip )?(\\$)?(?P<dollar_amt>[\\d\\.]+)(\\$)?', str(body).lower())
     if m:
         return str(get_xmr_val(m.group("dollar_amt")))
     return None
