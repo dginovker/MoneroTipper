@@ -1,5 +1,4 @@
 import re
-from Decimal import Decimal
 from decimal import Decimal
 
 import helper
@@ -44,7 +43,7 @@ def handle_withdraw(sender_wallet, sender_name, recipient_address, amount):
     tipper_logger.log(f'{sender_name} is trying to send {recipient_address} {amount} XMR')
     try:
         res = "Withdrawl success! [Txid](https://xmrchain.net/search?value="
-        res += generate_transaction(senderWallet=sender_wallet, recipientAddress=recipient_address,
+        res += generate_transaction(sender_wallet=sender_wallet, recipient_address=recipient_address,
                                     amount=Decimal(amount))
         res += ")"
     except Exception as e:
@@ -56,7 +55,7 @@ def handle_withdraw(sender_wallet, sender_name, recipient_address, amount):
 
 def handle_withdraw_request(author, subject, contents):
     """
-    Handles the withdrawl request, setting up RPC and calling the withdraw function
+    Handles the withdrawal request, setting up RPC and calling the withdraw function
 
     :param author: Wallet to withdraw from
     :param subject: The withdrawl request string
@@ -66,14 +65,14 @@ def handle_withdraw_request(author, subject, contents):
 
     amount = parse_withdrawl_amount(subject)
     if amount == None:
-        helper.bot_handler.reddit.redditor(author.name).message(subject="I didn't understand your withdrawal!", message=f'You sent: "{subject}", but I couldn\'t figure out how much you wanted to send. See [this](https://www.reddit.com/r/MoneroTipsBot/wiki/index#wiki_withdrawing) guide if you need help, or click "Report a Bug" under "Get Started"  if you think there\'s a bug!' + signature)
+        helper.praw.redditor(author.name).message(subject="I didn't understand your withdrawal!", message=f'You sent: "{subject}", but I couldn\'t figure out how much you wanted to send. See [this](https://www.reddit.com/r/MoneroTipsBot/wiki/index#wiki_withdrawing) guide if you need help, or click "Report a Bug" under "Get Started"  if you think there\'s a bug!' + signature)
         return None
 
-    sender_rpc_n_wallet = safe_wallet(port=helper.ports.withdraw_sender_port, wallet_name=author.name.lower(), password=helper.bot_handler.password)
+    sender_rpc_n_wallet = safe_wallet(port=helper.ports.withdraw_sender_port, wallet_name=author.name.lower())
 
     res = handle_withdraw(sender_rpc_n_wallet.wallet, author.name, contents, amount)
 
     sender_rpc_n_wallet.kill_rpc()
 
-    helper.bot_handler.reddit.redditor(author.name).message(subject="Your withdrawl", message=res + signature)
+    helper.praw.redditor(author.name).message(subject="Your withdrawl", message=res + signature)
     tipper_logger.log("Told " + author.name + " their withdrawl status (" + res + ")")

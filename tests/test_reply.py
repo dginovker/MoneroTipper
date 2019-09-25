@@ -22,7 +22,7 @@ class replyTestCase(unittest.TestCase):
 
     def test_parse_tip_amount(self):
         body = "/u/monerotipsbot 1.0 xmr I love this monero community member"
-        self.assertEqual(parse_tip_amount(self.replier.botname, body), "1.0")
+        self.assertEqual(parse_tip_amount(body, self.replier.botname), "1.0")
 
     @patch('logger.tipper_logger.log')
     @patch('tipbot.wallet_generator.generate_wallet_if_doesnt_exist')

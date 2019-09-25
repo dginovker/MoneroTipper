@@ -5,12 +5,13 @@ import os
 
 import helper
 
-def generate_wallet_if_doesnt_exist(name, password):
+
+def generate_wallet_if_doesnt_exist(name, password=helper.password):
     """
     Generates a new user wallet, if the user doesn't already have one
 
     :param name: Name of user generating the wallet
-    :param password: Password for the user wallet
+    :param password: Password to give the new wallet
     :return: True if a wallet was generated, False otherwise
     """
 
@@ -18,7 +19,7 @@ def generate_wallet_if_doesnt_exist(name, password):
     if wallet_exists(name):
         return False
 
-    return generate_wallet(name=name, password=password)
+    return generate_wallet(name=name, password=helper.password)
 
 
 def wallet_exists(name):
@@ -32,17 +33,18 @@ def wallet_exists(name):
     return os.path.isfile(path)
 
 
-def generate_wallet(name, password):
+def generate_wallet(name, password=helper.password):
     """
     Generates a new user wallet
     Stores the blockheight in a file named user_blockheight
 
     :param name: Name of user generating the wallet
+    :param password: Password to give the new wallet
     :return True on successful wallet generation, False otherwise
     """
 
     name = str(name)
-    rpcP = RPC(port=helper.ports.generate_wallet_port, password=password)
+    rpcP = RPC(port=helper.ports.generate_wallet_port)
 
     rpc_url = f"http://127.0.0.1:{helper.ports.generate_wallet_port}/json_rpc"
     function_url = "http://127.0.0.1:" + str(helper.ports.generate_wallet_port) + "/get_height"

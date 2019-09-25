@@ -1,5 +1,5 @@
 import re
-from Decimal import Decimal
+from decimal import Decimal
 
 import helper
 from helper import signature, get_xmr_val
@@ -10,7 +10,7 @@ from tipbot.backend.safe_wallet import safe_wallet
 from tipbot.backend.wallet_generator import generate_wallet_if_doesnt_exist
 
 
-def parse_tip_amount(botname, body):
+def parse_tip_amount(body, botname=helper.botname):
     """
     Tries to parse the amount a Redditor wishes to tip, based on the comment requesting the tip
 
@@ -60,32 +60,32 @@ def handle_tip_request(author, body, comment):
     """
 
     recipient = get_tip_recipient(comment)
-    amount = parse_tip_amount(helper.bot_handler.botname, body)
+    amount = parse_tip_amount(body)
     reply = None
 
     if recipient is None or amount is None:
         reply = "Nothing interesting happens.\n\n*In case you were trying to tip, I didn't understand you.*"
     elif Decimal(amount) < 0.001:
-        reply = helper.bot_handler.below_threshold_message
+        reply = helper.below_threshold_message
     else:
         tipper_logger.log(f'{author.name} is sending {recipient} {amount} XMR.')
-        generate_wallet_if_doesnt_exist(recipient.name.lower(), helper.bot_handler.password)
+        generate_wallet_if_doesnt_exist(recipient.name.lower())
 
-        res = tip(sender=author.name, recipient=recipient.name, amount=amount, password=helper.bot_handler.password)
+        res = tip(sender=author.name, recipient=recipient.name, amount=amount)
         if res["response"] is not None:
             reply = f'{res["response"]}'
             tipper_logger.log("The response is: " + reply)
         if res["message"] is not None:
-            helper.bot_handler.reddit.redditor(author.name).message(subject="Your tip", message=f"Regarding your tip here: {comment.context}\n\n" + res["message"] + signature)
+            helper.praw.redditor(author.name).message(subject="Your tip", message=f"Regarding your tip here: {comment.context}\n\n" + res["message"] + signature)
 
     try:
         if reply is not None:
-            helper.bot_handler.reddit.comment(str(comment)).reply(reply + signature)
+            helper.praw.comment(str(comment)).reply(reply + signature)
     except Exception as e:
         tipper_logger.log(e)
 
 
-def tip(sender, recipient, amount, password):
+def tip(sender, recipient, amount):
     """
     Sends Monero from sender to recipient
     If the sender and the recipient are the same, it creates only 1 rpc
@@ -98,8 +98,8 @@ def tip(sender, recipient, amount, password):
     """
 
     if recipient == "automoderator":
-        tipper_logger.log("Changing recipient to MoneroTipsBot to prevent abuse")
-        recipient = "monerotipsbot"
+        tipper_logger.log(f"Changing recipient to {helper.botname} to prevent abuse")
+        recipient = helper.botname
 
     info = {
         "txid" : "None",
@@ -115,9 +115,9 @@ def tip(sender, recipient, amount, password):
     recipient_rpc_n_wallet = None
 
     try:
-        sender_rpc_n_wallet = safe_wallet(port=helper.ports.tip_sender_port, wallet_name=sender.lower(), password=password)
+        sender_rpc_n_wallet = safe_wallet(port=helper.ports.tip_sender_port, wallet_name=sender.lower())
         if sender.lower() != recipient.lower():
-            recipient_rpc_n_wallet = safe_wallet(port=helper.ports.tip_recipient_port, wallet_name=recipient.lower(), password=password)
+            recipient_rpc_n_wallet = safe_wallet(port=helper.ports.tip_recipient_port, wallet_name=recipient.lower())
         else:
             recipient_rpc_n_wallet = sender_rpc_n_wallet
         tipper_logger.log("Wallets loaded!!")
@@ -134,7 +134,7 @@ def tip(sender, recipient, amount, password):
     tipper_logger.log("Successfully initialized wallets..")
 
     try:
-        txs = generate_transaction(senderWallet=sender_rpc_n_wallet.wallet, recipientAddress=recipient_rpc_n_wallet.wallet.address(), amount=amount)
+        txs = generate_transaction(sender_wallet=sender_rpc_n_wallet.wallet, recipient_address=recipient_rpc_n_wallet.wallet.address(), amount=amount)
 
         info["txid"] = str(txs)
         info["response"] = "Successfully tipped /u/" + recipient + " " + amount + " XMR! [^(txid)](https://xmrchain.com/search?value=" + str(txs) + ")"
