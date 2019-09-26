@@ -26,7 +26,7 @@ def main():
 
     try:
         while True:
-            for i in os.listdir("wallets/" + ("testnet/" if testnet else "mainnet/")):
+            for i in os.listdir("wallets/" + ("testnet/" if args.testnet else "mainnet/")):
                 if not "." in i:
                     start = int(round(time.time() * 1000))
                     print("Opening " + i + "'s wallet")
