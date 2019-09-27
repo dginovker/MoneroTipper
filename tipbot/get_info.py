@@ -81,7 +81,7 @@ def get_info_from_wallet(wallet, wallet_name, private_info=False):
         "balance_(unconfirmed)": str(helper.format_decimal(wallet.balance(unlocked=False) - wallet.balance(unlocked=True))),
         "seed": "Private mnemonic seed: " + wallet.seed().phrase + "\n\nRestore height (optional): " + open(
             "wallets/" + wallet_name + ".height", "r").read() if private_info
-        else "If you would like your **private** info, click [here](https://www.reddit.com/r/MoneroTipsBot/wiki/index#wiki_extracting_your_private_key)"
+        else "If you would like your **private** info, click [here](https://www.reddit.com/r/{botname}/wiki/index#wiki_extracting_your_private_key)"
     }
 
 

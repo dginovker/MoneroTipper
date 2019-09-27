@@ -1,4 +1,5 @@
 import unittest
+import helper
 from decimal import Decimal
 import decimal
 
@@ -8,7 +9,6 @@ try:
     from unittest.mock import patch, Mock, MagicMock
 except ImportError:
     from mock import patch, Mock
-from tipbot.reply import ReplyHandler
 
 class replyTestCase(unittest.TestCase):
     author = ""
@@ -16,12 +16,8 @@ class replyTestCase(unittest.TestCase):
     comment = ""
     subject = ""
 
-    def setUp(self):
-        self.replier = ReplyHandler(reddit=MagicMock(), password="password")
-        pass
-
     def test_parse_tip_amount(self):
-        body = "/u/monerotipsbot 1.0 xmr I love this monero community member"
+        body = f"/u/{helper.botname.lower()} 1.0 xmr I love this monero community member"
         self.assertEqual(parse_tip_amount(body, self.replier.botname), "1.0")
 
     @patch('logger.tipper_logger.log')

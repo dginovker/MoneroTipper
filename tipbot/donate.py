@@ -49,7 +49,7 @@ def handle_donation(author, subject):
     try:
         generate_transaction(sender_wallet=sender_rpc_n_wallet.wallet, recipient_address=general_fund_address, amount=amount, split_size=1)
         helper.praw.redditor(author).message(subject="Your donation to the General Dev Fund", message=f'Thank you for donating {format_decimal(amount)} of your XMR balance to the CCS!\n\nYou will soon have your total donations broadcasted to the wiki :) {signature}')
-        helper.praw.redditor("OsrsNeedsF2P").message(subject=f'{author} donated {amount} to the CCS!', message="Update table here: https://old.reddit.com/r/MoneroTipsBot/wiki/index#wiki_donating_to_the_ccs")
+        helper.praw.redditor("OsrsNeedsF2P").message(subject=f'{author} donated {amount} to the CCS!', message="Update table here: https://old.reddit.com/r/{botname}/wiki/index#wiki_donating_to_the_ccs")
         tipper_logger.log(f'{author} donated {format_decimal(amount)} to the CCS.')
     except Exception as e:
         helper.praw.redditor(author).message(subject="Your donation to the CCS failed", message=f'Please send the following to /u/OsrsNeedsF2P:\n\n' + str(e) + signature)

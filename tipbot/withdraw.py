@@ -63,7 +63,7 @@ def handle_withdraw_request(author, subject, contents):
 
     amount = parse_withdrawl_amount(subject)
     if amount is None:
-        helper.praw.redditor(author).message(subject="I didn't understand your withdrawal!", message=f'You sent: "{subject}", but I couldn\'t figure out how much you wanted to send. See [this](https://www.reddit.com/r/MoneroTipsBot/wiki/index#wiki_withdrawing) guide if you need help, or click "Report a Bug" under "Get Started"  if you think there\'s a bug!' + signature)
+        helper.praw.redditor(author).message(subject="I didn't understand your withdrawal!", message=f'You sent: "{subject}", but I couldn\'t figure out how much you wanted to send. See [this](https://www.reddit.com/r/{helper.botname}/wiki/index#wiki_withdrawing) guide if you need help, or click "Report a Bug" under "Get Started"  if you think there\'s a bug!' + signature)
         return None
 
     sender_rpc_n_wallet = SafeWallet(port=helper.ports.withdraw_sender_port, wallet_name=author.lower())

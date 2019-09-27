@@ -163,7 +163,7 @@ def get_error_response(e):
     response = "Error: " + str(e)
 
     if "Method 'transfer_split' failed with RPC Error of unknown code -4" in str(e):  # Not enough spendable inputs
-        response = "Sorry, you do not have enough spendable balance. Wait a bit, or see [this guide](https://www.reddit.com/r/MoneroTipsBot/wiki/index#wiki_why_is_all_my_monero_unconfirmed.3F_i_want_to_send_more_tips.21) for a solution."
+        response = "Sorry, you do not have enough spendable balance. Wait a bit, or see [this guide](https://www.reddit.com/r/{botname}/wiki/index#wiki_why_is_all_my_monero_unconfirmed.3F_i_want_to_send_more_tips.21) for a solution."
     if "of unknown code -3" in str(e):  # Node out of sync
         response += "\n\n The tipbot node might be really out of sync. Checking on it soon; /u/OsrsNeedsF2P..."
     if "not enough money" in str(e) or "tx not possible" in str(e):  # Can't afford fee
