@@ -66,7 +66,11 @@ class RPC(object):
                         proc.send_signal(SIGTERM)
                         print("MURDERING THE SIGNAL")
                         # TODO: Sleep until it's dead, timeout 20 seconds?
+            except psutil.AccessDenied:
+                # This is fine, because this issue was not incurred when trying to kill the signal.
+                pass
             except Exception as e:
+                # This could be bad, so let's log it just in case.
                 tipper_logger.log("RPC BAD: Something bad happened with trying to kill the RPC?")
                 tipper_logger.log(e)
 
