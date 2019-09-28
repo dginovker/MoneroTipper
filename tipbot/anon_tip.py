@@ -2,9 +2,10 @@ import re
 from decimal import Decimal
 
 import helper
+from helper import get_signature
 from logger import tipper_logger
 from tipbot.backend.wallet_generator import generate_wallet_if_doesnt_exist
-from helper import get_xmr_val, signature
+from helper import get_xmr_val
 from tipbot.tip import tip
 
 
@@ -50,18 +51,18 @@ def handle_anonymous_tip(author, subject, contents):
     amount = parse_anon_tip_amount(subject)
 
     if recipient is None or amount is None:
-        helper.praw.redditor(author).message(subject="Your anonymous tip", message="Nothing interesting happens.\n\n*Your recipient or amount wasn't clear to me*" + signature)
+        helper.praw.redditor(author).message(subject="Your anonymous tip", message="Nothing interesting happens.\n\n*Your recipient or amount wasn't clear to me*" + get_signature())
         return
     if Decimal(amount) < 0.001:  # Less than amount displayed in balance page
-        helper.praw.redditor(author).message(subject="Your anonymous tip", message=helper.below_threshold_message + signature)
+        helper.praw.redditor(author).message(subject="Your anonymous tip", message=helper.get_below_threshold_message() + get_signature())
         return
 
     tipper_logger.log(
         author + " is trying to send " + parse_anon_tip_amount(subject) + " XMR to " + parse_anon_tip_recipient(subject))
     res = tip(sender=author, recipient=recipient, amount=amount)
     if res["message"] is not None:
-        helper.praw.redditor(author).message(subject="Your anonymous tip", message=res["message"] + signature)
+        helper.praw.redditor(author).message(subject="Your anonymous tip", message=res["message"] + get_signature())
     else:
-        helper.praw.redditor(author).message(subject="Anonymous tip successful", message=res["response"] + signature)
+        helper.praw.redditor(author).message(subject="Anonymous tip successful", message=res["response"] + get_signature())
         helper.praw.redditor(recipient).message("You have received an anonymous tip of " + amount + " XMR!",
-                                                message=(signature if contents == helper.no_message_anon_tip_string else "The tipper attached the following message:\n\n" + contents + signature))
+                                                message=(get_signature() if contents == helper.no_message_anon_tip_string else "The tipper attached the following message:\n\n" + contents + get_signature()))

@@ -23,7 +23,6 @@ class Ports:
         self.donation_sender_port += 10000
         self.withdraw_sender_port += 10000
 
-
 # Default ports being used by the service
 ports = Ports()
 
@@ -41,21 +40,23 @@ testnet = False
 
 
 ### Constants ###
-below_threshold_message = f"The minimum tip you can send it 1 mXMR, or 0.001 XMR, since that's the minimum I show in the [balance page](https://www.reddit.com/message/compose/?to={botname}&subject=My%20info&message=Hit%20%27send%27%20and%20the%20bot%20will%20tell%20you%20your%20balance%20:\))!"
-
 no_message_anon_tip_string = "Edit this line to send a message, or leave it exactly the same to attach no message at all!"
 
 # General dev fund holder address
 general_fund_address = '46zarwyDHd8F2GXxVuETVz3wKvEnWic634eYykBS9Q6UbmQfm2y7XRt45KzF6rGT1Pj9YTp55iHRKXZsR7AaxDZM7XqtYRK'
-
-# Signature to add to the end of each reply
-signature = str(f"\n\n*****\n\n^\(っ◔◡◔)っ ^♡ ^| [^(Get Started)](https://old.reddit.com/r/{botname}/wiki/index) ^| [^(Show my balance)](https://www.reddit.com/message/compose/?to={botname}&subject=My%20info&message=Hit%20%27send%27%20and%20the%20bot%20will%20tell%20you%20your%20balance%20:\)) ^| [^(Donate to the CCS)](https://old.reddit.com/r/{botname}/wiki/index#wiki_donating_to_the_ccs) ^| ^♡\n\n ^(NOTICE: Bot is currently in Beta mode for a bit, expect downtime. Back up your seed!)")
 
 # Number of decimal points to display
 precision = 4
 
 
 ### Helper functions ###
+def get_signature():
+    return str(f"\n\n*****\n\n^\(っ◔◡◔)っ ^♡ ^| [^(Get Started)](https://old.reddit.com/r/{botname}/wiki/index) ^| [^(Show my balance)](https://www.reddit.com/message/compose/?to={botname}&subject=My%20info&message=Hit%20%27send%27%20and%20the%20bot%20will%20tell%20you%20your%20balance%20:\)) ^| [^(Donate to the CCS)](https://old.reddit.com/r/{botname}/wiki/index#wiki_donating_to_the_ccs) ^| ^♡\n\n ^(NOTICE: Bot is currently in Beta mode for a bit, expect downtime. Back up your seed!)")
+
+def get_below_threshold_message():
+    return f"The minimum tip you can send it 1 mXMR, or 0.001 XMR, since that's the minimum I show in the [balance page](https://www.reddit.com/message/compose/?to={botname}&subject=My%20info&message=Hit%20%27send%27%20and%20the%20bot%20will%20tell%20you%20your%20balance%20:\))!"
+
+
 def format_decimal(decimal, points=precision):
     """
     Formats a decimal number to have the number of decimal points defined to by precision

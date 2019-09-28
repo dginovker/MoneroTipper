@@ -5,7 +5,7 @@ import helper
 from logger import tipper_logger
 from tipbot.backend.safewallet import SafeWallet
 from tipbot.backend.transaction import generate_transaction
-from helper import get_xmr_val, signature
+from helper import get_xmr_val, get_signature
 from tipbot.tip import get_error_response
 
 
@@ -63,7 +63,7 @@ def handle_withdraw_request(author, subject, contents):
 
     amount = parse_withdrawl_amount(subject)
     if amount is None:
-        helper.praw.redditor(author).message(subject="I didn't understand your withdrawal!", message=f'You sent: "{subject}", but I couldn\'t figure out how much you wanted to send. See [this](https://www.reddit.com/r/{helper.botname}/wiki/index#wiki_withdrawing) guide if you need help, or click "Report a Bug" under "Get Started"  if you think there\'s a bug!' + signature)
+        helper.praw.redditor(author).message(subject="I didn't understand your withdrawal!", message=f'You sent: "{subject}", but I couldn\'t figure out how much you wanted to send. See [this](https://www.reddit.com/r/{helper.botname}/wiki/index#wiki_withdrawing) guide if you need help, or click "Report a Bug" under "Get Started"  if you think there\'s a bug!' + get_signature())
         return None
 
     sender_rpc_n_wallet = SafeWallet(port=helper.ports.withdraw_sender_port, wallet_name=author.lower())
@@ -72,5 +72,5 @@ def handle_withdraw_request(author, subject, contents):
 
     sender_rpc_n_wallet.kill_rpc()
 
-    helper.praw.redditor(author).message(subject="Your withdrawl", message=res + signature)
+    helper.praw.redditor(author).message(subject="Your withdrawl", message=res + get_signature())
     tipper_logger.log("Told " + author + " their withdrawl status (" + res + ")")

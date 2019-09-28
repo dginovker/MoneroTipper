@@ -52,7 +52,7 @@ def process_message(subject, body, author, comment):
         return
 
     # tipper_logger.log(f'Received message I don\t understand from {author}:\n\n {body}')
-    helper.praw.redditor(author).message(subject="I didn't understand your command", message=f'I didn\'t understand what you meant last time you tagged me. You said: \n\n{body}\n\nIf you didn\'t mean to summon me, you\'re all good! If you\'re confused, please let my owner know by clicking Report a Bug!{helper.signature}')
+    helper.praw.redditor(author).message(subject="I didn't understand your command", message=f'I didn\'t understand what you meant last time you tagged me. You said: \n\n{body}\n\nIf you didn\'t mean to summon me, you\'re all good! If you\'re confused, please let my owner know by clicking Report a Bug!{helper.get_signature()}')
 
 
 def main():
@@ -72,7 +72,7 @@ def main():
             traceback.print_exc()
             helper.praw.redditor(author).message(subject="Something broke!!",
                                                  message="If you tried to do something, please send the following error to /u/OsrsNeedsF2P:\n\n" + str(
-                                                     e) + helper.signature)
+                                                     e) + helper.get_signature())
         except Exception as e:
             tipper_logger.log("Just wow." + str(e))
         main()
@@ -86,7 +86,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     helper.praw = praw.Reddit(args.account_name, user_agent='Monero non-custodial testnet tipper: v0.9 (by /u/OsrsNeedsF2P)')
-    helper.botname = helper.praw.user.me()
+    helper.botname = helper.praw.user.me().name
     helper.password = args.password
 
     if args.testnet:

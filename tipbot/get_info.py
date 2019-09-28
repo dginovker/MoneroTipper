@@ -1,7 +1,7 @@
 from decimal import Decimal
 
 import helper
-from helper import signature
+from helper import get_signature
 from logger import tipper_logger
 
 from tipbot.backend.wallet_generator import generate_wallet_if_doesnt_exist
@@ -95,5 +95,5 @@ def handle_info_request(author, private_info=False):
     """
     helper.praw.redditor(author).message(
         subject="Your " + ("private address and info" if private_info else "public address and balance"),
-        message=get_info_as_string(wallet_name=author.lower(), private_info=private_info) + signature)
+        message=get_info_as_string(wallet_name=author.lower(), private_info=private_info) + get_signature())
     tipper_logger.log(f'Told {author} their {("private" if private_info else "public")} info.')

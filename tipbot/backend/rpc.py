@@ -66,8 +66,9 @@ class RPC(object):
                         proc.send_signal(SIGTERM)
                         print("MURDERING THE SIGNAL")
                         # TODO: Sleep until it's dead, timeout 20 seconds?
-            except Exception:
+            except Exception as e:
                 tipper_logger.log("RPC BAD: Something bad happened with trying to kill the RPC?")
+                tipper_logger.log(e)
 
     def wait_for_rpc_to_load(self):
         """

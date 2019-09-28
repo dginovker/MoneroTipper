@@ -2,7 +2,7 @@ import re
 from decimal import Decimal
 
 import helper
-from helper import signature, get_xmr_val
+from helper import get_signature, get_xmr_val
 from logger import tipper_logger
 
 from tipbot.backend.transaction import generate_transaction
@@ -76,11 +76,11 @@ def handle_tip_request(author, body, comment):
             reply = f'{res["response"]}'
             tipper_logger.log("The response is: " + reply)
         if res["message"] is not None:
-            helper.praw.redditor(author).message(subject="Your tip", message=f"Regarding your tip here: {comment.context}\n\n" + res["message"] + signature)
+            helper.praw.redditor(author).message(subject="Your tip", message=f"Regarding your tip here: {comment.context}\n\n" + res["message"] + get_signature())
 
     try:
         if reply is not None:
-            helper.praw.comment(str(comment)).reply(reply + signature)
+            helper.praw.comment(str(comment)).reply(reply + get_signature())
     except Exception as e:
         tipper_logger.log(e)
 
