@@ -30,7 +30,9 @@ class RPC(object):
     rpc_process = None
     load_timeout = None
 
-    def __init__(self, port, wallet_name=None, rpc_location="monero/monero-wallet-rpc", password=helper.password, disable_rpc_login=True, load_timeout=300):
+    def __init__(self, port, wallet_name=None, rpc_location="monero/monero-wallet-rpc", password=None, disable_rpc_login=True, load_timeout=300):
+        if password is None:
+            password = helper.password
         self.port = port
         self.wallet_name = wallet_name
         self.rpc_location = rpc_location

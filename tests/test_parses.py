@@ -21,13 +21,11 @@ class mainTestCase(unittest.TestCase):
     helper.botname = "MoneroTip"
 
     def test_parse_tip_amount(self):
-        self.assertTrue(
-            parse_tip_amount(f"/u/{helper.botname} 1.0 xmr", helper.botname) == "1.0")
+        self.assertTrue(parse_tip_amount(f"/u/{helper.botname} 1.0 xmr", helper.botname) == "1.0")
         self.assertTrue(parse_tip_amount(f"/u/{helper.botname} 1xmr", helper.botname) == "1")
-        self.assertTrue(
-            parse_tip_amount(f"/u/{helper.botname} tip 1 xmr", helper.botname) == "1")
-        self.assertTrue(
-            parse_tip_amount(f"/u/{helper.botname} tip 1xmr", helper.botname) == "1")
+        self.assertTrue(parse_tip_amount(f"/u/{helper.botname} 5 xmr", helper.botname) == "5")
+        self.assertTrue(parse_tip_amount(f"/u/{helper.botname} tip 1 xmr", helper.botname) == "1")
+        self.assertTrue(parse_tip_amount(f"/u/{helper.botname} tip 1xmr", helper.botname) == "1")
 
         self.assertTrue(
             parse_tip_amount(f"/u/{helper.botname} 1 mxmr", helper.botname) == "0.001")

@@ -12,8 +12,10 @@ class SafeWallet(object):
 
     wallet = None
     rpc = None
+    password = None
+    timeout = None
 
-    def __init__(self, port, wallet_name, password=helper.password, timeout=300):
+    def __init__(self, port, wallet_name, password=None, timeout=300):
         """
         Creates a monero-python Wallet based on the custom RPC that verifies it was created properly
 
@@ -22,6 +24,11 @@ class SafeWallet(object):
         :param wallet_name: Lowercase string of username
         :param timeout: How long to let the RPC sync before killing
         """
+        if password is None:
+            password = helper.password
+
+        self.password = password
+        self.timeout = timeout
         self.rpc = RPC(port=port, wallet_name=wallet_name, password=password, load_timeout=timeout)
 
         if not os.path.isfile("aborted-" + wallet_name):  # Check if wallet was emergency aborted

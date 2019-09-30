@@ -23,7 +23,7 @@ def get_info_as_string(wallet_name, private_info=False):
     return info_as_string
 
 
-def get_info(wallet_name, private_info=False, port=helper.ports.get_info_port, password=helper.password, timeout=300):
+def get_info(wallet_name, private_info=False, port=helper.ports.get_info_port, password=None, timeout=300):
     """
     Gets a tuple of wallet information, based on the user's name passed in
 
@@ -34,6 +34,8 @@ def get_info(wallet_name, private_info=False, port=helper.ports.get_info_port, p
     :param timeout: Time until RPC is aborted
     :return: Tuple containing the address, balance, unconfirmed balance and private seed if private_info is True
     """
+    if password is None:
+        password = helper.password
 
     generate_wallet_if_doesnt_exist(wallet_name)
 

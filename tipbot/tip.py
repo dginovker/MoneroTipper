@@ -1,4 +1,5 @@
 import re
+import traceback
 from decimal import Decimal
 
 import helper
@@ -10,7 +11,7 @@ from tipbot.backend.safewallet import SafeWallet
 from tipbot.backend.wallet_generator import generate_wallet_if_doesnt_exist
 
 
-def parse_tip_amount(body, botname=helper.botname):
+def parse_tip_amount(body, botname=None):
     """
     Tries to parse the amount a Redditor wishes to tip, based on the comment requesting the tip
 
@@ -18,6 +19,8 @@ def parse_tip_amount(body, botname=helper.botname):
     :param body: The contents of a comment that called the bot
     :return: An amount, in XMR, that the bot will tip
     """
+    if botname is None:
+        botname = helper.botname
 
     # "/u/MoneroTip 5 XMR"
     m = re.search(f'/u/{botname.lower()} (tip )?([\\d\\.]+)( )?(m)?xmr', str(body).lower())
@@ -60,13 +63,13 @@ def handle_tip_request(author, body, comment):
     """
 
     recipient = get_tip_recipient(comment)
-    amount = parse_tip_amount(body)
+    amount = parse_tip_amount(body=body, botname=helper.botname)
     reply = None
 
     if recipient is None or amount is None:
         reply = "Nothing interesting happens.\n\n*In case you were trying to tip, I didn't understand you.*"
     elif Decimal(amount) < 0.001:
-        reply = helper.below_threshold_message
+        reply = helper.get_below_threshold_message()
     else:
         tipper_logger.log(f'{author} is sending {recipient} {amount} XMR.')
         generate_wallet_if_doesnt_exist(recipient.name.lower())
@@ -137,10 +140,11 @@ def tip(sender, recipient, amount):
         txs = generate_transaction(sender_wallet=sender_rpc_n_wallet.wallet, recipient_address=recipient_rpc_n_wallet.wallet.address(), amount=amount)
 
         info["txid"] = str(txs)
-        info["response"] = "Successfully tipped /u/" + recipient + " " + amount + " XMR! [^(txid)](https://xmrchain.com/search?value=" + str(txs) + ")"
+        info["response"] = f"Successfully tipped /u/{recipient} {amount} XMR! [^(txid)]({helper.get_xmrchain(txs)})"
         tipper_logger.log("Successfully sent tip")
     except Exception as e:
         tipper_logger.log(e)
+        traceback.print_exc()
         info["response"] = None
         info["message"] = get_error_response(e)
 
@@ -168,5 +172,7 @@ def get_error_response(e):
         response += "\n\n The tipbot node might be really out of sync. Checking on it soon; /u/OsrsNeedsF2P..."
     if "not enough money" in str(e) or "tx not possible" in str(e):  # Can't afford fee
         response += "\n\n You do not have a high enough balance to cover the network fee. If you would like to manually withdraw the rest of your balance (<1 cent), you can try to by extracting your private key"
+    if "per_subaddress" in str(e):  # No balance, and it tried to run sweep_all
+        response += "\n\n You do not have any balance! Try filling some up by clicking \"Get Started\"."
 
     return response

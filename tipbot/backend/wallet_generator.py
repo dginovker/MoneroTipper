@@ -6,7 +6,7 @@ import os
 import helper
 
 
-def generate_wallet_if_doesnt_exist(name, password=helper.password):
+def generate_wallet_if_doesnt_exist(name, password=None):
     """
     Generates a new user wallet, if the user doesn't already have one
 
@@ -14,12 +14,14 @@ def generate_wallet_if_doesnt_exist(name, password=helper.password):
     :param password: Password to give the new wallet
     :return: True if a wallet was generated, False otherwise
     """
+    if password is None:
+        password = helper.password
 
     name = str(name)
     if wallet_exists(name):
         return False
 
-    return generate_wallet(name=name, password=helper.password)
+    return generate_wallet(name=name, password=password)
 
 
 def wallet_exists(name):
@@ -33,7 +35,7 @@ def wallet_exists(name):
     return os.path.isfile(path)
 
 
-def generate_wallet(name, password=helper.password):
+def generate_wallet(name, password=None):
     """
     Generates a new user wallet
     Stores the blockheight in a file named user_blockheight
@@ -42,6 +44,8 @@ def generate_wallet(name, password=helper.password):
     :param password: Password to give the new wallet
     :return True on successful wallet generation, False otherwise
     """
+    if password is None:
+        password = helper.password
 
     name = str(name)
     rpc = RPC(port=helper.ports.generate_wallet_port)

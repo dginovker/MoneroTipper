@@ -40,10 +40,8 @@ def handle_withdraw(sender_wallet, sender_name, recipient_address, amount):
 
     tipper_logger.log(f'{sender_name} is trying to send {recipient_address} {amount} XMR')
     try:
-        res = "Withdrawl success! [Txid](https://xmrchain.net/search?value="
-        res += generate_transaction(sender_wallet=sender_wallet, recipient_address=recipient_address,
-                                    amount=Decimal(amount))
-        res += ")"
+        res = "Withdrawal success! [Txid](" \
+              f"{helper.get_xmrchain(generate_transaction(sender_wallet=sender_wallet, recipient_address=recipient_address, amount=Decimal(amount)))})"
     except Exception as e:
         tipper_logger.log(e)
         res = get_error_response(e)
