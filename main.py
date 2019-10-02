@@ -33,7 +33,6 @@ def process_message(subject, body, author, comment):
     generate_wallet_if_doesnt_exist(name=author.lower(), password=args.password)
 
     if comment_requests_tip(body):
-        test = helper.password
         handle_tip_request(author=author, body=body, comment=comment)
         return
     if subject.lower() in "my info":

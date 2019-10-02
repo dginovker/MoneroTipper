@@ -59,9 +59,9 @@ def get_balance(wallet, confirmed):
     unconf_balance = wallet.balance(unlocked=False) - wallet.balance(unlocked=True)
     dust_message = ""
 
-    if Decimal(0) < conf_balance < 0.0001:
+    if Decimal(0) < conf_balance < Decimal(0.0001):
         dust_message += " (Miniscule balance exists, export private key to view it)"
-    if Decimal(0) < unconf_balance < 0.0001:
+    if Decimal(0) < unconf_balance < Decimal(0.0001):
         dust_message += " (Miniscule unconf balance exists, export private key to view it)"
 
     return helper.format_decimal(conf_balance) + dust_message if confirmed \

@@ -68,7 +68,7 @@ def handle_tip_request(author, body, comment):
 
     if recipient is None or amount is None:
         reply = "Nothing interesting happens.\n\n*In case you were trying to tip, I didn't understand you.*"
-    elif Decimal(amount) < 0.001:
+    elif Decimal(amount) < Decimal(0.0001):
         reply = helper.get_below_threshold_message()
     else:
         tipper_logger.log(f'{author} is sending {recipient} {amount} XMR.')

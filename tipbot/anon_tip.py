@@ -53,7 +53,7 @@ def handle_anonymous_tip(author, subject, contents):
     if recipient is None or amount is None:
         helper.praw.redditor(author).message(subject="Your anonymous tip", message="Nothing interesting happens.\n\n*Your recipient or amount wasn't clear to me*" + get_signature())
         return
-    if Decimal(amount) < 0.001:  # Less than amount displayed in balance page
+    if Decimal(amount) < (0.0001):  # Less than amount displayed in balance page
         helper.praw.redditor(author).message(subject="Your anonymous tip", message=helper.get_below_threshold_message() + get_signature())
         return
 
