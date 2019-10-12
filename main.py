@@ -51,7 +51,6 @@ def process_message(subject, body, author, comment):
         handle_anonymous_tip(author=author, subject=subject, contents=body)
         return
 
-    # tipper_logger.log(f'Received message I don\t understand from {author}:\n\n {body}')
     helper.praw.redditor(author).message(subject="I didn't understand your command", message=f'I didn\'t understand what you meant last time you tagged me. You said: \n\n{body}\n\nIf you didn\'t mean to summon me, you\'re all good! If you\'re confused, please let my owner know by clicking Report a Bug!{helper.get_signature()}')
 
 
@@ -67,12 +66,12 @@ def main():
                 process_message(subject=message.subject, body=message.body, author=author, comment=message)
     except Exception as e:
         try:
-            tipper_logger.log("Main error: " + str(e))
-            tipper_logger.log("Blame " + author)
-            traceback.print_exc()
-            helper.praw.redditor(author).message(subject="Something broke!!",
-                                                 message="If you tried to do something, please send the following error to /u/OsrsNeedsF2P:\n\n" + str(
-                                                     e) + helper.get_signature())
+            if "read timeout" not in str(e):  # Don't care about Reddit being temporarily down
+                tipper_logger.log("Main error: " + str(e))
+                tipper_logger.log("Blame " + author)
+                traceback.print_exc()
+                helper.praw.redditor(author).message(subject="Something broke!!",
+                                                     message="If you tried to do something, please send the following error to /u/OsrsNeedsF2P:\n\n" + str(e) + helper.get_signature())
         except Exception as e:
             tipper_logger.log("Just wow." + str(e))
         main()
