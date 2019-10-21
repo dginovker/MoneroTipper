@@ -66,7 +66,7 @@ def main():
                 process_message(subject=message.subject, body=message.body, author=author, comment=message)
     except Exception as e:
         try:
-            if "read timeout" not in str(e):  # Don't care about Reddit being temporarily down
+            if "Read timed out" not in str(e):  # Don't care about Reddit being temporarily down
                 tipper_logger.log("Main error: " + str(e))
                 tipper_logger.log("Blame " + author)
                 traceback.print_exc()
