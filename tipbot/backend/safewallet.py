@@ -29,13 +29,20 @@ class SafeWallet(object):
 
         self.password = password
         self.timeout = timeout
+
+        self.open_rpc(port=port, wallet_name=wallet_name, tries=5)
+
+
+
+    def open_rpc(self, port, wallet_name, password=password, timeout=timeout, tries=5):
         self.rpc = RPC(port=port, wallet_name=wallet_name, password=password, load_timeout=timeout)
 
         if not os.path.isfile("aborted-" + wallet_name):  # Check if wallet was emergency aborted
             self.wallet = Wallet(JSONRPCWallet(port=self.rpc.port, password=self.rpc.password, timeout=self.rpc.load_timeout))
         else:
-            tipper_logger.log("WARNING: " + wallet_name + " had their RPC aborted!!!")
+            tipper_logger.log(f"WARNING: {wallet_name} had their RPC aborted!!! Trying {tries} more times")
             os.remove("aborted-" + wallet_name)
+            self.open_rpc(port=port, wallet_name=wallet_name, password=password, timeout=timeout, tries=tries-1)
 
     def kill_rpc(self):
         self.rpc.kill()
