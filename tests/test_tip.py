@@ -3,13 +3,9 @@ import unittest
 import praw
 
 import helper
-import main
 from tipbot import tip
 
-try:
-    from unittest.mock import patch, Mock, MagicMock
-except ImportError:
-    from mock import patch, Mock
+from unittest.mock import patch, Mock, MagicMock
 
 class tipTestCase(unittest.TestCase):
     helper.praw = praw.Reddit("MoneroTest", user_agent='Monero non-custodial testnet tipper test suite: (by /u/OsrsNeedsF2P)')

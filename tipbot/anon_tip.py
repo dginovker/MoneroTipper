@@ -6,7 +6,7 @@ from helper import get_signature
 from logger import tipper_logger
 from tipbot.backend.wallet_generator import generate_wallet_if_doesnt_exist
 from helper import get_xmr_val
-from tipbot.tip import tip
+from tipbot.tip import tip, fix_automoderator_recipient
 
 
 def parse_anon_tip_amount(subject):
@@ -26,16 +26,14 @@ def parse_anon_tip_amount(subject):
 
 def parse_anon_tip_recipient(subject):
     """
-    Returns user to send XMR to
+    Returns username as String to send XMR to
 
     :param subject: in format "Anonymous tip USER AMOUNT xmr"
     """
     m = re.search('anonymous tip (.+) .+ (m)?xmr', subject.lower())
     if m:
         generate_wallet_if_doesnt_exist(m.group(1).lower())
-        if m.group(1) == "automoderator":
-            return helper.botname
-        return m.group(1)
+        return fix_automoderator_recipient(m.group(1))
 
 
 def handle_anonymous_tip(author, subject, contents):
@@ -57,9 +55,10 @@ def handle_anonymous_tip(author, subject, contents):
         helper.praw.redditor(author).message(subject="Your anonymous tip", message=helper.get_below_threshold_message() + get_signature())
         return
 
-    tipper_logger.log(
-        author + " is trying to send " + parse_anon_tip_amount(subject) + " XMR to " + parse_anon_tip_recipient(subject))
+    tipper_logger.log(author + " is trying to send " + parse_anon_tip_amount(subject) + " XMR to " + parse_anon_tip_recipient(subject))
+
     res = tip(sender=author, recipient=recipient, amount=amount)
+
     if res["message"] is not None:
         helper.praw.redditor(author).message(subject="Your anonymous tip", message=res["message"] + get_signature())
     else:

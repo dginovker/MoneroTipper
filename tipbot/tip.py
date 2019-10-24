@@ -39,7 +39,7 @@ def get_tip_recipient(comment):
     Determines the recipient of the tip, based on the comment requesting the tip
 
     :param comment: The PRAW comment that notified the bot
-    :return: Username of the parent of the comment
+    :return: String representing Username of the parent of the comment
     """
 
     author = None
@@ -48,7 +48,7 @@ def get_tip_recipient(comment):
     except Exception:
         tipper_logger.log("Somehow there's no parent at all?")
 
-    return author
+    return fix_automoderator_recipient(author.name)
 
 
 def handle_tip_request(author, body, comment):
@@ -72,9 +72,9 @@ def handle_tip_request(author, body, comment):
         reply = helper.get_below_threshold_message()
     else:
         tipper_logger.log(f'{author} is sending {recipient} {amount} XMR.')
-        generate_wallet_if_doesnt_exist(recipient.name.lower())
+        generate_wallet_if_doesnt_exist(recipient.lower())
 
-        res = tip(sender=author, recipient=recipient.name, amount=amount)
+        res = tip(sender=author, recipient=recipient, amount=amount)
         if res["response"] is not None:
             reply = f'{res["response"]}'
             tipper_logger.log("The response is: " + reply)
@@ -88,6 +88,13 @@ def handle_tip_request(author, body, comment):
         tipper_logger.log(e)
 
 
+def fix_automoderator_recipient(recipient):
+    if recipient.lower() == "automoderator":
+        tipper_logger.log(f"Changing recipient to {helper.botname} to prevent abuse")
+        return helper.botname
+    return recipient
+
+
 def tip(sender, recipient, amount):
     """
     Sends Monero from sender to recipient
@@ -99,10 +106,6 @@ def tip(sender, recipient, amount):
     :param amount: amount to send in XMR
     :return info: dictionary containing txid, a private message and a public response
     """
-
-    if recipient == "automoderator":
-        tipper_logger.log(f"Changing recipient to {helper.botname} to prevent abuse")
-        recipient = helper.botname
 
     info = {
         "txid" : "None",

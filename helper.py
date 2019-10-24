@@ -27,7 +27,7 @@ class Ports:
 ports = Ports()
 
 # Wallet passwords
-password = ""
+password = "password"
 
 # PRAW (Python Reddit API Wrapper) instance
 praw = None

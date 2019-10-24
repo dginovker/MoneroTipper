@@ -79,7 +79,7 @@ def main():
 
 if __name__ == "__main__":
     parser = ArgumentParser()
-    parser.add_argument("-p", "--password", dest="password", default="\"\"", help="Password to Monero wallets")
+    parser.add_argument("-p", "--password", dest="password", default="password", help="Password to Monero wallets")
     parser.add_argument("-a" "--account", dest="account_name", required=True, help="Reddit account username. Must match praw.ini.")
     parser.add_argument("-t", "--testnet", action="store_true", help="Whether to run MoneroTipper on testnet")
     args = parser.parse_args()

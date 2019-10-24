@@ -51,7 +51,7 @@ def generate_wallet(name, password=None):
     rpc = RPC(port=helper.ports.generate_wallet_port)
 
     rpc_url = f"http://127.0.0.1:{helper.ports.generate_wallet_port}/json_rpc"
-    function_url = "http://127.0.0.1:" + str(helper.ports.generate_wallet_port) + "/get_height"
+    function_url = "http://127.0.0.1:" + str(helper.ports.monerod_port) + "/get_height"
     headers = {'Content-Type': 'application/json'}
 
     payload = {
@@ -66,14 +66,12 @@ def generate_wallet(name, password=None):
     }
 
     try:
-        requests.post(
-            rpc_url, data=json.dumps(payload), headers=headers).json()
+        requests.post(rpc_url, data=json.dumps(payload), headers=headers).json()
     except Exception as e:
         tipper_logger.log(str(e))
 
     try:
-        blockheight_response = requests.post(
-            function_url, headers=headers).json()
+        blockheight_response = requests.post(function_url, headers=headers).json()
         print(blockheight_response["height"] - 10, file=open('wallets/' + ("testnet/" if helper.testnet else "mainnet/") + name + ".height", 'w')) # DON'T CHANGE THIS DUMDUM
     except Exception as e:
         tipper_logger.log(str(e))
