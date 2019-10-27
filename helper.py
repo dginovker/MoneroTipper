@@ -51,7 +51,17 @@ precision = 4
 
 ### Helper functions ###
 def get_signature():
-    return str(f"\n\n*****\n\n^\(っ◔◡◔)っ ^♡ ^| [^(Get Started)](https://old.reddit.com/r/{botname}/wiki/index) ^| [^(Show my balance)](https://www.reddit.com/message/compose/?to={botname}&subject=My%20info&message=Hit%20%27send%27%20and%20the%20bot%20will%20tell%20you%20your%20balance%20:\)) ^| [^(Donate to the CCS)](https://old.reddit.com/r/{botname}/wiki/index#wiki_donating_to_the_ccs) ^| ^♡\n\n ^(NOTICE: Bot is currently in Beta mode for a bit, expect downtime. Back up your seed!)")
+    base = str(f"\n\n*****\n\n")
+    emojii = str(f"^\(っ◔◡◔)っ ^♡")
+    get_started = str(f" ^| [^(Get Started)](https://old.reddit.com/r/{botname}/wiki/index)")
+    show_balance = str(f" ^| [^(Show my balance)](https://www.reddit.com/message/compose/?to={botname}&subject=My%20info&message=Hit%20%27send%27%20and%20the%20bot%20will%20tell%20you%20your%20balance%20:\))")
+    donate = str(f" ^| [^(Donate to the CCS)](https://old.reddit.com/r/{botname}/wiki/index#wiki_donating_to_the_ccs)")
+    end = str(f" ^| ^♡")
+    double_sig = str(f"\n\n ^(NOTICE: This bot is a testnet version. There may be long delays between transactions showing up on the network!)")  if testnet else ""
+    return base + emojii + get_started + show_balance + donate + end + double_sig
+
+def get_faucet_reward():
+    return 0 if not testnet else 1
 
 def get_below_threshold_message():
     return f"The minimum tip you can send it 1 mXMR, or 0.0001 XMR, since that's the minimum I show in the [balance page](https://www.reddit.com/message/compose/?to={botname}&subject=My%20info&message=Hit%20%27send%27%20and%20the%20bot%20will%20tell%20you%20your%20balance%20:\))!"
