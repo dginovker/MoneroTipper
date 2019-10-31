@@ -8,3 +8,4 @@ tests/_trial_temp/
 venv/
 logs/*
 monero/*
+abort*

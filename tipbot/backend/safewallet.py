@@ -35,6 +35,9 @@ class SafeWallet(object):
 
 
     def open_rpc(self, port, wallet_name, password=password, timeout=timeout, tries=5):
+        if tries == 0:
+            tipper_logger.log(f"WARNING: FAILED to open {wallet_name}'s wallet!!")
+            return
         self.rpc = RPC(port=port, wallet_name=wallet_name, password=password, load_timeout=timeout)
 
         if not os.path.isfile("aborted-" + wallet_name):  # Check if wallet was emergency aborted

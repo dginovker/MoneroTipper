@@ -24,6 +24,9 @@ class HiddenPrints:
 
 def main():
     helper.testnet = args.testnet
+    if helper.testnet:
+        helper.ports.ports_to_testnet()
+
     try:
         while True:
             for i in os.listdir("wallets/" + ("testnet/" if args.testnet else "mainnet/")):
