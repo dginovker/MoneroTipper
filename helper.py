@@ -88,4 +88,4 @@ def get_xmr_val(dollars):
                             headers={'accept': 'application/json'},
                             params=(('ids', 'monero'), ('vs_currencies', 'usd')))
 
-    return float(dollars) / float(json.loads(response.content)["monero"]["usd"])
+    return format_decimal(float(dollars) / float(json.loads(response.content)["monero"]["usd"]))
