@@ -82,8 +82,8 @@ def get_info_from_wallet(wallet, wallet_name, private_info=False):
         "balance": get_balance(wallet, True),  # format_decimal(wallet.balance(unlocked=True)),
         "balance_(unconfirmed)": str(helper.format_decimal(wallet.balance(unlocked=False) - wallet.balance(unlocked=True))),
         "seed": "Private mnemonic seed: " + wallet.seed().phrase + "\n\nRestore height (optional): " + open(
-            "wallets/" + wallet_name + ".height", "r").read() if private_info
-        else "If you would like your **private** info, click [here](https://www.reddit.com/r/{botname}/wiki/index#wiki_extracting_your_private_key)"
+            "wallets/" + ("testnet/" if helper.testnet else "mainnet/") + wallet_name + ".height", "r").read() if private_info
+        else f"If you would like your **private** info, click [here](https://www.reddit.com/r/{helper.botname}/wiki/index#wiki_extracting_your_private_key)"
     }
 
 

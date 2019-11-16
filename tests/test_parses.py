@@ -41,6 +41,8 @@ class mainTestCase(unittest.TestCase):
         self.assertTrue(parse_tip_amount(f"/u/{helper.botname} $1", helper.botname) == str(
             get_xmr_val(1)))
 
+        self.assertTrue(parse_tip_amount(f"Here's some stuff to throw the bot off:\n If you want to peer to peer trade Monero instead of using an exchange, check out LocalMonero: http://localmonero.co/\n/u/{helper.botname} 0.001 XMR", helper.botname) == "0.001")
+
     def test_parse_withdrawal_amount(self):
         self.assertTrue(parse_withdrawl_amount("withdraw 1.0 xmr") == "1.0")
         self.assertTrue(parse_withdrawl_amount("withdraw 1xmr") == "1")
