@@ -66,7 +66,11 @@ def main():
                 process_message(subject=message.subject, body=message.body, author=author, comment=message)
     except Exception as e:
         try:
-            if "read timeout" not in str(e).lower() and "reddit.com timed out" not in str(e) and "503" not in str(e) or "127.0.0.1" in str(e):  # Don't care about Reddit being temporarily down, but I do care about local connection failures
+            if "read timeout" not in str(e).lower() \
+                    and "reddit.com timed out" not in str(e) \
+                    and "503" not in str(e) \
+                    and "Connection aborted" not in str(e) \
+                    or "127.0.0.1" in str(e):  # If localhost is in it, then definitely do send the error msg
                 tipper_logger.log("Main error: " + str(e))
                 tipper_logger.log("Blame " + author)
                 traceback.print_exc()
