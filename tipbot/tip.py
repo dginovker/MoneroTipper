@@ -148,8 +148,7 @@ def tip(sender, recipient, amount):
     except Exception as e:
         tipper_logger.log(e)
         traceback.print_exc()
-        info["response"] = None
-        info["message"] = get_error_response(e)
+        info["response"] = get_error_response(e)
 
     sender_rpc_n_wallet.kill_rpc()
     recipient_rpc_n_wallet.kill_rpc()
