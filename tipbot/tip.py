@@ -118,19 +118,12 @@ def tip(sender, recipient, amount):
     sender = str(sender)
     recipient = str(recipient)
     sender_rpc_n_wallet = None
-    recipient_rpc_n_wallet = None
 
     try:
         sender_rpc_n_wallet = SafeWallet(port=helper.ports.tip_sender_port, wallet_name=sender.lower())
-        if sender.lower() != recipient.lower():
-            recipient_rpc_n_wallet = SafeWallet(port=helper.ports.tip_recipient_port, wallet_name=recipient.lower())
-        else:
-            recipient_rpc_n_wallet = sender_rpc_n_wallet
-        tipper_logger.log("Wallets loaded!!")
-
+        tipper_logger.log("Sender wallet loaded!!")
     except Exception as e:
         sender_rpc_n_wallet.kill_rpc()
-        recipient_rpc_n_wallet.kill_rpc()
         tipper_logger.log("Failed to open wallets for " + sender + " and " + recipient + ". Message: ")
         tipper_logger.log(e)
         info["response"] = "Could not open wallets properly! Perhaps my node is out of sync? (Try again shortly).\n\n^/u/OsrsNeedsF2P!!"
@@ -140,7 +133,8 @@ def tip(sender, recipient, amount):
     tipper_logger.log("Successfully initialized wallets..")
 
     try:
-        txs = generate_transaction(sender_wallet=sender_rpc_n_wallet.wallet, recipient_address=recipient_rpc_n_wallet.wallet.address(), amount=amount)
+        recipient_address=open("wallets/" + ("testnet/" if helper.testnet else "mainnet/") + recipient.lower() + ".address.txt", "r").read()
+        txs = generate_transaction(sender_wallet=sender_rpc_n_wallet.wallet, recipient_address=recipient_address, amount=amount)
 
         info["txid"] = str(txs)
         info["response"] = f"Successfully tipped /u/{recipient} {amount} XMR! [^(txid)]({helper.get_xmrchain(txs)})"
@@ -151,7 +145,6 @@ def tip(sender, recipient, amount):
         info["response"] = get_error_response(e)
 
     sender_rpc_n_wallet.kill_rpc()
-    recipient_rpc_n_wallet.kill_rpc()
 
     tipper_logger.log("Tip function completed without crashing")
 

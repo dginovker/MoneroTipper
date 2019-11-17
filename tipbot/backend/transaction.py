@@ -67,14 +67,14 @@ def generate_transaction(sender_wallet, recipient_address, amount, split_size=6,
 
     sum = 0
     transactions = []
-    if sender_wallet.balance() - Decimal(amount) < Decimal(0.002):
+    if Decimal(amount) < Decimal(0.1) + sender_wallet.balance():
         tipper_logger.log("Sending sweep_all transaction...")
 
         sweep_res = timeout_function(target=send_sweep_all, args=(sender_wallet, recipient_address), timeout=timeout)
 
         tipper_logger.log("Sweep res is: " + str(sweep_res))
         if sweep_res == None:
-            raise ValueError("The sweep all function timed out! You may have too many inputs!")
+            raise ValueError("The sweep all function timed out! You may have no unlocked balance, or (unlikely) too many inputs!")
         return sweep_res
 
     # Make multiple of the same output, but in smaller chunks
