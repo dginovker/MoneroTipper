@@ -64,7 +64,6 @@ def handle_tip_request(author, body, comment):
 
     recipient = get_tip_recipient(comment)
     amount = parse_tip_amount(body=body, botname=helper.botname)
-    reply = None
 
     if recipient is None or amount is None:
         reply = "Nothing interesting happens.\n\n*In case you were trying to tip, I didn't understand you.*"
@@ -75,17 +74,14 @@ def handle_tip_request(author, body, comment):
         generate_wallet_if_doesnt_exist(recipient.lower())
 
         res = tip(sender=author, recipient=recipient, amount=amount)
-        if res["response"] is not None:
-            reply = f'{res["response"]}'
-            tipper_logger.log("The response is: " + reply)
+
+        reply = f'{res["response"]}'
+        tipper_logger.log("The response is: " + reply)
+
         if res["message"] is not None:
             helper.praw.redditor(author).message(subject="Your tip", message=f"Regarding your tip here: {comment.context}\n\n" + res["message"] + get_signature())
 
-    try:
-        if reply is not None:
-            helper.praw.comment(str(comment)).reply(reply + get_signature())
-    except Exception as e:
-        tipper_logger.log(e)
+    helper.praw.comment(str(comment)).reply(reply + get_signature())
 
 
 def fix_automoderator_recipient(recipient):
@@ -109,8 +105,8 @@ def tip(sender, recipient, amount):
 
     info = {
         "txid" : "None",
-        "response" : "None",
-        "message" : None
+        "response" : "None", #Comment reply
+        "message" : None #Error message
     }
 
     tipper_logger.log(sender + " is trying to send " + recipient + " " + amount + " XMR")
@@ -142,7 +138,8 @@ def tip(sender, recipient, amount):
     except Exception as e:
         tipper_logger.log(e)
         traceback.print_exc()
-        info["response"] = get_error_response(e)
+        info["message"] = get_error_response(e)
+        info["response"] = "Didn't tip - Check your private message to see why :)"
 
     sender_rpc_n_wallet.kill_rpc()
 

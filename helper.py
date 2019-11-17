@@ -1,4 +1,5 @@
 import json
+import re
 
 import requests
 
@@ -89,3 +90,6 @@ def get_xmr_val(dollars):
                             params=(('ids', 'monero'), ('vs_currencies', 'usd')))
 
     return format_decimal(float(dollars) / float(json.loads(response.content)["monero"]["usd"]))
+
+def is_txid(string):
+    return re.search("[0-9a-f]{64}", str(string))

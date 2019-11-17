@@ -1,8 +1,9 @@
 from monero import prio
 from decimal import Decimal
+
+from helper import is_txid
 from logger import tipper_logger
 import multiprocessing
-
 
 def send_sweep_all(sender_wallet, recipient_address, pipe):
     """
@@ -12,7 +13,10 @@ def send_sweep_all(sender_wallet, recipient_address, pipe):
     :param recipient_address: Destination
     :param pipe: Way of returning a string
     """
-    pipe.send(str(sender_wallet.sweep_all(recipient_address, priority=prio.UNIMPORTANT)[0][0]))
+    try:
+        pipe.send(str(sender_wallet.sweep_all(recipient_address, priority=prio.UNIMPORTANT)[0][0]))
+    except Exception as e:
+        pipe.send(e)
 
 
 def broadcast_transaction(sender_wallet, transactions, pipe):
@@ -24,7 +28,10 @@ def broadcast_transaction(sender_wallet, transactions, pipe):
     :param transactions: Transactions to send
     :param pipe: Way of returning a string
     """
-    pipe.send(str(sender_wallet.transfer_multiple(transactions, priority=prio.UNIMPORTANT)[0].hash))
+    try:
+        pipe.send(str(sender_wallet.transfer_multiple(transactions, priority=prio.UNIMPORTANT)[0].hash))
+    except Exception as e:
+        pipe.send(e)
 
 
 def timeout_function(target, args, timeout):
@@ -35,6 +42,7 @@ def timeout_function(target, args, timeout):
     :param timeout: Time in seconds to wait
     :return: String that the function in process wanted to return
     """
+    print("In timeout func, timeout set to " + str(timeout))
     response = None
     recv_end, send_end = multiprocessing.Pipe(False)
     p = multiprocessing.Process(target=target, args=args+(send_end,))
@@ -67,14 +75,14 @@ def generate_transaction(sender_wallet, recipient_address, amount, split_size=6,
 
     sum = 0
     transactions = []
-    if Decimal(amount) < Decimal(0.1) + sender_wallet.balance():
+    if Decimal(amount) > sender_wallet.balance() - Decimal(0.001) and Decimal(amount) < Decimal(0.1) + sender_wallet.balance(): # If you're sending more than your balance, but not much more --
         tipper_logger.log("Sending sweep_all transaction...")
 
         sweep_res = timeout_function(target=send_sweep_all, args=(sender_wallet, recipient_address), timeout=timeout)
 
         tipper_logger.log("Sweep res is: " + str(sweep_res))
-        if sweep_res == None:
-            raise ValueError("The sweep all function timed out! You may have no unlocked balance, or (unlikely) too many inputs!")
+        if not is_txid(sweep_res):
+            raise ValueError(sweep_res) #It'll get caught by the calling function which will handle it
         return sweep_res
 
     # Make multiple of the same output, but in smaller chunks
@@ -89,6 +97,6 @@ def generate_transaction(sender_wallet, recipient_address, amount, split_size=6,
 
     broadcast_res =  timeout_function(target=broadcast_transaction, args=(sender_wallet, transactions), timeout=timeout)
     tipper_logger.log("Broadcast res is: " + str(broadcast_res))
-    if broadcast_res == None:
-        raise ValueError("The broadcast transaction function timed out! You may have too many inputs!")
+    if not is_txid(broadcast_res):
+        raise ValueError(broadcast_res)
     return broadcast_res
