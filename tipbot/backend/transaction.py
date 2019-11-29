@@ -42,7 +42,6 @@ def timeout_function(target, args, timeout):
     :param timeout: Time in seconds to wait
     :return: String that the function in process wanted to return
     """
-    print("In timeout func, timeout set to " + str(timeout))
     response = None
     recv_end, send_end = multiprocessing.Pipe(False)
     p = multiprocessing.Process(target=target, args=args+(send_end,))
