@@ -30,7 +30,7 @@ class SafeWallet(object):
         self.password = password
         self.timeout = timeout
 
-        self.open_rpc(port=port, wallet_name=wallet_name, tries=5)
+        self.open_rpc(port=port, password=password, wallet_name=wallet_name, tries=5)
 
 
 
