@@ -19,7 +19,6 @@ class RPC(object):
     :param port: Port for the Monero RPC to run on
     :param wallet_name: Wallet name to open on this RPC session
     :param rpc_location: Location on disk where the RPC program sits
-    :param wallet_dir: Directory where all the wallets are kept
     :param disable_rpc_login: Whether or not to use --disable-rpc-login on the RPC
     :param load_timeout: Timeout in seconds for how long to load an RPC
     """
@@ -31,7 +30,9 @@ class RPC(object):
     rpc_process = None
     load_timeout = None
 
-    def __init__(self, port, wallet_name=None, rpc_location="monero/monero-wallet-rpc", password="\"\"", disable_rpc_login=True, load_timeout=300):
+    def __init__(self, port, wallet_name=None, rpc_location="monero/monero-wallet-rpc", password=None, disable_rpc_login=True, load_timeout=300):
+        if password is None:
+            password = helper.password
         self.port = port
         self.wallet_name = wallet_name
         self.rpc_location = rpc_location
@@ -67,8 +68,13 @@ class RPC(object):
                         proc.send_signal(SIGTERM)
                         print("MURDERING THE SIGNAL")
                         # TODO: Sleep until it's dead, timeout 20 seconds?
-            except:
-                ""
+            except psutil.AccessDenied:
+                # This is fine, because this issue was not incurred when trying to kill the signal.
+                pass
+            except Exception as e:
+                # This could be bad, so let's log it just in case.
+                tipper_logger.log("RPC BAD: Something bad happened with trying to kill the RPC?")
+                tipper_logger.log(e)
 
     def wait_for_rpc_to_load(self):
         """

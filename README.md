@@ -20,7 +20,7 @@ An on-chain, non-custodial, Reddit Monero tip bot written in Python.
 - Have praw.ini in main dir
 - Have Monero software in `/monero` dir
 - Run `monerod`
-- Run `main.py -p <password>`
+- Run `main.py -p <password> [-t]`
 
 ## Credits:
 

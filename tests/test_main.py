@@ -3,7 +3,7 @@ try:
     from unittest.mock import patch, Mock, MagicMock
 except ImportError:
     from mock import patch, Mock
-from main import commentRequestsTip, processMessage
+from main import comment_requests_tip, process_message
 
 class mainTestCase(unittest.TestCase):
 
@@ -13,8 +13,8 @@ class mainTestCase(unittest.TestCase):
     comment = ""
 
     def test_comment_requests_tip(self):
-        self.assertTrue(commentRequestsTip("/u/monerotipsbot 1.0 xmr monero is great"))
-        self.assertFalse(commentRequestsTip("/u/monerotipsbot infinity xmr"))
+        self.assertTrue(comment_requests_tip("/u/monerotipsbot 1.0 xmr monero is great"))
+        self.assertFalse(comment_requests_tip("/u/monerotipsbot infinity xmr"))
 
     def test_process_message(self):
         subject = "Withdraw .1 XMR"

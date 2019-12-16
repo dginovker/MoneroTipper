@@ -1,18 +1,21 @@
-from wallet_rpc.rpc import RPC
+from tipbot.backend.rpc import RPC
 from logger import tipper_logger
 import json, requests
 import os
 
 import helper
 
-def generate_wallet_if_doesnt_exist(name, password):
+
+def generate_wallet_if_doesnt_exist(name, password=None):
     """
     Generates a new user wallet, if the user doesn't already have one
 
     :param name: Name of user generating the wallet
-    :param password: Password for the user wallet
+    :param password: Password to give the new wallet
     :return: True if a wallet was generated, False otherwise
     """
+    if password is None:
+        password = helper.password
 
     name = str(name)
     if wallet_exists(name):
@@ -32,20 +35,23 @@ def wallet_exists(name):
     return os.path.isfile(path)
 
 
-def generate_wallet(name, password):
+def generate_wallet(name, password=None):
     """
     Generates a new user wallet
     Stores the blockheight in a file named user_blockheight
 
     :param name: Name of user generating the wallet
+    :param password: Password to give the new wallet
     :return True on successful wallet generation, False otherwise
     """
+    if password is None:
+        password = helper.password
 
     name = str(name)
-    rpcP = RPC(port=helper.ports.generate_wallet_port, password=password)
+    rpc = RPC(port=helper.ports.generate_wallet_port)
 
     rpc_url = f"http://127.0.0.1:{helper.ports.generate_wallet_port}/json_rpc"
-    function_url = "http://127.0.0.1:" + str(helper.ports.generate_wallet_port) + "/get_height"
+    function_url = "http://127.0.0.1:" + str(helper.ports.monerod_port) + "/get_height"
     headers = {'Content-Type': 'application/json'}
 
     payload = {
@@ -60,19 +66,17 @@ def generate_wallet(name, password):
     }
 
     try:
-        requests.post(
-            rpc_url, data=json.dumps(payload), headers=headers).json()
+        requests.post(rpc_url, data=json.dumps(payload), headers=headers).json()
     except Exception as e:
         tipper_logger.log(str(e))
 
     try:
-        blockheight_response = requests.post(
-            function_url, headers=headers).json()
+        blockheight_response = requests.post(function_url, headers=headers).json()
         print(blockheight_response["height"] - 10, file=open('wallets/' + ("testnet/" if helper.testnet else "mainnet/") + name + ".height", 'w')) # DON'T CHANGE THIS DUMDUM
     except Exception as e:
         tipper_logger.log(str(e))
 
-    rpcP.kill()
+    rpc.kill()
 
     if wallet_exists(name):
         tipper_logger.log("Generated a wallet for " + name)

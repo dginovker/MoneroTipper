@@ -1,4 +1,4 @@
-from tipperInteractions.get_info import *
+from tipbot.get_info import *
 from argparse import ArgumentParser
 from logger import tipper_logger
 import helper
@@ -8,8 +8,8 @@ import os, sys
 
 
 parser = ArgumentParser()
-parser.add_argument("-p", "--password", dest="password")
-parser.add_argument("-t", "--testnet", dest="testnet")
+parser.add_argument("-p", "--password", dest="password", default="password")
+parser.add_argument("-t", "--testnet", action="store_true", help="Whether to run MoneroTipper on testnet")
 args = parser.parse_args()
 
 
@@ -23,14 +23,17 @@ class HiddenPrints:
         sys.stdout = self._original_stdout
 
 def main():
+    helper.testnet = args.testnet
+    if helper.testnet:
+        helper.ports.ports_to_testnet()
 
     try:
         while True:
-            for i in os.listdir("wallets/" + ("testnet/" if testnet else "mainnet/")):
+            for i in os.listdir("wallets/" + ("testnet/" if args.testnet else "mainnet/")):
                 if not "." in i:
                     start = int(round(time.time() * 1000))
                     print("Opening " + i + "'s wallet")
-                    get_info(i, False, password=args.password, port=helper.ports.wallet_sync_port, timeout=60)
+                    get_info(wallet_name=i, private_info=False, password=args.password, port=helper.ports.wallet_sync_port, timeout=60)
                     if int(round(time.time()*1000))-start > 50000:
                         print("Warn: " + i + "'s wallet is likely unsynced")
 
