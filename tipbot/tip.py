@@ -129,7 +129,8 @@ def tip(sender, recipient, amount):
     tipper_logger.log("Successfully initialized wallets..")
 
     try:
-        recipient_address=open("wallets/" + ("testnet/" if helper.testnet else "mainnet/") + recipient.lower() + ".address.txt", "r").read()
+        #recipient_address=open("wallets/" + ("testnet/" if helper.testnet else "mainnet/") + recipient.lower() + ".address.txt", "r").read()
+        recipient_address = helper.get_local_wallet_address(recipient.lower())
         txs = generate_transaction(sender_wallet=sender_rpc_n_wallet.wallet, recipient_address=recipient_address, amount=amount)
 
         info["txid"] = str(txs)
