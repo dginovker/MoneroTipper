@@ -1,6 +1,7 @@
 import unittest
 
 import helper
+from main import comment_requests_tip
 from tipbot.anon_tip import parse_anon_tip_amount
 from helper import get_xmr_val
 from tipbot.donate import parse_donate_amount
@@ -19,6 +20,14 @@ class mainTestCase(unittest.TestCase):
     """
 
     helper.botname = "MoneroTip"
+
+    def test_comment_requests_tip(self):
+        self.assertTrue(comment_requests_tip(f"/u/{helper.botname} 1 XMR"))
+        self.assertTrue(comment_requests_tip(f"/u/{helper.botname} 1xmr"))
+        self.assertTrue(comment_requests_tip(f"/u/{helper.botname} 1mXMR"))
+        self.assertTrue(comment_requests_tip(f"/u/{helper.botname} 1$"))
+        self.assertTrue(comment_requests_tip(f"/u/{helper.botname} $1"))
+        self.assertTrue(comment_requests_tip(f"thx for the guide /u/{helper.botname} tip 1mxmr enjoy :)"))
 
     def test_parse_tip_amount(self):
         self.assertTrue(parse_tip_amount(f"/u/{helper.botname} 1.0 xmr", helper.botname) == "1.0")

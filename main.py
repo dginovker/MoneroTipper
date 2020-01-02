@@ -15,7 +15,7 @@ from tipbot.withdraw import handle_withdraw_request
 
 
 def comment_requests_tip(body):
-    return re.search(f'/u/{helper.botname.lower()} (tip )?($)?([\\d\\.]+?)( )?(m)?(xmr)?($)?', str(body).lower())
+    return re.search(f'/u/{helper.botname.lower()} (tip )?(\\$)?([\\d\\.]+?)( )?(m)?(xmr)?(\\$)?', str(body).lower())
 
 
 def process_message(subject, body, author, comment):
