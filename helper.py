@@ -3,6 +3,8 @@ import re
 
 import requests
 
+from tipbot.backend.safewallet import SafeWallet
+
 
 class Ports:
     monerod_port = 18081
@@ -13,6 +15,7 @@ class Ports:
     tip_recipient_port = 18089
     donation_sender_port = 18090
     withdraw_sender_port = 18091
+    create_address_txt_port = 18092
 
     def ports_to_testnet(self):
         self.monerod_port += 10000
@@ -23,6 +26,7 @@ class Ports:
         self.tip_recipient_port += 10000
         self.donation_sender_port += 10000
         self.withdraw_sender_port += 10000
+        self.create_address_txt_port += 10000
 
 # Default ports being used by the service
 ports = Ports()
@@ -93,3 +97,21 @@ def get_xmr_val(dollars):
 
 def is_txid(string):
     return re.search("[0-9a-f]{64}", str(string))
+
+
+def get_address_txt(wallet_name):
+    """
+    Gets the address.txt from the wallet without creating a RPC, unless the file doesn't exist, in which case it creates a RPC and saves it
+
+    :param wallet_name: The wallet name to get the address from
+    :return: The address
+    """
+    try:
+        return open("wallets/" + ("testnet/" if testnet else "mainnet/") + wallet_name + ".address.txt", "r").read().rstrip()
+    except Exception:
+        wallet = SafeWallet(port=ports.create_address_txt_port, wallet_name=wallet_name)
+        address = wallet.rpc.run_rpc_request('{"jsonrpc":"2.0","id":"0","method":"get_address","params":{"account_index":0,"address_index":[0]}}').json()["result"]["address"]
+        print(address, file=open('wallets/' + ("testnet/" if testnet else "mainnet/") + wallet_name + ".address.txt", 'w'))
+        wallet.kill_rpc()
+        return address
+

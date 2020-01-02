@@ -28,6 +28,8 @@ def process_message(subject, body, author, comment):
     :param comment: comment to parse for the command
     """
 
+    tipper_logger.log("Got message " + body)
+
     tipper_logger.log(f'Received message: {subject} from {author}: {body}')
 
     generate_wallet_if_doesnt_exist(name=author.lower(), password=args.password)

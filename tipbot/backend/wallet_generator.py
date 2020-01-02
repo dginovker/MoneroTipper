@@ -78,6 +78,8 @@ def generate_wallet(name, password=None):
 
     rpc.kill()
 
+    helper.get_address_txt(name) # This will generate the .address.txt so we don't need to open each time
+
     if wallet_exists(name):
         tipper_logger.log("Generated a wallet for " + name)
         return True

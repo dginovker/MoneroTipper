@@ -2,6 +2,7 @@ import shlex, subprocess
 import multiprocessing
 import time
 import os
+import requests
 from _signal import SIGTERM
 
 import psutil
@@ -126,6 +127,20 @@ class RPC(object):
             return "SUCCESS"
 
         return "LOADING"
+
+    def run_rpc_request(self, command):
+        """
+
+        :param command: RPC request data to run
+        :return: return value
+        """
+        headers = {
+            'Content-Type': 'application/json',
+        }
+
+        response = requests.post(f'http://127.0.0.1:{self.port}/json_rpc', headers=headers, data=command)
+
+        return response
 
     def kill(self):
         """

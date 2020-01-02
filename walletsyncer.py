@@ -24,6 +24,7 @@ class HiddenPrints:
 
 def main():
     helper.testnet = args.testnet
+    helper.password = args.password
     if helper.testnet:
         helper.ports.ports_to_testnet()
 
