@@ -3,6 +3,9 @@ import re
 
 import requests
 
+from tipbot.backend.rpc import RPC
+from tipbot.backend.wallet_generator import generate_wallet_if_doesnt_exist
+
 
 class Ports:
     monerod_port = 18081
@@ -13,6 +16,7 @@ class Ports:
     tip_recipient_port = 18089
     donation_sender_port = 18090
     withdraw_sender_port = 18091
+    get_address_port = 18092
 
     def ports_to_testnet(self):
         self.monerod_port += 10000
@@ -23,6 +27,7 @@ class Ports:
         self.tip_recipient_port += 10000
         self.donation_sender_port += 10000
         self.withdraw_sender_port += 10000
+        self.get_address_port += 10000
 
 # Default ports being used by the service
 ports = Ports()
@@ -93,3 +98,29 @@ def get_xmr_val(dollars):
 
 def is_txid(string):
     return re.search("[0-9a-f]{64}", str(string))
+
+def get_local_wallet_address(wallet_name):
+    generate_wallet_if_doesnt_exist(wallet_name)
+
+    rpc_url = f"http://127.0.0.1:{ports.get_address_port}/json_rpc"
+    rpc = RPC(wallet_name=wallet_name, port=ports.get_address_port)
+
+    headers = {
+        'Content-Type': 'application/json',
+    }
+
+    payload = {
+        "jsonrpc" : "2.0",
+        "id" : "0",
+        "method" : "get_address",
+        "params": {
+            "account_index" : "0",
+            "address_index":"[0]"
+        }
+    }
+
+    response = requests.post(rpc_url, data=json.dumps(payload), headers=headers).json()
+
+    rpc.kill()
+    return response
+
