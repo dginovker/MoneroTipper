@@ -116,7 +116,7 @@ def tip(sender, recipient, amount):
     sender_rpc_n_wallet = None
 
     try:
-        sender_rpc_n_wallet = SafeWallet(port=helper.ports.tip_sender_port, wallet_name=sender.lower())
+        sender_rpc_n_wallet = SafeWallet(port=helper.ports.tip_sender_port, wallet_password=helper.password, wallet_name=sender.lower())
         tipper_logger.log("Sender wallet loaded!!")
     except Exception as e:
         sender_rpc_n_wallet.kill_rpc()
