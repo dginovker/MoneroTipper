@@ -9,3 +9,4 @@ venv/
 logs/*
 monero/*
 abort*
+_trial_temp/

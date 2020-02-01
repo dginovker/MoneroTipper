@@ -39,7 +39,7 @@ def get_info(wallet_name, private_info=False, port=helper.ports.get_info_port, p
 
     generate_wallet_if_doesnt_exist(wallet_name)
 
-    rpc_n_wallet = SafeWallet(port=port, wallet_name=wallet_name, password=password, timeout=timeout)
+    rpc_n_wallet = SafeWallet(port=port, wallet_name=wallet_name, wallet_password=password, timeout=timeout)
 
     info = get_info_from_wallet(rpc_n_wallet.wallet, wallet_name, private_info)
 

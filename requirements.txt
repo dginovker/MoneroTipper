@@ -2,3 +2,4 @@ requests
 psutil
 monero-python
 praw
+twisted
