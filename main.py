@@ -78,7 +78,7 @@ def main():
                 tipper_logger.log("Blame " + author)
                 traceback.print_exc()
                 helper.praw.redditor("OsrsNeedsF2P").message(subject=f"Something broke for /u/{author}!!",
-                                                     message="str(e)" + helper.get_signature())
+                                                     message=f"{str(e)}" + helper.get_signature())
         except Exception as e:
             tipper_logger.log("Just wow." + str(e))
         main()

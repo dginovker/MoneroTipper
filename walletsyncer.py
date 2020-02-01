@@ -22,6 +22,8 @@ class HiddenPrints:
         sys.stdout.close()
         sys.stdout = self._original_stdout
 
+sync_time = 180
+
 def main():
     helper.testnet = args.testnet
     helper.password = args.password
@@ -34,8 +36,8 @@ def main():
                 if not "." in i:
                     start = int(round(time.time() * 1000))
                     print("Opening " + i + "'s wallet")
-                    get_info(wallet_name=i, private_info=False, password=args.password, port=helper.ports.wallet_sync_port, timeout=60)
-                    if int(round(time.time()*1000))-start > 50000:
+                    get_info(wallet_name=i, private_info=False, password=args.password, port=helper.ports.wallet_sync_port, timeout=sync_time)
+                    if int(round(time.time()*1000))-start > sync_time*1000 - 10000:
                         print("Warn: " + i + "'s wallet is likely unsynced")
 
     except Exception as e:
