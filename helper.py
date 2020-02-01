@@ -3,9 +3,6 @@ import re
 
 import requests
 
-from tipbot.backend.safewallet import SafeWallet
-
-
 class Ports:
     monerod_port = 18081
     wallet_sync_port = 18085
@@ -106,12 +103,5 @@ def get_address_txt(wallet_name):
     :param wallet_name: The wallet name to get the address from
     :return: The address
     """
-    try:
-        return open("wallets/" + ("testnet/" if testnet else "mainnet/") + wallet_name + ".address.txt", "r").read().rstrip()
-    except Exception:
-        wallet = SafeWallet(port=ports.create_address_txt_port, wallet_name=wallet_name)
-        address = wallet.rpc.run_rpc_request('{"jsonrpc":"2.0","id":"0","method":"get_address","params":{"account_index":0,"address_index":[0]}}').json()["result"]["address"]
-        print(address, file=open('wallets/' + ("testnet/" if testnet else "mainnet/") + wallet_name + ".address.txt", 'w'))
-        wallet.kill_rpc()
-        return address
+    return open("wallets/" + ("testnet/" if testnet else "mainnet/") + wallet_name + ".address.txt", "r").read().rstrip()
 

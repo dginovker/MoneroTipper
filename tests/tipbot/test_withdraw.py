@@ -1,11 +1,7 @@
 import unittest
 
 import helper
-from tipbot.parse_message import comment_requests_tip
-from tipbot.anon_tip import parse_anon_tip_amount
 from helper import get_xmr_val
-from tipbot.donate import parse_donate_amount
-from tipbot.tip import parse_tip_amount
 from tipbot.withdraw import parse_withdrawl_amount
 
 try:

@@ -3,7 +3,7 @@ import os
 from monero.backends.jsonrpc import JSONRPCWallet
 from monero.wallet import Wallet
 
-import helper
+from helper import password
 from logger import tipper_logger
 from tipbot.backend.rpc import RPC
 
@@ -12,29 +12,26 @@ class SafeWallet(object):
 
     wallet = None
     rpc = None
-    password = None
+    wallet_password = None
     timeout = None
 
-    def __init__(self, port, wallet_name, password=None, timeout=300):
+    def __init__(self, port, wallet_name, wallet_password=password, timeout=300):
         """
         Creates a monero-python Wallet based on the custom RPC that verifies it was created properly
 
         :param port: Port to open RPC
-        :param password: Password to open the wallet
+        :param wallet_password: Password to open the wallet
         :param wallet_name: Lowercase string of username
         :param timeout: How long to let the RPC sync before killing
         """
-        if password is None:
-            password = helper.password
-
-        self.password = password
+        self.wallet_password = wallet_password
         self.timeout = timeout
 
-        self.open_rpc(port=port, password=password, wallet_name=wallet_name, tries=5)
+        self.open_rpc(port=port, password=wallet_password, wallet_name=wallet_name, tries=5)
 
 
 
-    def open_rpc(self, port, wallet_name, password=password, timeout=timeout, tries=5):
+    def open_rpc(self, port, wallet_name, password=wallet_password, timeout=timeout, tries=5):
         if tries == 0:
             tipper_logger.log(f"WARNING: FAILED to open {wallet_name}'s wallet!!")
             return
