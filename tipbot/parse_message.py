@@ -31,7 +31,7 @@ def subject_requests_donate(subject):
 
 
 def subject_requests_anonymous_tip(subject):
-    return "anonymous tip" in subject.lower()
+    return "anonymous tip" in subject.lower() and "re:" not in subject.lower()
 
 
 def process_message(author, comment, subject, body):

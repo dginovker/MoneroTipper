@@ -1,7 +1,7 @@
 import unittest
 
 import helper
-from tipbot.parse_message import comment_requests_tip
+from tipbot.parse_message import comment_requests_tip, subject_requests_anonymous_tip
 
 try:
     from unittest.mock import patch, Mock, MagicMock
@@ -23,3 +23,6 @@ class mainTestCase(unittest.TestCase):
         self.assertTrue(comment_requests_tip(f"/u/{helper.botname} 1$"))
         self.assertTrue(comment_requests_tip(f"/u/{helper.botname} $1"))
         self.assertTrue(comment_requests_tip(f"thx for the guide /u/{helper.botname} tip 1mxmr enjoy :)"))
+
+    def test_comment_requests_anon_tip(self):
+        self.assertFalse(subject_requests_anonymous_tip(f"re: You have received an anonymous tip of 0.01 XMR!"))
