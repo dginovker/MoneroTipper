@@ -30,9 +30,8 @@ def parse_anon_tip_recipient(subject):
 
     :param subject: in format "Anonymous tip USER AMOUNT xmr"
     """
-    m = re.search('anonymous tip (.+) .+ (m)?xmr', subject.lower())
+    m = re.search('anonymous tip ([^\s]+) .+ (m)?xmr', subject.lower())
     if m:
-        generate_wallet_if_doesnt_exist(m.group(1).lower())
         return fix_automoderator_recipient(m.group(1))
 
 
@@ -54,6 +53,8 @@ def handle_anonymous_tip(author, subject, contents):
     if Decimal(amount) < (0.0001):  # Less than amount displayed in balance page
         helper.praw.redditor(author).message(subject="Your anonymous tip", message=helper.get_below_threshold_message() + get_signature())
         return
+
+    generate_wallet_if_doesnt_exist(recipient)
 
     tipper_logger.log(author + " is trying to send " + parse_anon_tip_amount(subject) + " XMR to " + parse_anon_tip_recipient(subject))
 

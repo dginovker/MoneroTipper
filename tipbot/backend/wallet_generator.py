@@ -4,6 +4,7 @@ import json, requests
 import os
 
 import helper
+from tipbot.backend.safewallet import SafeWallet
 
 
 def generate_wallet_if_doesnt_exist(name, password=None):
@@ -65,6 +66,8 @@ def generate_wallet(name, password=None):
         }
     }
 
+    tipper_logger.log(f"Generating wallet for {name}.")
+
     try:
         requests.post(rpc_url, data=json.dumps(payload), headers=headers).json()
     except Exception as e:
@@ -78,7 +81,13 @@ def generate_wallet(name, password=None):
 
     rpc.kill()
 
-    helper.get_address_txt(name) # This will generate the .address.txt so we don't need to open each time
+    # Create .address.txt (probably a better way since we already had a wallet open)
+    wallet = SafeWallet(port=helper.ports.create_address_txt_port, wallet_name=name, wallet_password=password)
+    address = wallet.rpc.run_rpc_request(
+        '{"jsonrpc":"2.0","id":"0","method":"get_address","params":{"account_index":0,"address_index":[0]}}').json()[
+        "result"]["address"]
+    print(address, file=open('wallets/' + ("testnet/" if helper.testnet else "mainnet/") + name + ".address.txt", 'w'))
+    wallet.kill_rpc()
 
     if wallet_exists(name):
         tipper_logger.log("Generated a wallet for " + name)

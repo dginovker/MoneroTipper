@@ -1,13 +1,8 @@
 import unittest
 
 import helper
-from tipbot.anon_tip import parse_anon_tip_amount
+from tipbot.anon_tip import parse_anon_tip_amount, parse_anon_tip_recipient
 from helper import get_xmr_val
-
-try:
-    from unittest.mock import patch, Mock, MagicMock
-except ImportError:
-    from mock import patch, Mock
 
 class mainTestCase(unittest.TestCase):
     """
@@ -27,3 +22,7 @@ class mainTestCase(unittest.TestCase):
             get_xmr_val(1)))
         self.assertTrue(parse_anon_tip_amount(f"anonymous tip {helper.botname} $1.0") == str(
             get_xmr_val(1)))
+
+    def test_parse_anon_tip_recipient(self):
+        self.assertTrue(parse_anon_tip_recipient(f"anonymous tip big .1 mxmr") == "big")
+        self.assertTrue(parse_anon_tip_recipient(f"anonymous tip big      .1 mxmr") == "big")
