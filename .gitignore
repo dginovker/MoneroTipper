@@ -5,6 +5,7 @@ wallets/
 praw.ini
 __pycache__/
 tests/_trial_temp/
+tests/tipbot/_trial_temp/
 venv/
 logs/*
 monero/*

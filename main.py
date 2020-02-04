@@ -21,10 +21,7 @@ def main():
         try:
             if "read timeout" not in str(e).lower() \
                     and "reddit.com timed out" not in str(e) \
-                    and "503" not in str(e) \
-                    and "Connection aborted" not in str(e) \
-                    and "has no attribute 'name'" not in str(e) \
-                    or "127.0.0.1" in str(e):  # If localhost is in it, then definitely do send the error msg
+                    and "503" not in str(e):
                 tipper_logger.log("Main error: " + str(e))
                 tipper_logger.log("Blame " + author)
                 traceback.print_exc()

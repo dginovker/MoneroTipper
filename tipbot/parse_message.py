@@ -27,7 +27,7 @@ def subject_requests_withdraw(subject):
 
 
 def subject_requests_donate(subject):
-    return "donate" in subject.lower()
+    return "donate" in subject.lower() and "re:" not in subject.lower()
 
 
 def subject_requests_anonymous_tip(subject):

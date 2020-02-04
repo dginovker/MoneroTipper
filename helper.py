@@ -62,11 +62,14 @@ def get_signature():
     double_sig = str(f"\n\n ^(NOTICE: This bot is a testnet version. There may be long delays between transactions showing up on the network!)")  if testnet else ""
     return base + emojii + get_started + show_balance + donate + end + double_sig
 
+
 def get_below_threshold_message():
     return f"The minimum tip you can send it 1 mXMR, or 0.0001 XMR, since that's the minimum I show in the [balance page](https://www.reddit.com/message/compose/?to={botname}&subject=My%20info&message=Hit%20%27send%27%20and%20the%20bot%20will%20tell%20you%20your%20balance%20:\))!"
 
+
 def get_xmrchain(txid):
     return f"https://{'testnet.' if testnet else ''}xmrchain.com/search?value={str(txid)}"
+
 
 def format_decimal(decimal, points=precision):
     """
@@ -91,6 +94,7 @@ def get_xmr_val(dollars):
                             params=(('ids', 'monero'), ('vs_currencies', 'usd')))
 
     return format_decimal(float(dollars) / float(json.loads(response.content)["monero"]["usd"]))
+
 
 def is_txid(string):
     return re.search("[0-9a-f]{64}", str(string))

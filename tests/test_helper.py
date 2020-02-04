@@ -1,10 +1,6 @@
 import unittest
-try:
-    from unittest.mock import patch, Mock, MagicMock
-except ImportError:
-    from mock import patch, Mock
-import helper
 
+import helper
 
 class mainTestCase(unittest.TestCase):
 
@@ -13,3 +9,6 @@ class mainTestCase(unittest.TestCase):
         helper.ports.ports_to_testnet()
         self.assertTrue(helper.ports.monerod_port == 28081)
 
+    def test_get_xmr_val(self):
+        self.assertTrue(float(helper.get_xmr_val(5)) > 0)
+        self.assertTrue(float(helper.get_xmr_val(1)) < 5000)
