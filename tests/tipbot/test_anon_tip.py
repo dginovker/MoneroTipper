@@ -24,5 +24,4 @@ class mainTestCase(unittest.TestCase):
     def test_parse_anon_tip_recipient(self):
         self.assertTrue(parse_anon_tip_recipient(f"anonymous tip big .1 mxmr") == "big")
         self.assertTrue(parse_anon_tip_recipient(f"anonymous tip big      .1 mxmr") == "big")
-        print(parse_anon_tip_recipient(f"Anonymous tip OsrsNeedsF2P $5"))
         self.assertTrue(parse_anon_tip_recipient(f"Anonymous tip OsrsNeedsF2P $5") == "osrsneedsf2p")

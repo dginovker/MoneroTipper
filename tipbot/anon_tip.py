@@ -26,11 +26,11 @@ def parse_anon_tip_amount(subject):
 
 def parse_anon_tip_recipient(subject):
     """
-    Returns username as String to send XMR to
+    Returns username (in lowercase) as String to send XMR to
 
     :param subject: in format "Anonymous tip USER AMOUNT xmr"
     """
-    m = re.search('anonymous tip ([^\s]+) .+ (m)?xmr', subject, flags=re.IGNORECASE)
+    m = re.search(r'anonymous tip ([^\s]+) ', subject.lower(), flags=re.IGNORECASE)
     if m:
         return fix_automoderator_recipient(m.group(1))
 
