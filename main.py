@@ -14,9 +14,12 @@ def main():
     author = None
     try:
         for message in helper.praw.inbox.stream():
-            author = message.author.name
-            if message.created_utc > start_time:
-                process_message(author=author, comment=message, subject=message.subject, body=message.body)
+            if not message.author:
+                helper.praw.inbox.mark_read([message]) # Gets rid of messages that otherwise crash service (i.e. sub bans)
+            else:
+                author = message.author.name
+                if message.created_utc > start_time:
+                    process_message(author=author, comment=message, subject=message.subject, body=message.body)
     except Exception as e:
         try:
             if "read timeout" not in str(e).lower() \
