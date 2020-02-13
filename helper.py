@@ -1,5 +1,6 @@
 import json
 import re
+from decimal import Decimal
 
 import requests
 
@@ -98,6 +99,29 @@ def get_xmr_val(dollars):
 
 def is_txid(string):
     return re.search("[0-9a-f]{64}", str(string))
+
+
+def parse_amount(prefix, body):
+    """
+    Parses the amount of Monero to send/withdraw/tip/etc
+
+    :param prefix: Regex prefix that's unqiue (i.e. /u/MoneroTipsbot Tip)
+    :param body: The body of text to find an amount in
+    :param xmrgroup: The regex grouping that the XMR value lies in
+    :return: Amount in XMR intended to get parsed out
+    """
+
+    # "prefix 5 XMR"
+    m = re.search(rf"{prefix}(?P<xmr_amt>[\d\.]+)( )?(m)?xmr", str(body), flags=re.IGNORECASE)
+    if m:
+        return str(Decimal(m.group("xmr_amt"))/1000) if m.group(m.lastindex) == "m" else m.group("xmr_amt")  # Divide by 1000 if mXMR
+
+    # "prefix 5$"
+    m = re.search(rf'{prefix}(\$)?(?P<dollar_amt>[\d\.]+)(\$)?', str(body), flags=re.IGNORECASE)
+    if m:
+        return str(get_xmr_val(m.group("dollar_amt")))
+    return None
+
 
 
 def get_address_txt(wallet_name):

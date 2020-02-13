@@ -9,24 +9,6 @@ from helper import get_xmr_val, get_signature
 from tipbot.tip import get_error_response
 
 
-def parse_withdrawl_amount(subject):
-    """
-    Parses the amount a Redditor wishes to withdraw from their wallet
-
-    :param subject: Subject line in form "Withdraw xyz XMR"
-    :return: Amount of XMR that will be withdrawn
-    """
-
-    m = re.search('withdraw ([\\d\\.]+)( )?(m)?xmr', str(subject).lower())
-    if m:
-        return str(Decimal(m.group(1))/1000) if m.group(m.lastindex) == "m" else str(Decimal(m.group(1)))
-
-    m = re.search('withdraw (\\$)?(?P<dollar_amt>[\\d\\.]+)(\\$)?', str(subject).lower())
-    if m:
-        return str(get_xmr_val(m.group("dollar_amt")))
-    return None
-
-
 def handle_withdraw(sender_wallet, sender_name, recipient_address, amount):
     """
     Withdraws Monero from sender_name's wallet
@@ -59,7 +41,7 @@ def handle_withdraw_request(author, subject, contents):
     :return: Response message about withdrawl request
     """
 
-    amount = parse_withdrawl_amount(subject)
+    amount = helper.parse_amount("withdraw ", subject)
     if amount is None:
         helper.praw.redditor(author).message(subject="I didn't understand your withdrawal!", message=f'You sent: "{subject}", but I couldn\'t figure out how much you wanted to send. See [this](https://www.reddit.com/r/{helper.botname}/wiki/index#wiki_withdrawing) guide if you need help, or click "Report a Bug" under "Get Started"  if you think there\'s a bug!' + get_signature())
         return None
