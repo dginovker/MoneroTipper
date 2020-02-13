@@ -3,35 +3,12 @@ import traceback
 from decimal import Decimal
 
 import helper
-from helper import get_signature, get_xmr_val
+from helper import get_signature
 from logger import tipper_logger
 
 from tipbot.backend.transaction import generate_transaction
 from tipbot.backend.safewallet import SafeWallet
 from tipbot.backend.wallet_generator import generate_wallet_if_doesnt_exist
-
-
-def parse_tip_amount(body, botname=None):
-    """
-    Tries to parse the amount a Redditor wishes to tip, based on the comment requesting the tip
-
-    :param botname: Name of the bot running
-    :param body: The contents of a comment that called the bot
-    :return: An amount, in XMR, that the bot will tip
-    """
-    if botname is None:
-        botname = helper.botname
-
-    # "/u/MoneroTip 5 XMR"
-    m = re.search(f'/u/{botname.lower()} (tip )?([\\d\\.]+)( )?(m)?xmr', str(body).lower())
-    if m:
-        return str(Decimal(m.group(2))/1000) if m.group(m.lastindex) == "m" else m.group(2)  # Divide by 1000 if mXMR
-
-    # "/u/MoneroTip 5$"
-    m = re.search(f'/u/{botname.lower()} (tip )?(\\$)?(?P<dollar_amt>[\\d\\.]+)(\\$)?', str(body).lower())
-    if m:
-        return str(get_xmr_val(m.group("dollar_amt")))
-    return None
 
 
 def get_tip_recipient(comment):
@@ -63,7 +40,7 @@ def handle_tip_request(author, body, comment):
     """
 
     recipient = get_tip_recipient(comment)
-    amount = parse_tip_amount(body=body, botname=helper.botname)
+    amount =  helper.parse_amount(f'/u/{helper.botname.lower()} (tip )?', body)
 
     if recipient is None or amount is None:
         reply = "Nothing interesting happens.\n\n*In case you were trying to tip, I didn't understand you.*"

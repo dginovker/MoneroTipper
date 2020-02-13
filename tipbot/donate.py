@@ -1,36 +1,10 @@
-import re
 from decimal import Decimal
 
 import helper
-from helper import general_fund_address, format_decimal, get_signature, get_xmr_val
+from helper import general_fund_address, format_decimal, get_signature
 from logger import tipper_logger
 from tipbot.backend.safewallet import SafeWallet
 from tipbot.backend.transaction import generate_transaction
-
-
-def parse_donate_amount(subject, sender_balance):
-    """
-    Parses the amount a user wishes to donate to the CSS based on their message.
-
-    :param subject: Subject line in form "Donate xyz XMR" or "Donate xyz% of my balance"
-    :param sender_balance: Their current balance, used to calculate when sending a percentage
-    :return: Final amount in XMR they wish to donate
-    """
-
-    # "Donate xyz XMR"
-    m = re.search('donate ([\\d\\.]+)( )?(m)?xmr', subject.lower())
-    if m:
-        return str(Decimal(m.group(1))/1000) if m.group(m.lastindex) == "m" else m.group(1)
-
-    # "Donate xyz% of my balance"
-    m = re.search('donate ([\\d\\.]+)% of my balance', subject.lower())
-    if m:
-        return str(float(m.group(1)) * float(sender_balance) / 100)
-
-    # "Donate xyz$
-    m = re.search('donate (\\$)?(?P<dollar_amt>[\\d\\.]+)(\\$)?', str(subject).lower())
-    if m:
-        return str(get_xmr_val(m.group("dollar_amt")))
 
 
 def handle_donation(author, subject):
@@ -44,7 +18,7 @@ def handle_donation(author, subject):
 
     sender_rpc_n_wallet = SafeWallet(port=helper.ports.donation_sender_port, wallet_name=author.lower())
 
-    amount = Decimal(parse_donate_amount(subject, sender_rpc_n_wallet.wallet.balance()))
+    amount = Decimal(helper.parse_amount('donate ', subject, balance=sender_rpc_n_wallet.wallet.balance()))
 
     try:
         generate_transaction(sender_wallet=sender_rpc_n_wallet.wallet, recipient_address=general_fund_address, amount=amount, split_size=1)
