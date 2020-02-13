@@ -30,7 +30,7 @@ def parse_anon_tip_recipient(subject):
 
     :param subject: in format "Anonymous tip USER AMOUNT xmr"
     """
-    m = re.search('anonymous tip ([^\s]+) .+ (m)?xmr', subject.lower())
+    m = re.search('anonymous tip ([^\s]+) .+ (m)?xmr', subject, flags=re.IGNORECASE)
     if m:
         return fix_automoderator_recipient(m.group(1))
 

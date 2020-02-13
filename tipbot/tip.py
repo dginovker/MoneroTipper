@@ -3,7 +3,7 @@ import traceback
 from decimal import Decimal
 
 import helper
-from helper import get_signature, get_xmr_val
+from helper import get_signature
 from logger import tipper_logger
 
 from tipbot.backend.transaction import generate_transaction

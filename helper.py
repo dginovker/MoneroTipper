@@ -101,13 +101,13 @@ def is_txid(string):
     return re.search("[0-9a-f]{64}", str(string))
 
 
-def parse_amount(prefix, body):
+def parse_amount(prefix, body, balance=None):
     """
     Parses the amount of Monero to send/withdraw/tip/etc
 
     :param prefix: Regex prefix that's unqiue (i.e. /u/MoneroTipsbot Tip)
     :param body: The body of text to find an amount in
-    :param xmrgroup: The regex grouping that the XMR value lies in
+    :param balance: Optional parameter for sending a % of your balance
     :return: Amount in XMR intended to get parsed out
     """
 
@@ -116,13 +116,16 @@ def parse_amount(prefix, body):
     if m:
         return str(Decimal(m.group("xmr_amt"))/1000) if m.group(m.lastindex) == "m" else m.group("xmr_amt")  # Divide by 1000 if mXMR
 
+    # "prefix 50% of my balance"
+    m = re.search(rf'{prefix}(?P<percent>[\d\.]+)% of my balance', body)
+    if m:
+        return str(float(m.group("percent")) * float(balance) / 100)
+
     # "prefix 5$"
     m = re.search(rf'{prefix}(\$)?(?P<dollar_amt>[\d\.]+)(\$)?', str(body), flags=re.IGNORECASE)
     if m:
         return str(get_xmr_val(m.group("dollar_amt")))
     return None
-
-
 
 def get_address_txt(wallet_name):
     """
