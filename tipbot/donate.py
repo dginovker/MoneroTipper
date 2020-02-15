@@ -16,7 +16,7 @@ def handle_donation(author, subject):
     :param subject: Subject line of the message, telling how much to withdraw
     """
 
-    sender_rpc_n_wallet = SafeWallet(port=helper.ports.donation_sender_port, wallet_name=author.lower())
+    sender_rpc_n_wallet = SafeWallet(port=helper.ports.donation_sender_port, wallet_name=author.lower(), wallet_password=helper.password)
 
     amount = Decimal(helper.parse_amount('donate ', subject, balance=sender_rpc_n_wallet.wallet.balance()))
 
