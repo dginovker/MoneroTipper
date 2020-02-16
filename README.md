@@ -15,7 +15,7 @@ A secure, on-chain, Reddit Monero tip bot written in Python.
 - 0.8: Anonymous tips and UX
 - 0.9: Security and RPC refactor
 - 0.10: Testnet & mainnet support
-- 0.11: Stability & Testing
+- 0.11: Stability & Test suites
 
 ## How to run (Testnet)
 
