@@ -64,5 +64,5 @@ def handle_anonymous_tip(author, subject, contents):
         helper.praw.redditor(author).message(subject="Your anonymous tip", message=res["message"] + get_signature())
     else:
         helper.praw.redditor(author).message(subject="Anonymous tip successful", message=res["response"] + get_signature())
-        helper.praw.redditor(recipient).message(f"You have received an anonymous tip of {amount} XMR! ^({helper.get_dollar_val(amount)} USD)",
+        helper.praw.redditor(recipient).message(f"You have received an anonymous tip of {amount} XMR! ({helper.get_dollar_val(amount)} USD)",
                                                 message=(get_signature() if contents == helper.no_message_anon_tip_string else "The tipper attached the following message:\n\n" + contents + get_signature()))
