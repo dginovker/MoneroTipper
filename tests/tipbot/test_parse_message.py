@@ -27,6 +27,8 @@ class mainTestCase(unittest.TestCase):
         self.assertTrue(comment_requests_tip(f"/u/{helper.botname} $1"))
         self.assertTrue(comment_requests_tip(f"thx for the guide /u/{helper.botname} tip 1mxmr enjoy :)"))
 
+        self.assertTrue(comment_requests_tip(f"/u/{helper.botname} $0.03"))
+
         self.assertFalse(comment_requests_tip(f"/u/{helper.botname}'s broken"))
 
     def test_subject_requests_info(self):

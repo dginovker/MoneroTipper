@@ -97,6 +97,22 @@ def get_xmr_val(dollars):
     return format_decimal(float(dollars) / float(json.loads(response.content)["monero"]["usd"]))
 
 
+def get_dollar_val(xmr):
+    """
+    Converts XMR to USD with coingecko API
+
+    :param xmr: Amount of XMR
+    :return: Amount of USD representing the XMR
+    """
+
+    response = requests.get('https://api.coingecko.com/api/v3/simple/price',
+                            headers={'accept': 'application/json'},
+                            params=(('ids', 'monero'), ('vs_currencies', 'usd')))
+
+    return format_decimal(float(json.loads(response.content)["monero"]["usd"]) * float(xmr), 2)
+
+
+
 def is_txid(string):
     return re.search("[0-9a-f]{64}", str(string))
 
