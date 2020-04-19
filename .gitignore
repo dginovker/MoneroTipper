@@ -9,5 +9,6 @@ tests/tipbot/_trial_temp/
 venv/
 logs/*
 monero/*
+monero_tools/*
 abort*
 _trial_temp/
