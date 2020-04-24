@@ -1,7 +1,7 @@
 from decimal import Decimal
 
 import helper
-from helper import general_fund_address, format_decimal, get_signature
+from helper import format_decimal, get_signature
 from logger import tipper_logger
 from tipbot.backend.safewallet import SafeWallet
 from tipbot.backend.transaction import generate_transaction
@@ -21,7 +21,7 @@ def handle_donation(author, subject):
     amount = Decimal(helper.parse_amount('donate ', subject, balance=sender_rpc_n_wallet.wallet.balance()))
 
     try:
-        generate_transaction(sender_wallet=sender_rpc_n_wallet.wallet, recipient_address=general_fund_address, amount=amount, split_size=1)
+        generate_transaction(sender_wallet=sender_rpc_n_wallet.wallet, recipient_address=helper.get_general_fund_address(), amount=amount, split_size=1)
         helper.praw.redditor(author).message(subject="Your donation to the General Dev Fund", message=f'Thank you for donating {format_decimal(amount)} of your XMR balance to the CCS!\n\nYou will soon have your total donations broadcasted to the wiki :) {get_signature()}')
         helper.praw.redditor("OsrsNeedsF2P").message(subject=f'{author} donated {amount} to the CCS!', message=f"Update table here: https://old.reddit.com/r/{helper.botname}/wiki/index#wiki_donating_to_the_ccs")
         tipper_logger.log(f'{author} donated {format_decimal(amount)} to the CCS.')
