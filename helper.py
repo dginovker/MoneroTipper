@@ -46,7 +46,7 @@ testnet = False
 no_message_anon_tip_string = "Edit this line to send a message, or leave it exactly the same to attach no message at all!"
 
 # General dev fund holder address
-general_fund_address = '46zarwyDHd8F2GXxVuETVz3wKvEnWic634eYykBS9Q6UbmQfm2y7XRt45KzF6rGT1Pj9YTp55iHRKXZsR7AaxDZM7XqtYRK'
+general_fund_address = '9y5L4smntsvPmCzZucrqZGCsVWmrtKBJ3cFircPHSSYGG7j7qgkGsAxgJLjwpsB89qM2guKKDge5LeumUeofdQZ688R5GMP'
 
 # Number of decimal points to display
 precision = 4
@@ -133,7 +133,7 @@ def parse_amount(prefix, body, balance=None):
         return str(Decimal(m.group("xmr_amt"))/1000) if m.group(m.lastindex) == "m" else m.group("xmr_amt")  # Divide by 1000 if mXMR
 
     # "prefix 50% of my balance"
-    m = re.search(rf'{prefix}(?P<percent>[\d\.]+)% of my balance', body)
+    m = re.search(rf'{prefix}(?P<percent>[\d\.]+)% of my balance', str(body), flags=re.IGNORECASE)
     if m:
         return str(float(m.group("percent")) * float(balance) / 100)
 

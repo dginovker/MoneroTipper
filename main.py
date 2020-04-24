@@ -42,7 +42,7 @@ if __name__ == "__main__":
     parser.add_argument("-t", "--testnet", action="store_true", help="Whether to run MoneroTipper on testnet")
     args = parser.parse_args()
 
-    helper.praw = praw.Reddit(args.account_name, user_agent='Monero non-custodial testnet tipper: v0.9 (by /u/OsrsNeedsF2P)')
+    helper.praw = praw.Reddit(args.account_name, user_agent='Monero non-custodial testnet tipper: v0.11 (by /u/OsrsNeedsF2P)')
     helper.botname = helper.praw.user.me().name
     helper.password = args.password
 
