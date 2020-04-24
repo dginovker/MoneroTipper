@@ -74,6 +74,8 @@ def generate_transaction(sender_wallet, recipient_address, amount, split_size=6,
 
     sum = 0
     transactions = []
+    decimalamount = Decimal(amount)
+    senderwalletbalance = sender_wallet.balance()
     if Decimal(amount) > sender_wallet.balance() - Decimal(0.001) and Decimal(amount) < Decimal(0.1) + sender_wallet.balance(): # If you're sending more than your balance, but not much more --
         tipper_logger.log("Sending sweep_all transaction...")
 

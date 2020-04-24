@@ -4,6 +4,7 @@ from decimal import Decimal
 
 import requests
 
+
 class Ports:
     monerod_port = 18081
     wallet_sync_port = 18085
@@ -26,6 +27,7 @@ class Ports:
         self.withdraw_sender_port += 10000
         self.create_address_txt_port += 10000
 
+
 # Default ports being used by the service
 ports = Ports()
 
@@ -41,12 +43,8 @@ botname = ""
 # True if we're on testnet (different ports, different wallet dir)
 testnet = False
 
-
 ### Constants ###
 no_message_anon_tip_string = "Edit this line to send a message, or leave it exactly the same to attach no message at all!"
-
-# General dev fund holder address
-general_fund_address = '46zarwyDHd8F2GXxVuETVz3wKvEnWic634eYykBS9Q6UbmQfm2y7XRt45KzF6rGT1Pj9YTp55iHRKXZsR7AaxDZM7XqtYRK'
 
 # Number of decimal points to display
 precision = 4
@@ -57,10 +55,12 @@ def get_signature():
     base = str(f"\n\n*****\n\n")
     emojii = str(f"^\(っ◔◡◔)っ ^♡")
     get_started = str(f" ^| [^(Get Started)](https://old.reddit.com/r/{botname}/wiki/index)")
-    show_balance = str(f" ^| [^(Show my balance)](https://www.reddit.com/message/compose/?to={botname}&subject=My%20info&message=Hit%20%27send%27%20and%20the%20bot%20will%20tell%20you%20your%20balance%20:\))")
+    show_balance = str(
+        f" ^| [^(Show my balance)](https://www.reddit.com/message/compose/?to={botname}&subject=My%20info&message=Hit%20%27send%27%20and%20the%20bot%20will%20tell%20you%20your%20balance%20:\))")
     donate = str(f" ^| [^(Donate to the CCS)](https://old.reddit.com/r/{botname}/wiki/index#wiki_donating_to_the_ccs)")
     end = str(f" ^| ^♡")
-    double_sig = str(f"\n\n ^(NOTICE: This bot is a testnet version. There may be long delays between transactions showing up on the network!)")  if testnet else ""
+    double_sig = str(
+        f"\n\n ^(NOTICE: This bot is a testnet version. There may be long delays between transactions showing up on the network!)") if testnet else ""
     return base + emojii + get_started + show_balance + donate + end + double_sig
 
 
@@ -112,7 +112,6 @@ def get_dollar_val(xmr):
     return format_decimal(float(json.loads(response.content)["monero"]["usd"]) * float(xmr), 2)
 
 
-
 def is_txid(string):
     return re.search("[0-9a-f]{64}", str(string))
 
@@ -130,10 +129,11 @@ def parse_amount(prefix, body, balance=None):
     # "prefix 5 XMR"
     m = re.search(rf"{prefix}(?P<xmr_amt>[\d\.]+)( )?(m)?xmr", str(body), flags=re.IGNORECASE)
     if m:
-        return str(Decimal(m.group("xmr_amt"))/1000) if m.group(m.lastindex) == "m" else m.group("xmr_amt")  # Divide by 1000 if mXMR
+        return str(Decimal(m.group("xmr_amt")) / 1000) if m.group(m.lastindex) == "m" else m.group(
+            "xmr_amt")  # Divide by 1000 if mXMR
 
     # "prefix 50% of my balance"
-    m = re.search(rf'{prefix}(?P<percent>[\d\.]+)% of my balance', body)
+    m = re.search(rf'{prefix}(?P<percent>[\d\.]+)% of my balance', str(body), flags=re.IGNORECASE)
     if m:
         return str(float(m.group("percent")) * float(balance) / 100)
 
@@ -143,6 +143,7 @@ def parse_amount(prefix, body, balance=None):
         return str(get_xmr_val(m.group("dollar_amt")))
     return None
 
+
 def get_address_txt(wallet_name):
     """
     Gets the address.txt from the wallet without creating a RPC, unless the file doesn't exist, in which case it creates a RPC and saves it
@@ -150,5 +151,11 @@ def get_address_txt(wallet_name):
     :param wallet_name: The wallet name to get the address from
     :return: The address
     """
-    return open("wallets/" + ("testnet/" if testnet else "mainnet/") + wallet_name + ".address.txt", "r").read().rstrip()
+    return open("wallets/" + ("testnet/" if testnet else "mainnet/") + wallet_name + ".address.txt",
+                "r").read().rstrip()
 
+
+def get_general_fund_address():
+    if testnet:
+        return "9y5L4smntsvPmCzZucrqZGCsVWmrtKBJ3cFircPHSSYGG7j7qgkGsAxgJLjwpsB89qM2guKKDge5LeumUeofdQZ688R5GMP"
+    return "46zarwyDHd8F2GXxVuETVz3wKvEnWic634eYykBS9Q6UbmQfm2y7XRt45KzF6rGT1Pj9YTp55iHRKXZsR7AaxDZM7XqtYRK"
