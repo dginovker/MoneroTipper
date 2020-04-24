@@ -32,11 +32,12 @@ def main():
 
     try:
         while True:
-            for i in os.listdir("wallets/" + ("testnet/" if args.testnet else "mainnet/")):
+            for i in sorted(os.listdir("wallets/" + ("testnet/" if args.testnet else "mainnet/"))):
                 if not "." in i:
                     start = int(round(time.time() * 1000))
                     print("Opening " + i + "'s wallet")
-                    get_info(wallet_name=i, private_info=False, password=args.password, port=helper.ports.wallet_sync_port, timeout=sync_time)
+                    with HiddenPrints():
+                        get_info(wallet_name=i, private_info=False, password=args.password, port=helper.ports.wallet_sync_port, timeout=sync_time)
                     if int(round(time.time()*1000))-start > sync_time*1000 - 10000:
                         print("Warn: " + i + "'s wallet is likely unsynced")
 
