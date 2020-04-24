@@ -1,8 +1,9 @@
 import unittest
 
 import helper
-from tipbot.anon_tip import parse_anon_tip_amount, parse_anon_tip_recipient
 from helper import get_xmr_val
+from tipbot.anon_tip import parse_anon_tip_recipient
+
 
 class mainTestCase(unittest.TestCase):
     """
