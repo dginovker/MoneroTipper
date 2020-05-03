@@ -69,7 +69,10 @@ def get_below_threshold_message():
 
 
 def get_xmrchain(txid):
-    return f"https://{'testnet.' if testnet else ''}xmrchain.com/search?value={str(txid)}"
+    if testnet:
+        return f"https://testnet.xmrchain.com/search?value={txid}"
+    else:
+        return f"https://www.exploremonero.com/transaction/{txid}"
 
 
 def format_decimal(decimal, points=precision):
