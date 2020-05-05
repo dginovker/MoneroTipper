@@ -140,7 +140,7 @@ def get_error_response(e):
     if "of unknown code -3" in str(e):  # Node out of sync
         response += "\n\n The tipbot node might be really out of sync. Report this to /u/OsrsNeedsF2P"
     if "not enough money" in str(e) or "tx not possible" in str(e):  # Can't afford fee
-        response += "\n\n You do not have a high enough balance to cover the network fee. If you would like to manually withdraw the rest of your balance (<1 cent), you can try to by extracting your private key"
+        response += "\n\n Your balance is either very low (<1 cent) and you cannot cover the network fee, or you're waiting for your return change before you can submit another transaction."
     if "per_subaddress" in str(e):  # No balance, and it tried to run sweep_all
         response += "\n\n You do not have any balance! Try filling some up by clicking \"Get Started\"."
 
