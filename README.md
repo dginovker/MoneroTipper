@@ -1,4 +1,4 @@
-# MoneroTipsBot
+# MoneroTipsBot ![Image using](https://i.imgur.com/CJ57WXD.png)
 
 ## Censorship free donations, for your favorite Reddit contributors.
 
