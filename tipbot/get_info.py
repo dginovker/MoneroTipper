@@ -19,8 +19,11 @@ def get_info_as_string(wallet_name, private_info=False):
 
     info = get_info(wallet_name=wallet_name, private_info=private_info, password=helper.password)
 
-    info_as_string = f'Public address: {info["address"]} [(QR code)](https://api.qrserver.com/v1/create-qr-code/?data={info["address"]}&size=220x220&margin=4)\n\nBalance: {info["balance"]} ({info["balance_(unconfirmed)"]} unconfirmed)\n\n{info["seed"]}'
-    return info_as_string
+    try:
+        return f'Public address: {info["address"]} [(QR code)](https://api.qrserver.com/v1/create-qr-code/?data={info["address"]}&size=220x220&margin=4)\n\nBalance: {info["balance"]} ({info["balance_(unconfirmed)"]} unconfirmed)\n\n{info["seed"]}'
+    except:
+        # It's just an error string, no formatting required.
+        return info
 
 
 def get_info(wallet_name, private_info=False, port=helper.ports.get_info_port, password=None, timeout=300):
@@ -77,14 +80,21 @@ def get_info_from_wallet(wallet, wallet_name, private_info=False):
     :param private_info: A boolean that determines whether or not to add the user's private info
     :return: Returns a tuple containing the user's address, balance, unconfirmed balance, and if private_info is True then their private mnemonic
     """
-    return {
-        "address": str(wallet.address()),
-        "balance": get_balance(wallet, True),  # format_decimal(wallet.balance(unlocked=True)),
-        "balance_(unconfirmed)": str(helper.format_decimal(wallet.balance(unlocked=False) - wallet.balance(unlocked=True))),
-        "seed": "Private mnemonic seed: " + wallet.seed().phrase + "\n\nRestore height (optional): " + open(
-            "wallets/" + ("testnet/" if helper.testnet else "mainnet/") + wallet_name + ".height", "r").read() if private_info
-        else f"If you would like your **private** info, click [here](https://www.reddit.com/r/{helper.botname}/wiki/index#wiki_extracting_your_private_key)"
-    }
+    try:
+        return {
+            "address": str(wallet.address()),
+            "balance": get_balance(wallet, True),  # format_decimal(wallet.balance(unlocked=True)),
+            "balance_(unconfirmed)": str(
+                helper.format_decimal(wallet.balance(unlocked=False) - wallet.balance(unlocked=True))),
+            "seed": "Private mnemonic seed: " + wallet.seed().phrase + "\n\nRestore height (optional): " + open(
+                "wallets/" + ("testnet/" if helper.testnet else "mainnet/") + wallet_name + ".height",
+                "r").read() if private_info
+            else f"If you would like your **private** info, click [here](https://www.reddit.com/r/{helper.botname}/wiki/index#wiki_extracting_your_private_key)"
+        }
+    except Exception as e:
+        if "has no attribute 'address'" in str(e):
+            return("Sorry - The blockchain is currently being synced. It'll be back up soon, or alternatively, [extract your private seed](https://www.reddit.com/r/monerotipsbot/wiki/index#wiki_extracting_your_private_key) to get access to your funds immediately!")
+
 
 
 def handle_info_request(author, private_info=False):

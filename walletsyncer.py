@@ -40,6 +40,7 @@ def main():
                         get_info(wallet_name=i, private_info=False, password=args.password, port=helper.ports.wallet_sync_port, timeout=sync_time)
                     if int(round(time.time()*1000))-start > sync_time*1000 - 10000:
                         print("Warn: " + i + "'s wallet is likely unsynced")
+                    print("Taking a break...")
                     time.sleep(sync_time) # Poor CPU
 
     except Exception as e:
