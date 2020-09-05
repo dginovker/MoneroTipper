@@ -17,9 +17,9 @@ A secure, on-chain, Reddit Monero tip bot written in Python.
 - 0.10: Testnet & mainnet support
 - 0.11: Stability & Test suites
 
-## How to run (Testnet)
+## How to run
 
-- Have praw.ini in main dir
+- Have [praw.ini](https://praw.readthedocs.io/en/latest/getting_started/configuration/prawini.html) in main dir
 - Have Monero software in `/monero_tools` dir
 - Run `monerod`
 - Run `main.py [-t]`
