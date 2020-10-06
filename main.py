@@ -8,31 +8,31 @@ from tipbot.parse_message import process_message
 
 
 def main():
-    tipper_logger.log("Searching for new messages")
-    start_time = datetime.datetime.now().timestamp()
+    while True:
+        tipper_logger.log("Searching for new messages")
+        start_time = datetime.datetime.now().timestamp()
 
-    author = None
-    try:
-        for message in helper.praw.inbox.stream():
-            if not message.author:
-                helper.praw.inbox.mark_read([message]) # Gets rid of messages that otherwise crash service (i.e. sub bans)
-            else:
-                author = message.author.name
-                if message.created_utc > start_time:
-                    process_message(author=author, comment=message, subject=message.subject, body=message.body)
-    except Exception as e:
+        author = None
         try:
-            if "read timeout" not in str(e).lower() \
-                    and "reddit.com timed out" not in str(e) \
-                    and "503" not in str(e):
-                tipper_logger.log("Main error: " + str(e))
-                tipper_logger.log("Blame " + author)
-                traceback.print_exc()
-                helper.praw.redditor("OsrsNeedsF2P").message(subject=f"Something broke for /u/{author}!!",
-                                                     message=f"{str(e)}" + helper.get_signature())
+            for message in helper.praw.inbox.stream():
+                if not message.author:
+                    helper.praw.inbox.mark_read([message]) # Gets rid of messages that otherwise crash service (i.e. sub bans)
+                else:
+                    author = message.author.name
+                    if message.created_utc > start_time:
+                        process_message(author=author, comment=message, subject=message.subject, body=message.body)
         except Exception as e:
-            tipper_logger.log("Just wow." + str(e))
-        main()
+            try:
+                if "read timeout" not in str(e).lower() \
+                        and "reddit.com timed out" not in str(e) \
+                        and "503" not in str(e):
+                    tipper_logger.log("Main error: " + str(e))
+                    tipper_logger.log("Blame " + author)
+                    traceback.print_exc()
+                    helper.praw.redditor("OsrsNeedsF2P").message(subject=f"Something broke for /u/{author}!!",
+                                                         message=f"{str(e)}" + helper.get_signature())
+            except Exception as e:
+                tipper_logger.log("Just wow." + str(e))
 
 
 if __name__ == "__main__":
