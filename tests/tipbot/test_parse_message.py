@@ -21,9 +21,11 @@ class mainTestCase(unittest.TestCase):
 
     def test_comment_requests_tip(self):
         self.assertTrue(comment_requests_tip(f"/u/{helper.botname} 1 XMR"))
+        self.assertTrue(comment_requests_tip(f"u/{helper.botname.lower()} 0.001 XMR"))
         self.assertTrue(comment_requests_tip(f"/u/{helper.botname} 1xmr"))
         self.assertTrue(comment_requests_tip(f"/u/{helper.botname} 1 mXMR"))
         self.assertTrue(comment_requests_tip(f"/u/{helper.botname} 1$"))
+        self.assertTrue(comment_requests_tip(f"u/{helper.botname} 1$"))
         self.assertTrue(comment_requests_tip(f"/u/{helper.botname} $1"))
         self.assertTrue(comment_requests_tip(f"thx for the guide /u/{helper.botname} tip 1mxmr enjoy :)"))
 

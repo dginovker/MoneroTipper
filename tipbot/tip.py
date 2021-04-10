@@ -40,7 +40,9 @@ def handle_tip_request(author, body, comment):
     """
 
     recipient = get_tip_recipient(comment)
-    amount =  helper.parse_amount(f'/u/{helper.botname.lower()} (tip )?', body)
+    amount =  helper.parse_amount(f'u/{helper.botname.lower()} (tip )?', body)
+
+    tipper_logger.log(f"Starting tip of {amount} to {recipient}..")
 
     if recipient is None or amount is None:
         reply = "Nothing interesting happens.\n\n*In case you were trying to tip, I didn't understand you.*"
