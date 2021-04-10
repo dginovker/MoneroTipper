@@ -10,15 +10,15 @@ class mainTestCase(unittest.TestCase):
         prefix = f"u/{helper.botname} (tip )?"
 
         self.assertTrue(helper.parse_amount(prefix, f"/u/{helper.botname} 1.0 xmr") == "1.0")
-        self.assertTrue(helper.parse_amount(prefix, f"/u/{helper.botname} 1xmr") == "1")
+        self.assertTrue(helper.parse_amount(prefix, f"u/{helper.botname} 1xmr") == "1")
         self.assertTrue(helper.parse_amount(prefix, f"/u/{helper.botname} 5 xmr") == "5")
-        self.assertTrue(helper.parse_amount(prefix, f"/u/{helper.botname} tip 1 xmr") == "1")
+        self.assertTrue(helper.parse_amount(prefix, f"u/{helper.botname} tip 1 xmr") == "1")
         self.assertTrue(helper.parse_amount(prefix, f"/u/{helper.botname} tip 1xmr") == "1")
 
         self.assertTrue(helper.parse_amount(prefix, f"/u/{helper.botname} 1 mxmr") == "0.001")
-        self.assertTrue(helper.parse_amount(prefix, f"/u/{helper.botname} 1mxmr") == "0.001")
+        self.assertTrue(helper.parse_amount(prefix, f"u/{helper.botname} 1mxmr") == "0.001")
         self.assertTrue(helper.parse_amount(prefix, f"/u/{helper.botname} tip 1 mxmr") == "0.001")
-        self.assertTrue(helper.parse_amount(prefix, f"/u/{helper.botname} tip 1mxmr") == "0.001")
+        self.assertTrue(helper.parse_amount(prefix, f"u/{helper.botname} tip 1mxmr") == "0.001")
 
         self.assertTrue(helper.parse_amount(prefix, f"/u/{helper.botname} 1.0$") == str(get_xmr_val(1)))
         self.assertTrue(helper.parse_amount(prefix, f"/u/{helper.botname} $1") == str(get_xmr_val(1)))
