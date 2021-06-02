@@ -54,6 +54,7 @@ precision = 4
 def get_signature():
     base = str(f"\n\n*****\n\n")
     emojii = str(f"^\(っ◔◡◔)っ ^♡")
+    shutdown = str(f" ^| MoneroTipsBot has shut down. Please [withdraw](https://old.reddit.com/r/MoneroTipsBot/wiki/index#wiki_withdrawing) your funds")
     get_started = str(f" ^| [^(Get Started)](https://old.reddit.com/r/{botname}/wiki/index)")
     show_balance = str(
         f" ^| [^(Show my balance)](https://www.reddit.com/message/compose/?to={botname}&subject=My%20info&message=Hit%20%27send%27%20and%20the%20bot%20will%20tell%20you%20your%20balance%20:\))")
@@ -61,7 +62,7 @@ def get_signature():
     end = str(f" ^| ^♡")
     double_sig = str(
         f"\n\n ^(NOTICE: This bot is a testnet version. There may be long delays between transactions showing up on the network!)") if testnet else ""
-    return base + emojii + get_started + show_balance + donate + end + double_sig
+    return base + emojii + shutdown + end + double_sig
 
 
 def get_below_threshold_message():

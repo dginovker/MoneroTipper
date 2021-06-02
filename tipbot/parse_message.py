@@ -49,7 +49,7 @@ def process_message(author, comment, subject, body):
     generate_wallet_if_doesnt_exist(name=author.lower(), password=helper.password)
 
     if comment_requests_tip(body):
-        handle_tip_request(author=author, body=body, comment=comment)
+        # handle_tip_request(author=author, body=body, comment=comment)
         return
     if subject_requests_info(subject):
         handle_info_request(author=author, private_info=False)
@@ -64,7 +64,8 @@ def process_message(author, comment, subject, body):
         handle_donation(author=author, subject=subject)
         return
     if subject_requests_anonymous_tip(subject):
-        handle_anonymous_tip(author=author, subject=subject, contents=body)
+        # handle_anonymous_tip(author=author, subject=subject, contents=body)
         return
 
-    helper.praw.redditor(author).message(subject="I didn't understand your command", message=f'I didn\'t understand what you meant last time you tagged me. You said: \n\n{body}\n\nIf you didn\'t mean to summon me, you\'re all good! If you\'re confused, please let my owner know by clicking Report a Bug!{helper.get_signature()}')
+    # helper.praw.redditor(author).message(subject="I didn't understand your command", message=f'I didn\'t understand what you meant last time you tagged me. You said: \n\n{body}\n\nIf you didn\'t mean to summon me, you\'re all good! If you\'re confused, please let my owner know by clicking Report a Bug!{helper.get_signature()}')
+    helper.praw.redditor(author).message(subject="MoneroTipsBot has shut down", message=f'Please withdraw your funds! {helper.get_signature()}')

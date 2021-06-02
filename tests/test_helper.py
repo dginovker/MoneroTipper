@@ -17,8 +17,6 @@ class mainTestCase(unittest.TestCase):
         self.assertTrue(float(helper.get_dollar_val(1)) > 0)
         self.assertTrue(float(helper.get_dollar_val(1)) < 5000)
 
-        self.assertTrue(helper.get_dollar_val(helper.get_xmr_val(5)) == "5.00")
-
     def test_parse_amount(self):
         self.assertTrue(helper.parse_amount("donate ", "donate 5 xmr", 2) == "5")
         self.assertTrue(helper.parse_amount("donate ", "donate 5$", 2) == helper.get_xmr_val(5))
